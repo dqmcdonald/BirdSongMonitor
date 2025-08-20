@@ -69,6 +69,7 @@ def process_rec(filename: str, conn ):
     # return if this file is already in the DB:
     base_name = os.path.basename(filename)
     if file_in_database(base_name, conn ):
+        print(f"   {base_name} already in database")
         return
 
     recording = Recording(
@@ -81,7 +82,7 @@ def process_rec(filename: str, conn ):
     )
     recording.analyze()
     print()
-    print(base_name)
+    print(f"  Detections in file: {base_name}")
     cur = conn.cursor()
     for dec in recording.detections:
         cur.execute("""
@@ -89,19 +90,34 @@ def process_rec(filename: str, conn ):
             (base_name, dt, dec["common_name"],dec["scientific_name"],
              dec["start_time"],dec["end_time"],dec["confidence"]))
         
-        print("   ", dec["common_name"], dec["start_time"], dec["confidence"])
+        print(f"    {dec['common_name']:<20}  {dec['start_time']:3.0f} {dec['confidence']:3.2f}")
     conn.commit()
 
 
 def proc_recordings(directory: str, conn ):
     # process all the recordings in the given directory
 
+    print()
+    print(f"""Processing all files in {directory}/ """)
     for f in glob.glob(directory + "/*"):
         process_rec(f, conn)
     
 
 def main():
+
+    if len(sys.argv) < 2:
+        print()
+        sys.exit("Error: Specify a directory to process")
+
+    if not os.path.exists(sys.argv[1]):
+        print()
+        sys.exit(f"Error: directory {sys.argv[1]} does not exist")
+
+
     conn = create_db() 
+
+    print()
+    print("Setup done, about to process files")
 
     proc_recordings(sys.argv[1], conn)
 
