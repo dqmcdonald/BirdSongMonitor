@@ -3,17 +3,16 @@
 # D.Q. McDonald August 2025
 
 
-DB_NAME = "birdmon.db"
 
 import sys
 import os.path
 import sqlite3
 import argparse
 
-def open_db():
+def open_db( db_name: str):
     # open database and return connection
 
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(db_name)
     return conn
 
 
@@ -27,11 +26,12 @@ def query_db( conn, args ) :
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('db_name', help="Database name")
     parser.add_argument('-a', '--all', action='store_true', 
         help="list all detections in the database")
     args = parser.parse_args()
 
-    conn = open_db() 
+    conn = open_db(args.db_name) 
 
     query_db(conn, args)
 
