@@ -43,7 +43,7 @@ python query_detections.py <db_name.db> [options]
 | `db_name` | (required) | Path to the SQLite database |
 | `-c`, `--confidence` | `0.25` | Minimum confidence threshold |
 | `-e`, `--event` | (all) | Filter by event: `Sunrise`, `Sunset`, or `Day` |
-| `-s`, `--species` | (all) | Show detailed rows for a single species (common name) |
+| `-s`, `--species` | (all) | Show detailed rows for a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-a`, `--all` | off | Dump every detection row |
 | `--from DATE` | (none) | Start date inclusive (`YYYY-MM-DD` or `DD-MM-YYYY`) |
 | `--to DATE` | (none) | End date inclusive (`YYYY-MM-DD` or `DD-MM-YYYY`) |
@@ -64,7 +64,7 @@ python plot_detections.py <db_name.db> [options]
 | `--plot TYPE` | `daily` | Chart type — see below |
 | `-c`, `--confidence` | `0.25` | Minimum confidence threshold |
 | `-e`, `--event` | `All` | Filter by event: `All`, `Sunrise`, `Sunset`, `Day` |
-| `-s`, `--species` | (all) | Limit to a single species (common name) |
+| `-s`, `--species` | (all) | Limit to a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-n`, `--top-n` | `20` | Number of species for heatmap / topn / confidence / events plots |
 | `-o`, `--output` | `<db_stem>[_<plot>].png` | Output PNG path |
 | `--cmap` | `YlOrRd` | Matplotlib colormap for heatmap |
