@@ -1,0 +1,1880 @@
+2025-11-28 12:26T: 
+
+
+******************************
+2025-11-28 12:26T: Logging started to SD card.
+2025-11-28 12:26T: SD Card Setup Complete.
+2025-11-28 12:26T: Initialization done.
+2025-11-28 12:26T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2025-11-28 12:26T: checkForEvent() [DST] month = 11, day = 28, hour = 11, minute=26
+2025-11-28 12:26T: checkForEvent() index = 337
+2025-11-28 12:26T: checkForEvent() sunrise(without offset): 4:44
+2025-11-28 12:26T: checkForEvent() sunset(without offset): 19:49
+2025-11-28 12:26T: checkForEvent() next day sunrise (without offset): 4:44
+2025-11-28 12:26T: checkForEvent() sunrise(with offset): 4:29
+2025-11-28 12:26T: checkForEvent() sunset(with offset): 19:34
+2025-11-28 12:26T: checkForEvent() next day sunrise (with offset): 4:29
+2025-11-28 12:26T: checkForEvent() before sunset
+2025-11-28 12:26T: About to sleep for 8 hours and 8 minutes
+2025-11-28 12:29T: 
+
+
+******************************
+2025-11-28 12:29T: Logging started to SD card.
+2025-11-28 12:29T: SD Card Setup Complete.
+2025-11-28 12:29T: Initialization done.
+2025-11-28 12:29T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2025-11-28 12:29T: checkForEvent() [DST] month = 11, day = 28, hour = 11, minute=29
+2025-11-28 12:29T: checkForEvent() index = 337
+2025-11-28 12:29T: checkForEvent() sunrise(without offset): 4:44
+2025-11-28 12:29T: checkForEvent() sunset(without offset): 19:49
+2025-11-28 12:29T: checkForEvent() next day sunrise (without offset): 4:44
+2025-11-28 12:29T: checkForEvent() sunrise(with offset): 4:29
+2025-11-28 12:29T: checkForEvent() sunset(with offset): 19:34
+2025-11-28 12:29T: checkForEvent() next day sunrise (with offset): 4:29
+2025-11-28 12:29T: checkForEvent() before sunset
+2025-11-28 12:29T: About to sleep for 8 hours and 5 minutes
+2026-04-14 15:55T: 
+
+
+******************************
+2026-04-14 15:55T: Logging started to SD card.
+2026-04-14 15:55T: SD Card Setup Complete.
+2026-04-14 15:55T: Initialization done.
+2026-04-14 15:55T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-14 15:55T: checkForEvent() [NZST] month = 4, day = 14, hour = 15, minute=55
+2026-04-14 15:55T: checkForEvent() index = 106
+2026-04-14 15:55T: checkForEvent() sunrise(without offset): 7:0
+2026-04-14 15:55T: checkForEvent() sunset(without offset): 17:58
+2026-04-14 15:55T: checkForEvent() next day sunrise (without offset): 7:1
+2026-04-14 15:55T: checkForEvent() sunrise(with offset): 6:45
+2026-04-14 15:55T: checkForEvent() sunset(with offset): 17:43
+2026-04-14 15:55T: checkForEvent() next day sunrise (with offset): 6:46
+2026-04-14 15:55T: checkForEvent() before sunset
+2026-04-14 15:55T: About to sleep for 1 hours and 48 minutes
+2026-04-14 17:43T: 
+
+
+******************************
+2026-04-14 17:43T: Logging started to SD card.
+2026-04-14 17:43T: SD Card Setup Complete.
+2026-04-14 17:43T: Initialization done.
+2026-04-14 17:43T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-14 17:43T: checkForEvent() [NZST] month = 4, day = 14, hour = 17, minute=43
+2026-04-14 17:43T: checkForEvent() index = 106
+2026-04-14 17:43T: checkForEvent() sunrise(without offset): 7:0
+2026-04-14 17:43T: checkForEvent() sunset(without offset): 17:58
+2026-04-14 17:43T: checkForEvent() next day sunrise (without offset): 7:1
+2026-04-14 17:43T: checkForEvent() sunrise(with offset): 6:45
+2026-04-14 17:43T: checkForEvent() sunset(with offset): 17:43
+2026-04-14 17:43T: checkForEvent() next day sunrise (with offset): 6:46
+2026-04-14 17:43T: checkForEvent() before sunset
+2026-04-14 17:43T: startRecording()
+2026-04-14 17:43T: Filename = 'SS_2026_04_14_17_43.WAV'
+2026-04-14 17:43T: Started recording.
+2026-04-14 17:48T: stopRecording()2026-04-14 17:48T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-14 17:48T: checkForEvent() [NZST] month = 4, day = 14, hour = 17, minute=48
+2026-04-14 17:48T: checkForEvent() index = 106
+2026-04-14 17:48T: checkForEvent() sunrise(without offset): 7:0
+2026-04-14 17:48T: checkForEvent() sunset(without offset): 17:58
+2026-04-14 17:48T: checkForEvent() next day sunrise (without offset): 7:1
+2026-04-14 17:48T: checkForEvent() sunrise(with offset): 6:45
+2026-04-14 17:48T: checkForEvent() sunset(with offset): 17:43
+2026-04-14 17:48T: checkForEvent() next day sunrise (with offset): 6:46
+2026-04-14 17:48T: checkForEvent() before next day
+2026-04-14 17:48T: About to sleep for 12 hours and 58 minutes
+2026-04-15 06:46T: 
+
+
+******************************
+2026-04-15 06:46T: Logging started to SD card.
+2026-04-15 06:46T: SD Card Setup Complete.
+2026-04-15 06:46T: Initialization done.
+2026-04-15 06:46T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-15 06:46T: checkForEvent() [NZST] month = 4, day = 15, hour = 6, minute=46
+2026-04-15 06:46T: checkForEvent() index = 107
+2026-04-15 06:46T: checkForEvent() sunrise(without offset): 7:1
+2026-04-15 06:46T: checkForEvent() sunset(without offset): 17:56
+2026-04-15 06:46T: checkForEvent() next day sunrise (without offset): 7:2
+2026-04-15 06:46T: checkForEvent() sunrise(with offset): 6:46
+2026-04-15 06:46T: checkForEvent() sunset(with offset): 17:41
+2026-04-15 06:46T: checkForEvent() next day sunrise (with offset): 6:47
+2026-04-15 06:46T: checkForEvent() before sunrise
+2026-04-15 06:46T: startRecording()
+2026-04-15 06:46T: Filename = 'SR_2026_04_15_06_46.WAV'
+2026-04-15 06:46T: Started recording.
+2026-04-15 06:51T: stopRecording()2026-04-15 06:51T: Completed sunrise recordings, setting day record flag
+2026-04-15 06:51T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-15 06:51T: checkForEvent() [NZST] month = 4, day = 15, hour = 6, minute=51
+2026-04-15 06:51T: checkForEvent() index = 107
+2026-04-15 06:51T: checkForEvent() sunrise(without offset): 7:1
+2026-04-15 06:51T: checkForEvent() sunset(without offset): 17:56
+2026-04-15 06:51T: checkForEvent() next day sunrise (without offset): 7:2
+2026-04-15 06:51T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-15 06:51T: checkForEvent() start, end minutes: 511:986
+2026-04-15 06:51T: checkForEvent() random_minutes 223
+2026-04-15 06:51T: About to sleep for 3 hours and 43 minutes
+2026-04-15 10:34T: 
+
+
+******************************
+2026-04-15 10:34T: Logging started to SD card.
+2026-04-15 10:34T: SD Card Setup Complete.
+2026-04-15 10:34T: Initialization done.
+2026-04-15 10:34T: Record during day flag set to true - about to record 
+2026-04-15 10:34T: startRecording()
+2026-04-15 10:34T: Filename = 'DA_2026_04_15_10_34.WAV'
+2026-04-15 10:34T: Started recording.
+2026-04-15 10:39T: stopRecording()2026-04-15 10:39T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-15 10:39T: checkForEvent() [NZST] month = 4, day = 15, hour = 10, minute=39
+2026-04-15 10:39T: checkForEvent() index = 107
+2026-04-15 10:39T: checkForEvent() sunrise(without offset): 7:1
+2026-04-15 10:39T: checkForEvent() sunset(without offset): 17:56
+2026-04-15 10:39T: checkForEvent() next day sunrise (without offset): 7:2
+2026-04-15 10:39T: checkForEvent() sunrise(with offset): 6:46
+2026-04-15 10:39T: checkForEvent() sunset(with offset): 17:41
+2026-04-15 10:39T: checkForEvent() next day sunrise (with offset): 6:47
+2026-04-15 10:39T: checkForEvent() before sunset
+2026-04-15 10:39T: About to sleep for 7 hours and 2 minutes
+2026-04-15 17:41T: 
+
+
+******************************
+2026-04-15 17:41T: Logging started to SD card.
+2026-04-15 17:41T: SD Card Setup Complete.
+2026-04-15 17:41T: Initialization done.
+2026-04-15 17:41T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-15 17:41T: checkForEvent() [NZST] month = 4, day = 15, hour = 17, minute=41
+2026-04-15 17:41T: checkForEvent() index = 107
+2026-04-15 17:41T: checkForEvent() sunrise(without offset): 7:1
+2026-04-15 17:41T: checkForEvent() sunset(without offset): 17:56
+2026-04-15 17:41T: checkForEvent() next day sunrise (without offset): 7:2
+2026-04-15 17:41T: checkForEvent() sunrise(with offset): 6:46
+2026-04-15 17:41T: checkForEvent() sunset(with offset): 17:41
+2026-04-15 17:41T: checkForEvent() next day sunrise (with offset): 6:47
+2026-04-15 17:41T: checkForEvent() before sunset
+2026-04-15 17:41T: startRecording()
+2026-04-15 17:41T: Filename = 'SS_2026_04_15_17_41.WAV'
+2026-04-15 17:41T: Started recording.
+2026-04-15 17:46T: stopRecording()2026-04-15 17:46T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-15 17:46T: checkForEvent() [NZST] month = 4, day = 15, hour = 17, minute=46
+2026-04-15 17:46T: checkForEvent() index = 107
+2026-04-15 17:46T: checkForEvent() sunrise(without offset): 7:1
+2026-04-15 17:46T: checkForEvent() sunset(without offset): 17:56
+2026-04-15 17:46T: checkForEvent() next day sunrise (without offset): 7:2
+2026-04-15 17:46T: checkForEvent() sunrise(with offset): 6:46
+2026-04-15 17:46T: checkForEvent() sunset(with offset): 17:41
+2026-04-15 17:46T: checkForEvent() next day sunrise (with offset): 6:47
+2026-04-15 17:46T: checkForEvent() before next day
+2026-04-15 17:46T: About to sleep for 13 hours and 0 minutes
+2026-04-16 06:46T: 
+
+
+******************************
+2026-04-16 06:46T: Logging started to SD card.
+2026-04-16 06:46T: SD Card Setup Complete.
+2026-04-16 06:46T: Initialization done.
+2026-04-16 06:46T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-16 06:46T: checkForEvent() [NZST] month = 4, day = 16, hour = 6, minute=46
+2026-04-16 06:46T: checkForEvent() index = 108
+2026-04-16 06:46T: checkForEvent() sunrise(without offset): 7:2
+2026-04-16 06:46T: checkForEvent() sunset(without offset): 17:55
+2026-04-16 06:46T: checkForEvent() next day sunrise (without offset): 7:4
+2026-04-16 06:46T: checkForEvent() sunrise(with offset): 6:47
+2026-04-16 06:46T: checkForEvent() sunset(with offset): 17:40
+2026-04-16 06:46T: checkForEvent() next day sunrise (with offset): 6:49
+2026-04-16 06:46T: checkForEvent() before sunrise
+2026-04-16 06:46T: startRecording()
+2026-04-16 06:46T: Filename = 'SR_2026_04_16_06_46.WAV'
+2026-04-16 06:46T: Started recording.
+2026-04-16 06:51T: stopRecording()2026-04-16 06:51T: Completed sunrise recordings, setting day record flag
+2026-04-16 06:51T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-16 06:51T: checkForEvent() [NZST] month = 4, day = 16, hour = 6, minute=51
+2026-04-16 06:51T: checkForEvent() index = 108
+2026-04-16 06:51T: checkForEvent() sunrise(without offset): 7:2
+2026-04-16 06:51T: checkForEvent() sunset(without offset): 17:55
+2026-04-16 06:51T: checkForEvent() next day sunrise (without offset): 7:4
+2026-04-16 06:51T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-16 06:51T: checkForEvent() start, end minutes: 512:985
+2026-04-16 06:51T: checkForEvent() random_minutes 143
+2026-04-16 06:51T: About to sleep for 2 hours and 23 minutes
+2026-04-16 09:14T: 
+
+
+******************************
+2026-04-16 09:14T: Logging started to SD card.
+2026-04-16 09:14T: SD Card Setup Complete.
+2026-04-16 09:14T: Initialization done.
+2026-04-16 09:14T: Record during day flag set to true - about to record 
+2026-04-16 09:14T: startRecording()
+2026-04-16 09:14T: Filename = 'DA_2026_04_16_09_14.WAV'
+2026-04-16 09:14T: Started recording.
+2026-04-16 09:19T: stopRecording()2026-04-16 09:19T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-16 09:19T: checkForEvent() [NZST] month = 4, day = 16, hour = 9, minute=19
+2026-04-16 09:19T: checkForEvent() index = 108
+2026-04-16 09:19T: checkForEvent() sunrise(without offset): 7:2
+2026-04-16 09:19T: checkForEvent() sunset(without offset): 17:55
+2026-04-16 09:19T: checkForEvent() next day sunrise (without offset): 7:4
+2026-04-16 09:19T: checkForEvent() sunrise(with offset): 6:47
+2026-04-16 09:19T: checkForEvent() sunset(with offset): 17:40
+2026-04-16 09:19T: checkForEvent() next day sunrise (with offset): 6:49
+2026-04-16 09:19T: checkForEvent() before sunset
+2026-04-16 09:19T: About to sleep for 8 hours and 21 minutes
+2026-04-16 17:40T: 
+
+
+******************************
+2026-04-16 17:40T: Logging started to SD card.
+2026-04-16 17:40T: SD Card Setup Complete.
+2026-04-16 17:40T: Initialization done.
+2026-04-16 17:40T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-16 17:40T: checkForEvent() [NZST] month = 4, day = 16, hour = 17, minute=40
+2026-04-16 17:40T: checkForEvent() index = 108
+2026-04-16 17:40T: checkForEvent() sunrise(without offset): 7:2
+2026-04-16 17:40T: checkForEvent() sunset(without offset): 17:55
+2026-04-16 17:40T: checkForEvent() next day sunrise (without offset): 7:4
+2026-04-16 17:40T: checkForEvent() sunrise(with offset): 6:47
+2026-04-16 17:40T: checkForEvent() sunset(with offset): 17:40
+2026-04-16 17:40T: checkForEvent() next day sunrise (with offset): 6:49
+2026-04-16 17:40T: checkForEvent() before sunset
+2026-04-16 17:40T: startRecording()
+2026-04-16 17:40T: Filename = 'SS_2026_04_16_17_40.WAV'
+2026-04-16 17:40T: Started recording.
+2026-04-16 17:45T: stopRecording()2026-04-16 17:45T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-16 17:45T: checkForEvent() [NZST] month = 4, day = 16, hour = 17, minute=45
+2026-04-16 17:45T: checkForEvent() index = 108
+2026-04-16 17:45T: checkForEvent() sunrise(without offset): 7:2
+2026-04-16 17:45T: checkForEvent() sunset(without offset): 17:55
+2026-04-16 17:45T: checkForEvent() next day sunrise (without offset): 7:4
+2026-04-16 17:45T: checkForEvent() sunrise(with offset): 6:47
+2026-04-16 17:45T: checkForEvent() sunset(with offset): 17:40
+2026-04-16 17:45T: checkForEvent() next day sunrise (with offset): 6:49
+2026-04-16 17:45T: checkForEvent() before next day
+2026-04-16 17:45T: About to sleep for 13 hours and 4 minutes
+2026-04-17 06:49T: 
+
+
+******************************
+2026-04-17 06:49T: Logging started to SD card.
+2026-04-17 06:49T: SD Card Setup Complete.
+2026-04-17 06:49T: Initialization done.
+2026-04-17 06:49T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-17 06:49T: checkForEvent() [NZST] month = 4, day = 17, hour = 6, minute=49
+2026-04-17 06:49T: checkForEvent() index = 109
+2026-04-17 06:49T: checkForEvent() sunrise(without offset): 7:4
+2026-04-17 06:49T: checkForEvent() sunset(without offset): 17:53
+2026-04-17 06:49T: checkForEvent() next day sunrise (without offset): 7:5
+2026-04-17 06:49T: checkForEvent() sunrise(with offset): 6:49
+2026-04-17 06:49T: checkForEvent() sunset(with offset): 17:38
+2026-04-17 06:49T: checkForEvent() next day sunrise (with offset): 6:50
+2026-04-17 06:49T: checkForEvent() before sunrise
+2026-04-17 06:49T: startRecording()
+2026-04-17 06:49T: Filename = 'SR_2026_04_17_06_49.WAV'
+2026-04-17 06:49T: Started recording.
+2026-04-17 06:54T: stopRecording()2026-04-17 06:54T: Completed sunrise recordings, setting day record flag
+2026-04-17 06:54T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-17 06:54T: checkForEvent() [NZST] month = 4, day = 17, hour = 6, minute=54
+2026-04-17 06:54T: checkForEvent() index = 109
+2026-04-17 06:54T: checkForEvent() sunrise(without offset): 7:4
+2026-04-17 06:54T: checkForEvent() sunset(without offset): 17:53
+2026-04-17 06:54T: checkForEvent() next day sunrise (without offset): 7:5
+2026-04-17 06:54T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-17 06:54T: checkForEvent() start, end minutes: 514:983
+2026-04-17 06:54T: checkForEvent() random_minutes 412
+2026-04-17 06:54T: About to sleep for 6 hours and 52 minutes
+2026-04-17 13:46T: 
+
+
+******************************
+2026-04-17 13:46T: Logging started to SD card.
+2026-04-17 13:46T: SD Card Setup Complete.
+2026-04-17 13:46T: Initialization done.
+2026-04-17 13:46T: Record during day flag set to true - about to record 
+2026-04-17 13:46T: startRecording()
+2026-04-17 13:46T: Filename = 'DA_2026_04_17_13_46.WAV'
+2026-04-17 13:46T: Started recording.
+2026-04-17 13:51T: stopRecording()2026-04-17 13:51T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-17 13:51T: checkForEvent() [NZST] month = 4, day = 17, hour = 13, minute=51
+2026-04-17 13:51T: checkForEvent() index = 109
+2026-04-17 13:51T: checkForEvent() sunrise(without offset): 7:4
+2026-04-17 13:51T: checkForEvent() sunset(without offset): 17:53
+2026-04-17 13:51T: checkForEvent() next day sunrise (without offset): 7:5
+2026-04-17 13:51T: checkForEvent() sunrise(with offset): 6:49
+2026-04-17 13:51T: checkForEvent() sunset(with offset): 17:38
+2026-04-17 13:51T: checkForEvent() next day sunrise (with offset): 6:50
+2026-04-17 13:51T: checkForEvent() before sunset
+2026-04-17 13:51T: About to sleep for 3 hours and 47 minutes
+2026-04-17 17:38T: 
+
+
+******************************
+2026-04-17 17:38T: Logging started to SD card.
+2026-04-17 17:38T: SD Card Setup Complete.
+2026-04-17 17:38T: Initialization done.
+2026-04-17 17:38T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-17 17:38T: checkForEvent() [NZST] month = 4, day = 17, hour = 17, minute=38
+2026-04-17 17:38T: checkForEvent() index = 109
+2026-04-17 17:38T: checkForEvent() sunrise(without offset): 7:4
+2026-04-17 17:38T: checkForEvent() sunset(without offset): 17:53
+2026-04-17 17:38T: checkForEvent() next day sunrise (without offset): 7:5
+2026-04-17 17:38T: checkForEvent() sunrise(with offset): 6:49
+2026-04-17 17:38T: checkForEvent() sunset(with offset): 17:38
+2026-04-17 17:38T: checkForEvent() next day sunrise (with offset): 6:50
+2026-04-17 17:38T: checkForEvent() before sunset
+2026-04-17 17:38T: startRecording()
+2026-04-17 17:38T: Filename = 'SS_2026_04_17_17_38.WAV'
+2026-04-17 17:38T: Started recording.
+2026-04-17 17:43T: stopRecording()2026-04-17 17:43T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-17 17:43T: checkForEvent() [NZST] month = 4, day = 17, hour = 17, minute=43
+2026-04-17 17:43T: checkForEvent() index = 109
+2026-04-17 17:43T: checkForEvent() sunrise(without offset): 7:4
+2026-04-17 17:43T: checkForEvent() sunset(without offset): 17:53
+2026-04-17 17:43T: checkForEvent() next day sunrise (without offset): 7:5
+2026-04-17 17:43T: checkForEvent() sunrise(with offset): 6:49
+2026-04-17 17:43T: checkForEvent() sunset(with offset): 17:38
+2026-04-17 17:43T: checkForEvent() next day sunrise (with offset): 6:50
+2026-04-17 17:43T: checkForEvent() before next day
+2026-04-17 17:43T: About to sleep for 13 hours and 7 minutes
+2026-04-18 06:50T: 
+
+
+******************************
+2026-04-18 06:50T: Logging started to SD card.
+2026-04-18 06:50T: SD Card Setup Complete.
+2026-04-18 06:50T: Initialization done.
+2026-04-18 06:51T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-18 06:51T: checkForEvent() [NZST] month = 4, day = 18, hour = 6, minute=51
+2026-04-18 06:51T: checkForEvent() index = 110
+2026-04-18 06:51T: checkForEvent() sunrise(without offset): 7:5
+2026-04-18 06:51T: checkForEvent() sunset(without offset): 17:51
+2026-04-18 06:51T: checkForEvent() next day sunrise (without offset): 7:6
+2026-04-18 06:51T: checkForEvent() sunrise(with offset): 6:50
+2026-04-18 06:51T: checkForEvent() sunset(with offset): 17:36
+2026-04-18 06:51T: checkForEvent() next day sunrise (with offset): 6:51
+2026-04-18 06:51T: checkForEvent() before sunrise
+2026-04-18 06:51T: startRecording()
+2026-04-18 06:51T: Filename = 'SR_2026_04_18_06_51.WAV'
+2026-04-18 06:51T: Started recording.
+2026-04-18 06:56T: stopRecording()2026-04-18 06:56T: Completed sunrise recordings, setting day record flag
+2026-04-18 06:56T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-18 06:56T: checkForEvent() [NZST] month = 4, day = 18, hour = 6, minute=56
+2026-04-18 06:56T: checkForEvent() index = 110
+2026-04-18 06:56T: checkForEvent() sunrise(without offset): 7:5
+2026-04-18 06:56T: checkForEvent() sunset(without offset): 17:51
+2026-04-18 06:56T: checkForEvent() next day sunrise (without offset): 7:6
+2026-04-18 06:56T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-18 06:56T: checkForEvent() start, end minutes: 515:981
+2026-04-18 06:56T: checkForEvent() random_minutes 292
+2026-04-18 06:56T: About to sleep for 4 hours and 52 minutes
+2026-04-18 11:48T: 
+
+
+******************************
+2026-04-18 11:48T: Logging started to SD card.
+2026-04-18 11:48T: SD Card Setup Complete.
+2026-04-18 11:48T: Initialization done.
+2026-04-18 11:48T: Record during day flag set to true - about to record 
+2026-04-18 11:48T: startRecording()
+2026-04-18 11:48T: Filename = 'DA_2026_04_18_11_48.WAV'
+2026-04-18 11:48T: Started recording.
+2026-04-18 11:53T: stopRecording()2026-04-18 11:53T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-18 11:53T: checkForEvent() [NZST] month = 4, day = 18, hour = 11, minute=53
+2026-04-18 11:53T: checkForEvent() index = 110
+2026-04-18 11:53T: checkForEvent() sunrise(without offset): 7:5
+2026-04-18 11:53T: checkForEvent() sunset(without offset): 17:51
+2026-04-18 11:53T: checkForEvent() next day sunrise (without offset): 7:6
+2026-04-18 11:53T: checkForEvent() sunrise(with offset): 6:50
+2026-04-18 11:53T: checkForEvent() sunset(with offset): 17:36
+2026-04-18 11:53T: checkForEvent() next day sunrise (with offset): 6:51
+2026-04-18 11:53T: checkForEvent() before sunset
+2026-04-18 11:53T: About to sleep for 5 hours and 43 minutes
+2026-04-18 17:36T: 
+
+
+******************************
+2026-04-18 17:36T: Logging started to SD card.
+2026-04-18 17:36T: SD Card Setup Complete.
+2026-04-18 17:36T: Initialization done.
+2026-04-18 17:36T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-18 17:36T: checkForEvent() [NZST] month = 4, day = 18, hour = 17, minute=36
+2026-04-18 17:36T: checkForEvent() index = 110
+2026-04-18 17:36T: checkForEvent() sunrise(without offset): 7:5
+2026-04-18 17:36T: checkForEvent() sunset(without offset): 17:51
+2026-04-18 17:36T: checkForEvent() next day sunrise (without offset): 7:6
+2026-04-18 17:36T: checkForEvent() sunrise(with offset): 6:50
+2026-04-18 17:36T: checkForEvent() sunset(with offset): 17:36
+2026-04-18 17:36T: checkForEvent() next day sunrise (with offset): 6:51
+2026-04-18 17:36T: checkForEvent() before sunset
+2026-04-18 17:36T: startRecording()
+2026-04-18 17:36T: Filename = 'SS_2026_04_18_17_36.WAV'
+2026-04-18 17:36T: Started recording.
+2026-04-18 17:41T: stopRecording()2026-04-18 17:41T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-18 17:41T: checkForEvent() [NZST] month = 4, day = 18, hour = 17, minute=41
+2026-04-18 17:41T: checkForEvent() index = 110
+2026-04-18 17:41T: checkForEvent() sunrise(without offset): 7:5
+2026-04-18 17:41T: checkForEvent() sunset(without offset): 17:51
+2026-04-18 17:41T: checkForEvent() next day sunrise (without offset): 7:6
+2026-04-18 17:41T: checkForEvent() sunrise(with offset): 6:50
+2026-04-18 17:41T: checkForEvent() sunset(with offset): 17:36
+2026-04-18 17:41T: checkForEvent() next day sunrise (with offset): 6:51
+2026-04-18 17:41T: checkForEvent() before next day
+2026-04-18 17:41T: About to sleep for 13 hours and 10 minutes
+2026-04-19 06:51T: 
+
+
+******************************
+2026-04-19 06:51T: Logging started to SD card.
+2026-04-19 06:51T: SD Card Setup Complete.
+2026-04-19 06:51T: Initialization done.
+2026-04-19 06:51T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-19 06:51T: checkForEvent() [NZST] month = 4, day = 19, hour = 6, minute=51
+2026-04-19 06:51T: checkForEvent() index = 111
+2026-04-19 06:51T: checkForEvent() sunrise(without offset): 7:6
+2026-04-19 06:51T: checkForEvent() sunset(without offset): 17:50
+2026-04-19 06:51T: checkForEvent() next day sunrise (without offset): 7:7
+2026-04-19 06:51T: checkForEvent() sunrise(with offset): 6:51
+2026-04-19 06:51T: checkForEvent() sunset(with offset): 17:35
+2026-04-19 06:51T: checkForEvent() next day sunrise (with offset): 6:52
+2026-04-19 06:51T: checkForEvent() before sunrise
+2026-04-19 06:51T: startRecording()
+2026-04-19 06:51T: Filename = 'SR_2026_04_19_06_51.WAV'
+2026-04-19 06:51T: Started recording.
+2026-04-19 06:56T: stopRecording()2026-04-19 06:56T: Completed sunrise recordings, setting day record flag
+2026-04-19 06:56T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-19 06:56T: checkForEvent() [NZST] month = 4, day = 19, hour = 6, minute=56
+2026-04-19 06:56T: checkForEvent() index = 111
+2026-04-19 06:56T: checkForEvent() sunrise(without offset): 7:6
+2026-04-19 06:56T: checkForEvent() sunset(without offset): 17:50
+2026-04-19 06:56T: checkForEvent() next day sunrise (without offset): 7:7
+2026-04-19 06:56T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-19 06:56T: checkForEvent() start, end minutes: 516:980
+2026-04-19 06:56T: checkForEvent() random_minutes 144
+2026-04-19 06:56T: About to sleep for 2 hours and 24 minutes
+2026-04-19 09:20T: 
+
+
+******************************
+2026-04-19 09:20T: Logging started to SD card.
+2026-04-19 09:20T: SD Card Setup Complete.
+2026-04-19 09:20T: Initialization done.
+2026-04-19 09:20T: Record during day flag set to true - about to record 
+2026-04-19 09:20T: startRecording()
+2026-04-19 09:20T: Filename = 'DA_2026_04_19_09_20.WAV'
+2026-04-19 09:20T: Started recording.
+2026-04-19 09:25T: stopRecording()2026-04-19 09:25T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-19 09:25T: checkForEvent() [NZST] month = 4, day = 19, hour = 9, minute=25
+2026-04-19 09:25T: checkForEvent() index = 111
+2026-04-19 09:25T: checkForEvent() sunrise(without offset): 7:6
+2026-04-19 09:25T: checkForEvent() sunset(without offset): 17:50
+2026-04-19 09:25T: checkForEvent() next day sunrise (without offset): 7:7
+2026-04-19 09:25T: checkForEvent() sunrise(with offset): 6:51
+2026-04-19 09:25T: checkForEvent() sunset(with offset): 17:35
+2026-04-19 09:25T: checkForEvent() next day sunrise (with offset): 6:52
+2026-04-19 09:25T: checkForEvent() before sunset
+2026-04-19 09:25T: About to sleep for 8 hours and 10 minutes
+2026-04-19 17:35T: 
+
+
+******************************
+2026-04-19 17:35T: Logging started to SD card.
+2026-04-19 17:35T: SD Card Setup Complete.
+2026-04-19 17:35T: Initialization done.
+2026-04-19 17:35T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-19 17:35T: checkForEvent() [NZST] month = 4, day = 19, hour = 17, minute=35
+2026-04-19 17:35T: checkForEvent() index = 111
+2026-04-19 17:35T: checkForEvent() sunrise(without offset): 7:6
+2026-04-19 17:35T: checkForEvent() sunset(without offset): 17:50
+2026-04-19 17:35T: checkForEvent() next day sunrise (without offset): 7:7
+2026-04-19 17:35T: checkForEvent() sunrise(with offset): 6:51
+2026-04-19 17:35T: checkForEvent() sunset(with offset): 17:35
+2026-04-19 17:35T: checkForEvent() next day sunrise (with offset): 6:52
+2026-04-19 17:35T: checkForEvent() before sunset
+2026-04-19 17:35T: startRecording()
+2026-04-19 17:35T: Filename = 'SS_2026_04_19_17_35.WAV'
+2026-04-19 17:35T: Started recording.
+2026-04-19 17:40T: stopRecording()2026-04-19 17:40T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-19 17:40T: checkForEvent() [NZST] month = 4, day = 19, hour = 17, minute=40
+2026-04-19 17:40T: checkForEvent() index = 111
+2026-04-19 17:40T: checkForEvent() sunrise(without offset): 7:6
+2026-04-19 17:40T: checkForEvent() sunset(without offset): 17:50
+2026-04-19 17:40T: checkForEvent() next day sunrise (without offset): 7:7
+2026-04-19 17:40T: checkForEvent() sunrise(with offset): 6:51
+2026-04-19 17:40T: checkForEvent() sunset(with offset): 17:35
+2026-04-19 17:40T: checkForEvent() next day sunrise (with offset): 6:52
+2026-04-19 17:40T: checkForEvent() before next day
+2026-04-19 17:40T: About to sleep for 13 hours and 12 minutes
+2026-04-20 06:52T: 
+
+
+******************************
+2026-04-20 06:52T: Logging started to SD card.
+2026-04-20 06:52T: SD Card Setup Complete.
+2026-04-20 06:52T: Initialization done.
+2026-04-20 06:52T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-20 06:52T: checkForEvent() [NZST] month = 4, day = 20, hour = 6, minute=52
+2026-04-20 06:52T: checkForEvent() index = 112
+2026-04-20 06:52T: checkForEvent() sunrise(without offset): 7:7
+2026-04-20 06:52T: checkForEvent() sunset(without offset): 17:48
+2026-04-20 06:52T: checkForEvent() next day sunrise (without offset): 7:8
+2026-04-20 06:52T: checkForEvent() sunrise(with offset): 6:52
+2026-04-20 06:52T: checkForEvent() sunset(with offset): 17:33
+2026-04-20 06:52T: checkForEvent() next day sunrise (with offset): 6:53
+2026-04-20 06:52T: checkForEvent() before sunrise
+2026-04-20 06:52T: startRecording()
+2026-04-20 06:52T: Filename = 'SR_2026_04_20_06_52.WAV'
+2026-04-20 06:52T: Started recording.
+2026-04-20 06:57T: stopRecording()2026-04-20 06:57T: Completed sunrise recordings, setting day record flag
+2026-04-20 06:57T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-20 06:57T: checkForEvent() [NZST] month = 4, day = 20, hour = 6, minute=57
+2026-04-20 06:57T: checkForEvent() index = 112
+2026-04-20 06:57T: checkForEvent() sunrise(without offset): 7:7
+2026-04-20 06:57T: checkForEvent() sunset(without offset): 17:48
+2026-04-20 06:57T: checkForEvent() next day sunrise (without offset): 7:8
+2026-04-20 06:57T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-20 06:57T: checkForEvent() start, end minutes: 517:978
+2026-04-20 06:57T: checkForEvent() random_minutes 377
+2026-04-20 06:57T: About to sleep for 6 hours and 17 minutes
+2026-04-20 13:14T: 
+
+
+******************************
+2026-04-20 13:14T: Logging started to SD card.
+2026-04-20 13:14T: SD Card Setup Complete.
+2026-04-20 13:14T: Initialization done.
+2026-04-20 13:14T: Record during day flag set to true - about to record 
+2026-04-20 13:14T: startRecording()
+2026-04-20 13:14T: Filename = 'DA_2026_04_20_13_14.WAV'
+2026-04-20 13:14T: Started recording.
+2026-04-20 13:19T: stopRecording()2026-04-20 13:19T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-20 13:19T: checkForEvent() [NZST] month = 4, day = 20, hour = 13, minute=19
+2026-04-20 13:19T: checkForEvent() index = 112
+2026-04-20 13:19T: checkForEvent() sunrise(without offset): 7:7
+2026-04-20 13:19T: checkForEvent() sunset(without offset): 17:48
+2026-04-20 13:19T: checkForEvent() next day sunrise (without offset): 7:8
+2026-04-20 13:19T: checkForEvent() sunrise(with offset): 6:52
+2026-04-20 13:19T: checkForEvent() sunset(with offset): 17:33
+2026-04-20 13:19T: checkForEvent() next day sunrise (with offset): 6:53
+2026-04-20 13:19T: checkForEvent() before sunset
+2026-04-20 13:19T: About to sleep for 4 hours and 14 minutes
+2026-04-20 17:33T: 
+
+
+******************************
+2026-04-20 17:33T: Logging started to SD card.
+2026-04-20 17:33T: SD Card Setup Complete.
+2026-04-20 17:33T: Initialization done.
+2026-04-20 17:33T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-20 17:33T: checkForEvent() [NZST] month = 4, day = 20, hour = 17, minute=33
+2026-04-20 17:33T: checkForEvent() index = 112
+2026-04-20 17:33T: checkForEvent() sunrise(without offset): 7:7
+2026-04-20 17:33T: checkForEvent() sunset(without offset): 17:48
+2026-04-20 17:33T: checkForEvent() next day sunrise (without offset): 7:8
+2026-04-20 17:33T: checkForEvent() sunrise(with offset): 6:52
+2026-04-20 17:33T: checkForEvent() sunset(with offset): 17:33
+2026-04-20 17:33T: checkForEvent() next day sunrise (with offset): 6:53
+2026-04-20 17:33T: checkForEvent() before sunset
+2026-04-20 17:33T: startRecording()
+2026-04-20 17:33T: Filename = 'SS_2026_04_20_17_33.WAV'
+2026-04-20 17:33T: Started recording.
+2026-04-20 17:38T: stopRecording()2026-04-20 17:38T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-20 17:38T: checkForEvent() [NZST] month = 4, day = 20, hour = 17, minute=38
+2026-04-20 17:38T: checkForEvent() index = 112
+2026-04-20 17:38T: checkForEvent() sunrise(without offset): 7:7
+2026-04-20 17:38T: checkForEvent() sunset(without offset): 17:48
+2026-04-20 17:38T: checkForEvent() next day sunrise (without offset): 7:8
+2026-04-20 17:38T: checkForEvent() sunrise(with offset): 6:52
+2026-04-20 17:38T: checkForEvent() sunset(with offset): 17:33
+2026-04-20 17:38T: checkForEvent() next day sunrise (with offset): 6:53
+2026-04-20 17:38T: checkForEvent() before next day
+2026-04-20 17:38T: About to sleep for 13 hours and 15 minutes
+2026-04-21 06:53T: 
+
+
+******************************
+2026-04-21 06:53T: Logging started to SD card.
+2026-04-21 06:53T: SD Card Setup Complete.
+2026-04-21 06:53T: Initialization done.
+2026-04-21 06:53T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-21 06:53T: checkForEvent() [NZST] month = 4, day = 21, hour = 6, minute=53
+2026-04-21 06:53T: checkForEvent() index = 113
+2026-04-21 06:53T: checkForEvent() sunrise(without offset): 7:8
+2026-04-21 06:53T: checkForEvent() sunset(without offset): 17:47
+2026-04-21 06:53T: checkForEvent() next day sunrise (without offset): 7:9
+2026-04-21 06:53T: checkForEvent() sunrise(with offset): 6:53
+2026-04-21 06:53T: checkForEvent() sunset(with offset): 17:32
+2026-04-21 06:53T: checkForEvent() next day sunrise (with offset): 6:54
+2026-04-21 06:53T: checkForEvent() before sunrise
+2026-04-21 06:53T: startRecording()
+2026-04-21 06:53T: Filename = 'SR_2026_04_21_06_53.WAV'
+2026-04-21 06:53T: Started recording.
+2026-04-21 06:58T: stopRecording()2026-04-21 06:58T: Completed sunrise recordings, setting day record flag
+2026-04-21 06:58T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-21 06:58T: checkForEvent() [NZST] month = 4, day = 21, hour = 6, minute=58
+2026-04-21 06:58T: checkForEvent() index = 113
+2026-04-21 06:58T: checkForEvent() sunrise(without offset): 7:8
+2026-04-21 06:58T: checkForEvent() sunset(without offset): 17:47
+2026-04-21 06:58T: checkForEvent() next day sunrise (without offset): 7:9
+2026-04-21 06:58T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-21 06:58T: checkForEvent() start, end minutes: 518:977
+2026-04-21 06:58T: checkForEvent() random_minutes 97
+2026-04-21 06:58T: About to sleep for 1 hours and 37 minutes
+2026-04-21 08:35T: 
+
+
+******************************
+2026-04-21 08:35T: Logging started to SD card.
+2026-04-21 08:35T: SD Card Setup Complete.
+2026-04-21 08:35T: Initialization done.
+2026-04-21 08:35T: Record during day flag set to true - about to record 
+2026-04-21 08:35T: startRecording()
+2026-04-21 08:35T: Filename = 'DA_2026_04_21_08_35.WAV'
+2026-04-21 08:35T: Started recording.
+2026-04-21 08:40T: stopRecording()2026-04-21 08:40T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-21 08:40T: checkForEvent() [NZST] month = 4, day = 21, hour = 8, minute=40
+2026-04-21 08:40T: checkForEvent() index = 113
+2026-04-21 08:40T: checkForEvent() sunrise(without offset): 7:8
+2026-04-21 08:40T: checkForEvent() sunset(without offset): 17:47
+2026-04-21 08:40T: checkForEvent() next day sunrise (without offset): 7:9
+2026-04-21 08:40T: checkForEvent() sunrise(with offset): 6:53
+2026-04-21 08:40T: checkForEvent() sunset(with offset): 17:32
+2026-04-21 08:40T: checkForEvent() next day sunrise (with offset): 6:54
+2026-04-21 08:40T: checkForEvent() before sunset
+2026-04-21 08:40T: About to sleep for 8 hours and 52 minutes
+2026-04-21 17:32T: 
+
+
+******************************
+2026-04-21 17:32T: Logging started to SD card.
+2026-04-21 17:32T: SD Card Setup Complete.
+2026-04-21 17:32T: Initialization done.
+2026-04-21 17:32T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-21 17:32T: checkForEvent() [NZST] month = 4, day = 21, hour = 17, minute=32
+2026-04-21 17:32T: checkForEvent() index = 113
+2026-04-21 17:32T: checkForEvent() sunrise(without offset): 7:8
+2026-04-21 17:32T: checkForEvent() sunset(without offset): 17:47
+2026-04-21 17:32T: checkForEvent() next day sunrise (without offset): 7:9
+2026-04-21 17:32T: checkForEvent() sunrise(with offset): 6:53
+2026-04-21 17:32T: checkForEvent() sunset(with offset): 17:32
+2026-04-21 17:32T: checkForEvent() next day sunrise (with offset): 6:54
+2026-04-21 17:32T: checkForEvent() before sunset
+2026-04-21 17:32T: startRecording()
+2026-04-21 17:32T: Filename = 'SS_2026_04_21_17_32.WAV'
+2026-04-21 17:32T: Started recording.
+2026-04-21 17:37T: stopRecording()2026-04-21 17:37T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-21 17:37T: checkForEvent() [NZST] month = 4, day = 21, hour = 17, minute=37
+2026-04-21 17:37T: checkForEvent() index = 113
+2026-04-21 17:37T: checkForEvent() sunrise(without offset): 7:8
+2026-04-21 17:37T: checkForEvent() sunset(without offset): 17:47
+2026-04-21 17:37T: checkForEvent() next day sunrise (without offset): 7:9
+2026-04-21 17:37T: checkForEvent() sunrise(with offset): 6:53
+2026-04-21 17:37T: checkForEvent() sunset(with offset): 17:32
+2026-04-21 17:37T: checkForEvent() next day sunrise (with offset): 6:54
+2026-04-21 17:37T: checkForEvent() before next day
+2026-04-21 17:37T: About to sleep for 13 hours and 17 minutes
+2026-04-22 06:54T: 
+
+
+******************************
+2026-04-22 06:54T: Logging started to SD card.
+2026-04-22 06:54T: SD Card Setup Complete.
+2026-04-22 06:54T: Initialization done.
+2026-04-22 06:54T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-22 06:54T: checkForEvent() [NZST] month = 4, day = 22, hour = 6, minute=54
+2026-04-22 06:54T: checkForEvent() index = 114
+2026-04-22 06:54T: checkForEvent() sunrise(without offset): 7:9
+2026-04-22 06:54T: checkForEvent() sunset(without offset): 17:45
+2026-04-22 06:54T: checkForEvent() next day sunrise (without offset): 7:11
+2026-04-22 06:54T: checkForEvent() sunrise(with offset): 6:54
+2026-04-22 06:54T: checkForEvent() sunset(with offset): 17:30
+2026-04-22 06:54T: checkForEvent() next day sunrise (with offset): 6:56
+2026-04-22 06:54T: checkForEvent() before sunrise
+2026-04-22 06:54T: startRecording()
+2026-04-22 06:54T: Filename = 'SR_2026_04_22_06_54.WAV'
+2026-04-22 06:54T: Started recording.
+2026-04-22 06:59T: stopRecording()2026-04-22 06:59T: Completed sunrise recordings, setting day record flag
+2026-04-22 06:59T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-22 06:59T: checkForEvent() [NZST] month = 4, day = 22, hour = 6, minute=59
+2026-04-22 06:59T: checkForEvent() index = 114
+2026-04-22 06:59T: checkForEvent() sunrise(without offset): 7:9
+2026-04-22 06:59T: checkForEvent() sunset(without offset): 17:45
+2026-04-22 06:59T: checkForEvent() next day sunrise (without offset): 7:11
+2026-04-22 06:59T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-22 06:59T: checkForEvent() start, end minutes: 519:975
+2026-04-22 06:59T: checkForEvent() random_minutes 440
+2026-04-22 06:59T: About to sleep for 7 hours and 20 minutes
+2026-04-22 14:19T: 
+
+
+******************************
+2026-04-22 14:19T: Logging started to SD card.
+2026-04-22 14:19T: SD Card Setup Complete.
+2026-04-22 14:19T: Initialization done.
+2026-04-22 14:19T: Record during day flag set to true - about to record 
+2026-04-22 14:19T: startRecording()
+2026-04-22 14:19T: Filename = 'DA_2026_04_22_14_19.WAV'
+2026-04-22 14:19T: Started recording.
+2026-04-22 14:24T: stopRecording()2026-04-22 14:24T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-22 14:24T: checkForEvent() [NZST] month = 4, day = 22, hour = 14, minute=24
+2026-04-22 14:24T: checkForEvent() index = 114
+2026-04-22 14:24T: checkForEvent() sunrise(without offset): 7:9
+2026-04-22 14:24T: checkForEvent() sunset(without offset): 17:45
+2026-04-22 14:24T: checkForEvent() next day sunrise (without offset): 7:11
+2026-04-22 14:24T: checkForEvent() sunrise(with offset): 6:54
+2026-04-22 14:24T: checkForEvent() sunset(with offset): 17:30
+2026-04-22 14:24T: checkForEvent() next day sunrise (with offset): 6:56
+2026-04-22 14:24T: checkForEvent() before sunset
+2026-04-22 14:24T: About to sleep for 3 hours and 6 minutes
+2026-04-22 17:30T: 
+
+
+******************************
+2026-04-22 17:30T: Logging started to SD card.
+2026-04-22 17:30T: SD Card Setup Complete.
+2026-04-22 17:30T: Initialization done.
+2026-04-22 17:30T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-22 17:30T: checkForEvent() [NZST] month = 4, day = 22, hour = 17, minute=30
+2026-04-22 17:30T: checkForEvent() index = 114
+2026-04-22 17:30T: checkForEvent() sunrise(without offset): 7:9
+2026-04-22 17:30T: checkForEvent() sunset(without offset): 17:45
+2026-04-22 17:30T: checkForEvent() next day sunrise (without offset): 7:11
+2026-04-22 17:30T: checkForEvent() sunrise(with offset): 6:54
+2026-04-22 17:30T: checkForEvent() sunset(with offset): 17:30
+2026-04-22 17:30T: checkForEvent() next day sunrise (with offset): 6:56
+2026-04-22 17:30T: checkForEvent() before sunset
+2026-04-22 17:30T: startRecording()
+2026-04-22 17:30T: Filename = 'SS_2026_04_22_17_30.WAV'
+2026-04-22 17:30T: Started recording.
+2026-04-22 17:35T: stopRecording()2026-04-22 17:35T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-22 17:35T: checkForEvent() [NZST] month = 4, day = 22, hour = 17, minute=35
+2026-04-22 17:35T: checkForEvent() index = 114
+2026-04-22 17:35T: checkForEvent() sunrise(without offset): 7:9
+2026-04-22 17:35T: checkForEvent() sunset(without offset): 17:45
+2026-04-22 17:35T: checkForEvent() next day sunrise (without offset): 7:11
+2026-04-22 17:35T: checkForEvent() sunrise(with offset): 6:54
+2026-04-22 17:35T: checkForEvent() sunset(with offset): 17:30
+2026-04-22 17:35T: checkForEvent() next day sunrise (with offset): 6:56
+2026-04-22 17:35T: checkForEvent() before next day
+2026-04-22 17:35T: About to sleep for 13 hours and 21 minutes
+2026-04-23 06:56T: 
+
+
+******************************
+2026-04-23 06:56T: Logging started to SD card.
+2026-04-23 06:56T: SD Card Setup Complete.
+2026-04-23 06:56T: Initialization done.
+2026-04-23 06:56T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-23 06:56T: checkForEvent() [NZST] month = 4, day = 23, hour = 6, minute=56
+2026-04-23 06:56T: checkForEvent() index = 115
+2026-04-23 06:56T: checkForEvent() sunrise(without offset): 7:11
+2026-04-23 06:56T: checkForEvent() sunset(without offset): 17:44
+2026-04-23 06:56T: checkForEvent() next day sunrise (without offset): 7:12
+2026-04-23 06:56T: checkForEvent() sunrise(with offset): 6:56
+2026-04-23 06:56T: checkForEvent() sunset(with offset): 17:29
+2026-04-23 06:56T: checkForEvent() next day sunrise (with offset): 6:57
+2026-04-23 06:56T: checkForEvent() before sunrise
+2026-04-23 06:56T: startRecording()
+2026-04-23 06:56T: Filename = 'SR_2026_04_23_06_56.WAV'
+2026-04-23 06:56T: Started recording.
+2026-04-23 07:01T: stopRecording()2026-04-23 07:01T: Completed sunrise recordings, setting day record flag
+2026-04-23 07:01T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-23 07:01T: checkForEvent() [NZST] month = 4, day = 23, hour = 7, minute=1
+2026-04-23 07:01T: checkForEvent() index = 115
+2026-04-23 07:01T: checkForEvent() sunrise(without offset): 7:11
+2026-04-23 07:01T: checkForEvent() sunset(without offset): 17:44
+2026-04-23 07:01T: checkForEvent() next day sunrise (without offset): 7:12
+2026-04-23 07:01T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-23 07:01T: checkForEvent() start, end minutes: 521:974
+2026-04-23 07:01T: checkForEvent() random_minutes 287
+2026-04-23 07:01T: About to sleep for 4 hours and 47 minutes
+2026-04-23 11:48T: 
+
+
+******************************
+2026-04-23 11:48T: Logging started to SD card.
+2026-04-23 11:48T: SD Card Setup Complete.
+2026-04-23 11:48T: Initialization done.
+2026-04-23 11:48T: Record during day flag set to true - about to record 
+2026-04-23 11:48T: startRecording()
+2026-04-23 11:48T: Filename = 'DA_2026_04_23_11_48.WAV'
+2026-04-23 11:48T: Started recording.
+2026-04-23 11:53T: stopRecording()2026-04-23 11:53T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-23 11:53T: checkForEvent() [NZST] month = 4, day = 23, hour = 11, minute=53
+2026-04-23 11:53T: checkForEvent() index = 115
+2026-04-23 11:53T: checkForEvent() sunrise(without offset): 7:11
+2026-04-23 11:53T: checkForEvent() sunset(without offset): 17:44
+2026-04-23 11:53T: checkForEvent() next day sunrise (without offset): 7:12
+2026-04-23 11:53T: checkForEvent() sunrise(with offset): 6:56
+2026-04-23 11:53T: checkForEvent() sunset(with offset): 17:29
+2026-04-23 11:53T: checkForEvent() next day sunrise (with offset): 6:57
+2026-04-23 11:53T: checkForEvent() before sunset
+2026-04-23 11:53T: About to sleep for 5 hours and 36 minutes
+2026-04-23 17:29T: 
+
+
+******************************
+2026-04-23 17:29T: Logging started to SD card.
+2026-04-23 17:29T: SD Card Setup Complete.
+2026-04-23 17:29T: Initialization done.
+2026-04-23 17:29T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-23 17:29T: checkForEvent() [NZST] month = 4, day = 23, hour = 17, minute=29
+2026-04-23 17:29T: checkForEvent() index = 115
+2026-04-23 17:29T: checkForEvent() sunrise(without offset): 7:11
+2026-04-23 17:29T: checkForEvent() sunset(without offset): 17:44
+2026-04-23 17:29T: checkForEvent() next day sunrise (without offset): 7:12
+2026-04-23 17:29T: checkForEvent() sunrise(with offset): 6:56
+2026-04-23 17:29T: checkForEvent() sunset(with offset): 17:29
+2026-04-23 17:29T: checkForEvent() next day sunrise (with offset): 6:57
+2026-04-23 17:29T: checkForEvent() before sunset
+2026-04-23 17:29T: startRecording()
+2026-04-23 17:29T: Filename = 'SS_2026_04_23_17_29.WAV'
+2026-04-23 17:29T: Started recording.
+2026-04-23 17:34T: stopRecording()2026-04-23 17:34T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-23 17:34T: checkForEvent() [NZST] month = 4, day = 23, hour = 17, minute=34
+2026-04-23 17:34T: checkForEvent() index = 115
+2026-04-23 17:34T: checkForEvent() sunrise(without offset): 7:11
+2026-04-23 17:34T: checkForEvent() sunset(without offset): 17:44
+2026-04-23 17:34T: checkForEvent() next day sunrise (without offset): 7:12
+2026-04-23 17:34T: checkForEvent() sunrise(with offset): 6:56
+2026-04-23 17:34T: checkForEvent() sunset(with offset): 17:29
+2026-04-23 17:34T: checkForEvent() next day sunrise (with offset): 6:57
+2026-04-23 17:34T: checkForEvent() before next day
+2026-04-23 17:34T: About to sleep for 13 hours and 23 minutes
+2026-04-24 06:57T: 
+
+
+******************************
+2026-04-24 06:57T: Logging started to SD card.
+2026-04-24 06:57T: SD Card Setup Complete.
+2026-04-24 06:57T: Initialization done.
+2026-04-24 06:57T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-24 06:57T: checkForEvent() [NZST] month = 4, day = 24, hour = 6, minute=57
+2026-04-24 06:57T: checkForEvent() index = 116
+2026-04-24 06:57T: checkForEvent() sunrise(without offset): 7:12
+2026-04-24 06:57T: checkForEvent() sunset(without offset): 17:42
+2026-04-24 06:57T: checkForEvent() next day sunrise (without offset): 7:13
+2026-04-24 06:57T: checkForEvent() sunrise(with offset): 6:57
+2026-04-24 06:57T: checkForEvent() sunset(with offset): 17:27
+2026-04-24 06:57T: checkForEvent() next day sunrise (with offset): 6:58
+2026-04-24 06:57T: checkForEvent() before sunrise
+2026-04-24 06:57T: startRecording()
+2026-04-24 06:57T: Filename = 'SR_2026_04_24_06_57.WAV'
+2026-04-24 06:57T: Started recording.
+2026-04-24 07:02T: stopRecording()2026-04-24 07:02T: Completed sunrise recordings, setting day record flag
+2026-04-24 07:02T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-24 07:02T: checkForEvent() [NZST] month = 4, day = 24, hour = 7, minute=2
+2026-04-24 07:02T: checkForEvent() index = 116
+2026-04-24 07:02T: checkForEvent() sunrise(without offset): 7:12
+2026-04-24 07:02T: checkForEvent() sunset(without offset): 17:42
+2026-04-24 07:02T: checkForEvent() next day sunrise (without offset): 7:13
+2026-04-24 07:02T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-24 07:02T: checkForEvent() start, end minutes: 522:972
+2026-04-24 07:02T: checkForEvent() random_minutes 349
+2026-04-24 07:02T: About to sleep for 5 hours and 49 minutes
+2026-04-24 12:51T: 
+
+
+******************************
+2026-04-24 12:51T: Logging started to SD card.
+2026-04-24 12:51T: SD Card Setup Complete.
+2026-04-24 12:51T: Initialization done.
+2026-04-24 12:51T: Record during day flag set to true - about to record 
+2026-04-24 12:51T: startRecording()
+2026-04-24 12:51T: Filename = 'DA_2026_04_24_12_51.WAV'
+2026-04-24 12:51T: Started recording.
+2026-04-24 12:56T: stopRecording()2026-04-24 12:56T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-24 12:56T: checkForEvent() [NZST] month = 4, day = 24, hour = 12, minute=56
+2026-04-24 12:56T: checkForEvent() index = 116
+2026-04-24 12:56T: checkForEvent() sunrise(without offset): 7:12
+2026-04-24 12:56T: checkForEvent() sunset(without offset): 17:42
+2026-04-24 12:56T: checkForEvent() next day sunrise (without offset): 7:13
+2026-04-24 12:56T: checkForEvent() sunrise(with offset): 6:57
+2026-04-24 12:56T: checkForEvent() sunset(with offset): 17:27
+2026-04-24 12:56T: checkForEvent() next day sunrise (with offset): 6:58
+2026-04-24 12:56T: checkForEvent() before sunset
+2026-04-24 12:56T: About to sleep for 4 hours and 31 minutes
+2026-04-24 17:27T: 
+
+
+******************************
+2026-04-24 17:27T: Logging started to SD card.
+2026-04-24 17:27T: SD Card Setup Complete.
+2026-04-24 17:27T: Initialization done.
+2026-04-24 17:28T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-24 17:28T: checkForEvent() [NZST] month = 4, day = 24, hour = 17, minute=28
+2026-04-24 17:28T: checkForEvent() index = 116
+2026-04-24 17:28T: checkForEvent() sunrise(without offset): 7:12
+2026-04-24 17:28T: checkForEvent() sunset(without offset): 17:42
+2026-04-24 17:28T: checkForEvent() next day sunrise (without offset): 7:13
+2026-04-24 17:28T: checkForEvent() sunrise(with offset): 6:57
+2026-04-24 17:28T: checkForEvent() sunset(with offset): 17:27
+2026-04-24 17:28T: checkForEvent() next day sunrise (with offset): 6:58
+2026-04-24 17:28T: checkForEvent() before sunset
+2026-04-24 17:28T: startRecording()
+2026-04-24 17:28T: Filename = 'SS_2026_04_24_17_28.WAV'
+2026-04-24 17:28T: Started recording.
+2026-04-24 17:33T: stopRecording()2026-04-24 17:33T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-24 17:33T: checkForEvent() [NZST] month = 4, day = 24, hour = 17, minute=33
+2026-04-24 17:33T: checkForEvent() index = 116
+2026-04-24 17:33T: checkForEvent() sunrise(without offset): 7:12
+2026-04-24 17:33T: checkForEvent() sunset(without offset): 17:42
+2026-04-24 17:33T: checkForEvent() next day sunrise (without offset): 7:13
+2026-04-24 17:33T: checkForEvent() sunrise(with offset): 6:57
+2026-04-24 17:33T: checkForEvent() sunset(with offset): 17:27
+2026-04-24 17:33T: checkForEvent() next day sunrise (with offset): 6:58
+2026-04-24 17:33T: checkForEvent() before next day
+2026-04-24 17:33T: About to sleep for 13 hours and 25 minutes
+2026-04-25 06:58T: 
+
+
+******************************
+2026-04-25 06:58T: Logging started to SD card.
+2026-04-25 06:58T: SD Card Setup Complete.
+2026-04-25 06:58T: Initialization done.
+2026-04-25 06:58T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-25 06:58T: checkForEvent() [NZST] month = 4, day = 25, hour = 6, minute=58
+2026-04-25 06:58T: checkForEvent() index = 117
+2026-04-25 06:58T: checkForEvent() sunrise(without offset): 7:13
+2026-04-25 06:58T: checkForEvent() sunset(without offset): 17:41
+2026-04-25 06:58T: checkForEvent() next day sunrise (without offset): 7:14
+2026-04-25 06:58T: checkForEvent() sunrise(with offset): 6:58
+2026-04-25 06:58T: checkForEvent() sunset(with offset): 17:26
+2026-04-25 06:58T: checkForEvent() next day sunrise (with offset): 6:59
+2026-04-25 06:58T: checkForEvent() before sunrise
+2026-04-25 06:58T: startRecording()
+2026-04-25 06:58T: Filename = 'SR_2026_04_25_06_58.WAV'
+2026-04-25 06:58T: Started recording.
+2026-04-25 07:03T: stopRecording()2026-04-25 07:03T: Completed sunrise recordings, setting day record flag
+2026-04-25 07:03T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-25 07:03T: checkForEvent() [NZST] month = 4, day = 25, hour = 7, minute=3
+2026-04-25 07:03T: checkForEvent() index = 117
+2026-04-25 07:03T: checkForEvent() sunrise(without offset): 7:13
+2026-04-25 07:03T: checkForEvent() sunset(without offset): 17:41
+2026-04-25 07:03T: checkForEvent() next day sunrise (without offset): 7:14
+2026-04-25 07:03T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-25 07:03T: checkForEvent() start, end minutes: 523:971
+2026-04-25 07:03T: checkForEvent() random_minutes 303
+2026-04-25 07:03T: About to sleep for 5 hours and 3 minutes
+2026-04-25 12:06T: 
+
+
+******************************
+2026-04-25 12:06T: Logging started to SD card.
+2026-04-25 12:06T: SD Card Setup Complete.
+2026-04-25 12:06T: Initialization done.
+2026-04-25 12:06T: Record during day flag set to true - about to record 
+2026-04-25 12:06T: startRecording()
+2026-04-25 12:06T: Filename = 'DA_2026_04_25_12_06.WAV'
+2026-04-25 12:06T: Started recording.
+2026-04-25 12:11T: stopRecording()2026-04-25 12:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-25 12:11T: checkForEvent() [NZST] month = 4, day = 25, hour = 12, minute=11
+2026-04-25 12:11T: checkForEvent() index = 117
+2026-04-25 12:11T: checkForEvent() sunrise(without offset): 7:13
+2026-04-25 12:11T: checkForEvent() sunset(without offset): 17:41
+2026-04-25 12:11T: checkForEvent() next day sunrise (without offset): 7:14
+2026-04-25 12:11T: checkForEvent() sunrise(with offset): 6:58
+2026-04-25 12:11T: checkForEvent() sunset(with offset): 17:26
+2026-04-25 12:11T: checkForEvent() next day sunrise (with offset): 6:59
+2026-04-25 12:11T: checkForEvent() before sunset
+2026-04-25 12:11T: About to sleep for 5 hours and 15 minutes
+2026-04-25 17:26T: 
+
+
+******************************
+2026-04-25 17:26T: Logging started to SD card.
+2026-04-25 17:26T: SD Card Setup Complete.
+2026-04-25 17:26T: Initialization done.
+2026-04-25 17:26T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-25 17:26T: checkForEvent() [NZST] month = 4, day = 25, hour = 17, minute=26
+2026-04-25 17:26T: checkForEvent() index = 117
+2026-04-25 17:26T: checkForEvent() sunrise(without offset): 7:13
+2026-04-25 17:26T: checkForEvent() sunset(without offset): 17:41
+2026-04-25 17:26T: checkForEvent() next day sunrise (without offset): 7:14
+2026-04-25 17:26T: checkForEvent() sunrise(with offset): 6:58
+2026-04-25 17:26T: checkForEvent() sunset(with offset): 17:26
+2026-04-25 17:26T: checkForEvent() next day sunrise (with offset): 6:59
+2026-04-25 17:26T: checkForEvent() before sunset
+2026-04-25 17:26T: startRecording()
+2026-04-25 17:26T: Filename = 'SS_2026_04_25_17_26.WAV'
+2026-04-25 17:26T: Started recording.
+2026-04-25 17:31T: stopRecording()2026-04-25 17:31T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-25 17:31T: checkForEvent() [NZST] month = 4, day = 25, hour = 17, minute=31
+2026-04-25 17:31T: checkForEvent() index = 117
+2026-04-25 17:31T: checkForEvent() sunrise(without offset): 7:13
+2026-04-25 17:31T: checkForEvent() sunset(without offset): 17:41
+2026-04-25 17:31T: checkForEvent() next day sunrise (without offset): 7:14
+2026-04-25 17:31T: checkForEvent() sunrise(with offset): 6:58
+2026-04-25 17:31T: checkForEvent() sunset(with offset): 17:26
+2026-04-25 17:31T: checkForEvent() next day sunrise (with offset): 6:59
+2026-04-25 17:31T: checkForEvent() before next day
+2026-04-25 17:31T: About to sleep for 13 hours and 28 minutes
+2026-04-26 06:59T: 
+
+
+******************************
+2026-04-26 06:59T: Logging started to SD card.
+2026-04-26 06:59T: SD Card Setup Complete.
+2026-04-26 06:59T: Initialization done.
+2026-04-26 06:59T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-26 06:59T: checkForEvent() [NZST] month = 4, day = 26, hour = 6, minute=59
+2026-04-26 06:59T: checkForEvent() index = 118
+2026-04-26 06:59T: checkForEvent() sunrise(without offset): 7:14
+2026-04-26 06:59T: checkForEvent() sunset(without offset): 17:39
+2026-04-26 06:59T: checkForEvent() next day sunrise (without offset): 7:15
+2026-04-26 06:59T: checkForEvent() sunrise(with offset): 6:59
+2026-04-26 06:59T: checkForEvent() sunset(with offset): 17:24
+2026-04-26 06:59T: checkForEvent() next day sunrise (with offset): 7:0
+2026-04-26 06:59T: checkForEvent() before sunrise
+2026-04-26 06:59T: startRecording()
+2026-04-26 06:59T: Filename = 'SR_2026_04_26_06_59.WAV'
+2026-04-26 06:59T: Started recording.
+2026-04-26 07:04T: stopRecording()2026-04-26 07:04T: Completed sunrise recordings, setting day record flag
+2026-04-26 07:04T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-26 07:04T: checkForEvent() [NZST] month = 4, day = 26, hour = 7, minute=4
+2026-04-26 07:04T: checkForEvent() index = 118
+2026-04-26 07:04T: checkForEvent() sunrise(without offset): 7:14
+2026-04-26 07:04T: checkForEvent() sunset(without offset): 17:39
+2026-04-26 07:04T: checkForEvent() next day sunrise (without offset): 7:15
+2026-04-26 07:04T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-26 07:04T: checkForEvent() start, end minutes: 524:969
+2026-04-26 07:04T: checkForEvent() random_minutes 409
+2026-04-26 07:04T: About to sleep for 6 hours and 49 minutes
+2026-04-26 13:53T: 
+
+
+******************************
+2026-04-26 13:53T: Logging started to SD card.
+2026-04-26 13:53T: SD Card Setup Complete.
+2026-04-26 13:53T: Initialization done.
+2026-04-26 13:53T: Record during day flag set to true - about to record 
+2026-04-26 13:53T: startRecording()
+2026-04-26 13:53T: Filename = 'DA_2026_04_26_13_53.WAV'
+2026-04-26 13:53T: Started recording.
+2026-04-26 13:58T: stopRecording()2026-04-26 13:58T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-26 13:58T: checkForEvent() [NZST] month = 4, day = 26, hour = 13, minute=58
+2026-04-26 13:58T: checkForEvent() index = 118
+2026-04-26 13:58T: checkForEvent() sunrise(without offset): 7:14
+2026-04-26 13:58T: checkForEvent() sunset(without offset): 17:39
+2026-04-26 13:58T: checkForEvent() next day sunrise (without offset): 7:15
+2026-04-26 13:58T: checkForEvent() sunrise(with offset): 6:59
+2026-04-26 13:58T: checkForEvent() sunset(with offset): 17:24
+2026-04-26 13:58T: checkForEvent() next day sunrise (with offset): 7:0
+2026-04-26 13:58T: checkForEvent() before sunset
+2026-04-26 13:58T: About to sleep for 3 hours and 26 minutes
+2026-04-26 17:24T: 
+
+
+******************************
+2026-04-26 17:24T: Logging started to SD card.
+2026-04-26 17:24T: SD Card Setup Complete.
+2026-04-26 17:24T: Initialization done.
+2026-04-26 17:24T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-26 17:24T: checkForEvent() [NZST] month = 4, day = 26, hour = 17, minute=24
+2026-04-26 17:24T: checkForEvent() index = 118
+2026-04-26 17:24T: checkForEvent() sunrise(without offset): 7:14
+2026-04-26 17:24T: checkForEvent() sunset(without offset): 17:39
+2026-04-26 17:24T: checkForEvent() next day sunrise (without offset): 7:15
+2026-04-26 17:24T: checkForEvent() sunrise(with offset): 6:59
+2026-04-26 17:24T: checkForEvent() sunset(with offset): 17:24
+2026-04-26 17:24T: checkForEvent() next day sunrise (with offset): 7:0
+2026-04-26 17:24T: checkForEvent() before sunset
+2026-04-26 17:24T: startRecording()
+2026-04-26 17:24T: Filename = 'SS_2026_04_26_17_24.WAV'
+2026-04-26 17:24T: Started recording.
+2026-04-26 17:29T: stopRecording()2026-04-26 17:29T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-26 17:29T: checkForEvent() [NZST] month = 4, day = 26, hour = 17, minute=29
+2026-04-26 17:29T: checkForEvent() index = 118
+2026-04-26 17:29T: checkForEvent() sunrise(without offset): 7:14
+2026-04-26 17:29T: checkForEvent() sunset(without offset): 17:39
+2026-04-26 17:29T: checkForEvent() next day sunrise (without offset): 7:15
+2026-04-26 17:29T: checkForEvent() sunrise(with offset): 6:59
+2026-04-26 17:29T: checkForEvent() sunset(with offset): 17:24
+2026-04-26 17:29T: checkForEvent() next day sunrise (with offset): 7:0
+2026-04-26 17:29T: checkForEvent() before next day
+2026-04-26 17:29T: About to sleep for 13 hours and 31 minutes
+2026-04-27 07:00T: 
+
+
+******************************
+2026-04-27 07:00T: Logging started to SD card.
+2026-04-27 07:00T: SD Card Setup Complete.
+2026-04-27 07:00T: Initialization done.
+2026-04-27 07:00T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-27 07:00T: checkForEvent() [NZST] month = 4, day = 27, hour = 7, minute=0
+2026-04-27 07:00T: checkForEvent() index = 119
+2026-04-27 07:00T: checkForEvent() sunrise(without offset): 7:15
+2026-04-27 07:00T: checkForEvent() sunset(without offset): 17:38
+2026-04-27 07:00T: checkForEvent() next day sunrise (without offset): 7:16
+2026-04-27 07:00T: checkForEvent() sunrise(with offset): 7:0
+2026-04-27 07:00T: checkForEvent() sunset(with offset): 17:23
+2026-04-27 07:00T: checkForEvent() next day sunrise (with offset): 7:1
+2026-04-27 07:00T: checkForEvent() before sunrise
+2026-04-27 07:00T: startRecording()
+2026-04-27 07:00T: Filename = 'SR_2026_04_27_07_00.WAV'
+2026-04-27 07:00T: Started recording.
+2026-04-27 07:05T: stopRecording()2026-04-27 07:05T: Completed sunrise recordings, setting day record flag
+2026-04-27 07:05T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-27 07:05T: checkForEvent() [NZST] month = 4, day = 27, hour = 7, minute=5
+2026-04-27 07:05T: checkForEvent() index = 119
+2026-04-27 07:05T: checkForEvent() sunrise(without offset): 7:15
+2026-04-27 07:05T: checkForEvent() sunset(without offset): 17:38
+2026-04-27 07:05T: checkForEvent() next day sunrise (without offset): 7:16
+2026-04-27 07:05T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-27 07:05T: checkForEvent() start, end minutes: 525:968
+2026-04-27 07:05T: checkForEvent() random_minutes 293
+2026-04-27 07:05T: About to sleep for 4 hours and 53 minutes
+2026-04-27 11:58T: 
+
+
+******************************
+2026-04-27 11:58T: Logging started to SD card.
+2026-04-27 11:58T: SD Card Setup Complete.
+2026-04-27 11:58T: Initialization done.
+2026-04-27 11:58T: Record during day flag set to true - about to record 
+2026-04-27 11:58T: startRecording()
+2026-04-27 11:58T: Filename = 'DA_2026_04_27_11_58.WAV'
+2026-04-27 11:58T: Started recording.
+2026-04-27 12:03T: stopRecording()2026-04-27 12:03T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-27 12:03T: checkForEvent() [NZST] month = 4, day = 27, hour = 12, minute=3
+2026-04-27 12:03T: checkForEvent() index = 119
+2026-04-27 12:03T: checkForEvent() sunrise(without offset): 7:15
+2026-04-27 12:03T: checkForEvent() sunset(without offset): 17:38
+2026-04-27 12:03T: checkForEvent() next day sunrise (without offset): 7:16
+2026-04-27 12:03T: checkForEvent() sunrise(with offset): 7:0
+2026-04-27 12:03T: checkForEvent() sunset(with offset): 17:23
+2026-04-27 12:03T: checkForEvent() next day sunrise (with offset): 7:1
+2026-04-27 12:03T: checkForEvent() before sunset
+2026-04-27 12:03T: About to sleep for 5 hours and 20 minutes
+2026-04-27 17:23T: 
+
+
+******************************
+2026-04-27 17:23T: Logging started to SD card.
+2026-04-27 17:23T: SD Card Setup Complete.
+2026-04-27 17:23T: Initialization done.
+2026-04-27 17:23T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-27 17:23T: checkForEvent() [NZST] month = 4, day = 27, hour = 17, minute=23
+2026-04-27 17:23T: checkForEvent() index = 119
+2026-04-27 17:23T: checkForEvent() sunrise(without offset): 7:15
+2026-04-27 17:23T: checkForEvent() sunset(without offset): 17:38
+2026-04-27 17:23T: checkForEvent() next day sunrise (without offset): 7:16
+2026-04-27 17:23T: checkForEvent() sunrise(with offset): 7:0
+2026-04-27 17:23T: checkForEvent() sunset(with offset): 17:23
+2026-04-27 17:23T: checkForEvent() next day sunrise (with offset): 7:1
+2026-04-27 17:23T: checkForEvent() before sunset
+2026-04-27 17:23T: startRecording()
+2026-04-27 17:23T: Filename = 'SS_2026_04_27_17_23.WAV'
+2026-04-27 17:23T: Started recording.
+2026-04-27 17:28T: stopRecording()2026-04-27 17:28T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-27 17:28T: checkForEvent() [NZST] month = 4, day = 27, hour = 17, minute=28
+2026-04-27 17:28T: checkForEvent() index = 119
+2026-04-27 17:28T: checkForEvent() sunrise(without offset): 7:15
+2026-04-27 17:28T: checkForEvent() sunset(without offset): 17:38
+2026-04-27 17:28T: checkForEvent() next day sunrise (without offset): 7:16
+2026-04-27 17:28T: checkForEvent() sunrise(with offset): 7:0
+2026-04-27 17:28T: checkForEvent() sunset(with offset): 17:23
+2026-04-27 17:28T: checkForEvent() next day sunrise (with offset): 7:1
+2026-04-27 17:28T: checkForEvent() before next day
+2026-04-27 17:28T: About to sleep for 13 hours and 33 minutes
+2026-04-28 07:01T: 
+
+
+******************************
+2026-04-28 07:01T: Logging started to SD card.
+2026-04-28 07:01T: SD Card Setup Complete.
+2026-04-28 07:01T: Initialization done.
+2026-04-28 07:01T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-28 07:01T: checkForEvent() [NZST] month = 4, day = 28, hour = 7, minute=1
+2026-04-28 07:01T: checkForEvent() index = 120
+2026-04-28 07:01T: checkForEvent() sunrise(without offset): 7:16
+2026-04-28 07:01T: checkForEvent() sunset(without offset): 17:36
+2026-04-28 07:01T: checkForEvent() next day sunrise (without offset): 7:18
+2026-04-28 07:01T: checkForEvent() sunrise(with offset): 7:1
+2026-04-28 07:01T: checkForEvent() sunset(with offset): 17:21
+2026-04-28 07:01T: checkForEvent() next day sunrise (with offset): 7:3
+2026-04-28 07:01T: checkForEvent() before sunrise
+2026-04-28 07:01T: startRecording()
+2026-04-28 07:01T: Filename = 'SR_2026_04_28_07_01.WAV'
+2026-04-28 07:01T: Started recording.
+2026-04-28 07:06T: stopRecording()2026-04-28 07:06T: Completed sunrise recordings, setting day record flag
+2026-04-28 07:06T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-28 07:06T: checkForEvent() [NZST] month = 4, day = 28, hour = 7, minute=6
+2026-04-28 07:06T: checkForEvent() index = 120
+2026-04-28 07:06T: checkForEvent() sunrise(without offset): 7:16
+2026-04-28 07:06T: checkForEvent() sunset(without offset): 17:36
+2026-04-28 07:06T: checkForEvent() next day sunrise (without offset): 7:18
+2026-04-28 07:06T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-28 07:06T: checkForEvent() start, end minutes: 526:966
+2026-04-28 07:06T: checkForEvent() random_minutes 216
+2026-04-28 07:06T: About to sleep for 3 hours and 36 minutes
+2026-04-28 10:42T: 
+
+
+******************************
+2026-04-28 10:42T: Logging started to SD card.
+2026-04-28 10:42T: SD Card Setup Complete.
+2026-04-28 10:42T: Initialization done.
+2026-04-28 10:42T: Record during day flag set to true - about to record 
+2026-04-28 10:42T: startRecording()
+2026-04-28 10:42T: Filename = 'DA_2026_04_28_10_42.WAV'
+2026-04-28 10:42T: Started recording.
+2026-04-28 10:47T: stopRecording()2026-04-28 10:47T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-28 10:47T: checkForEvent() [NZST] month = 4, day = 28, hour = 10, minute=47
+2026-04-28 10:47T: checkForEvent() index = 120
+2026-04-28 10:47T: checkForEvent() sunrise(without offset): 7:16
+2026-04-28 10:47T: checkForEvent() sunset(without offset): 17:36
+2026-04-28 10:47T: checkForEvent() next day sunrise (without offset): 7:18
+2026-04-28 10:47T: checkForEvent() sunrise(with offset): 7:1
+2026-04-28 10:47T: checkForEvent() sunset(with offset): 17:21
+2026-04-28 10:47T: checkForEvent() next day sunrise (with offset): 7:3
+2026-04-28 10:47T: checkForEvent() before sunset
+2026-04-28 10:47T: About to sleep for 6 hours and 34 minutes
+2026-04-28 17:21T: 
+
+
+******************************
+2026-04-28 17:21T: Logging started to SD card.
+2026-04-28 17:21T: SD Card Setup Complete.
+2026-04-28 17:21T: Initialization done.
+2026-04-28 17:21T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-28 17:21T: checkForEvent() [NZST] month = 4, day = 28, hour = 17, minute=21
+2026-04-28 17:21T: checkForEvent() index = 120
+2026-04-28 17:21T: checkForEvent() sunrise(without offset): 7:16
+2026-04-28 17:21T: checkForEvent() sunset(without offset): 17:36
+2026-04-28 17:21T: checkForEvent() next day sunrise (without offset): 7:18
+2026-04-28 17:21T: checkForEvent() sunrise(with offset): 7:1
+2026-04-28 17:21T: checkForEvent() sunset(with offset): 17:21
+2026-04-28 17:21T: checkForEvent() next day sunrise (with offset): 7:3
+2026-04-28 17:21T: checkForEvent() before sunset
+2026-04-28 17:21T: startRecording()
+2026-04-28 17:21T: Filename = 'SS_2026_04_28_17_21.WAV'
+2026-04-28 17:21T: Started recording.
+2026-04-28 17:26T: stopRecording()2026-04-28 17:26T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-28 17:26T: checkForEvent() [NZST] month = 4, day = 28, hour = 17, minute=26
+2026-04-28 17:26T: checkForEvent() index = 120
+2026-04-28 17:26T: checkForEvent() sunrise(without offset): 7:16
+2026-04-28 17:26T: checkForEvent() sunset(without offset): 17:36
+2026-04-28 17:26T: checkForEvent() next day sunrise (without offset): 7:18
+2026-04-28 17:26T: checkForEvent() sunrise(with offset): 7:1
+2026-04-28 17:26T: checkForEvent() sunset(with offset): 17:21
+2026-04-28 17:26T: checkForEvent() next day sunrise (with offset): 7:3
+2026-04-28 17:26T: checkForEvent() before next day
+2026-04-28 17:26T: About to sleep for 13 hours and 37 minutes
+2026-04-29 07:03T: 
+
+
+******************************
+2026-04-29 07:03T: Logging started to SD card.
+2026-04-29 07:03T: SD Card Setup Complete.
+2026-04-29 07:03T: Initialization done.
+2026-04-29 07:03T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-29 07:03T: checkForEvent() [NZST] month = 4, day = 29, hour = 7, minute=3
+2026-04-29 07:03T: checkForEvent() index = 121
+2026-04-29 07:03T: checkForEvent() sunrise(without offset): 7:18
+2026-04-29 07:03T: checkForEvent() sunset(without offset): 17:35
+2026-04-29 07:03T: checkForEvent() next day sunrise (without offset): 7:19
+2026-04-29 07:03T: checkForEvent() sunrise(with offset): 7:3
+2026-04-29 07:03T: checkForEvent() sunset(with offset): 17:20
+2026-04-29 07:03T: checkForEvent() next day sunrise (with offset): 7:4
+2026-04-29 07:03T: checkForEvent() before sunrise
+2026-04-29 07:03T: startRecording()
+2026-04-29 07:03T: Filename = 'SR_2026_04_29_07_03.WAV'
+2026-04-29 07:03T: Started recording.
+2026-04-29 07:08T: stopRecording()2026-04-29 07:08T: Completed sunrise recordings, setting day record flag
+2026-04-29 07:08T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-29 07:08T: checkForEvent() [NZST] month = 4, day = 29, hour = 7, minute=8
+2026-04-29 07:08T: checkForEvent() index = 121
+2026-04-29 07:08T: checkForEvent() sunrise(without offset): 7:18
+2026-04-29 07:08T: checkForEvent() sunset(without offset): 17:35
+2026-04-29 07:08T: checkForEvent() next day sunrise (without offset): 7:19
+2026-04-29 07:08T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-29 07:08T: checkForEvent() start, end minutes: 528:965
+2026-04-29 07:08T: checkForEvent() random_minutes 429
+2026-04-29 07:08T: About to sleep for 7 hours and 9 minutes
+2026-04-29 14:17T: 
+
+
+******************************
+2026-04-29 14:17T: Logging started to SD card.
+2026-04-29 14:17T: SD Card Setup Complete.
+2026-04-29 14:17T: Initialization done.
+2026-04-29 14:17T: Record during day flag set to true - about to record 
+2026-04-29 14:17T: startRecording()
+2026-04-29 14:17T: Filename = 'DA_2026_04_29_14_17.WAV'
+2026-04-29 14:17T: Started recording.
+2026-04-29 14:22T: stopRecording()2026-04-29 14:22T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-29 14:22T: checkForEvent() [NZST] month = 4, day = 29, hour = 14, minute=22
+2026-04-29 14:22T: checkForEvent() index = 121
+2026-04-29 14:22T: checkForEvent() sunrise(without offset): 7:18
+2026-04-29 14:22T: checkForEvent() sunset(without offset): 17:35
+2026-04-29 14:22T: checkForEvent() next day sunrise (without offset): 7:19
+2026-04-29 14:22T: checkForEvent() sunrise(with offset): 7:3
+2026-04-29 14:22T: checkForEvent() sunset(with offset): 17:20
+2026-04-29 14:22T: checkForEvent() next day sunrise (with offset): 7:4
+2026-04-29 14:22T: checkForEvent() before sunset
+2026-04-29 14:22T: About to sleep for 2 hours and 58 minutes
+2026-04-29 17:20T: 
+
+
+******************************
+2026-04-29 17:20T: Logging started to SD card.
+2026-04-29 17:20T: SD Card Setup Complete.
+2026-04-29 17:20T: Initialization done.
+2026-04-29 17:20T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-29 17:20T: checkForEvent() [NZST] month = 4, day = 29, hour = 17, minute=20
+2026-04-29 17:20T: checkForEvent() index = 121
+2026-04-29 17:20T: checkForEvent() sunrise(without offset): 7:18
+2026-04-29 17:20T: checkForEvent() sunset(without offset): 17:35
+2026-04-29 17:20T: checkForEvent() next day sunrise (without offset): 7:19
+2026-04-29 17:20T: checkForEvent() sunrise(with offset): 7:3
+2026-04-29 17:20T: checkForEvent() sunset(with offset): 17:20
+2026-04-29 17:20T: checkForEvent() next day sunrise (with offset): 7:4
+2026-04-29 17:20T: checkForEvent() before sunset
+2026-04-29 17:20T: startRecording()
+2026-04-29 17:20T: Filename = 'SS_2026_04_29_17_20.WAV'
+2026-04-29 17:20T: Started recording.
+2026-04-29 17:25T: stopRecording()2026-04-29 17:25T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-29 17:25T: checkForEvent() [NZST] month = 4, day = 29, hour = 17, minute=25
+2026-04-29 17:25T: checkForEvent() index = 121
+2026-04-29 17:25T: checkForEvent() sunrise(without offset): 7:18
+2026-04-29 17:25T: checkForEvent() sunset(without offset): 17:35
+2026-04-29 17:25T: checkForEvent() next day sunrise (without offset): 7:19
+2026-04-29 17:25T: checkForEvent() sunrise(with offset): 7:3
+2026-04-29 17:25T: checkForEvent() sunset(with offset): 17:20
+2026-04-29 17:25T: checkForEvent() next day sunrise (with offset): 7:4
+2026-04-29 17:25T: checkForEvent() before next day
+2026-04-29 17:25T: About to sleep for 13 hours and 39 minutes
+2026-04-30 07:04T: 
+
+
+******************************
+2026-04-30 07:04T: Logging started to SD card.
+2026-04-30 07:04T: SD Card Setup Complete.
+2026-04-30 07:04T: Initialization done.
+2026-04-30 07:04T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-30 07:04T: checkForEvent() [NZST] month = 4, day = 30, hour = 7, minute=4
+2026-04-30 07:04T: checkForEvent() index = 122
+2026-04-30 07:04T: checkForEvent() sunrise(without offset): 7:19
+2026-04-30 07:04T: checkForEvent() sunset(without offset): 17:33
+2026-04-30 07:04T: checkForEvent() next day sunrise (without offset): 7:20
+2026-04-30 07:04T: checkForEvent() sunrise(with offset): 7:4
+2026-04-30 07:04T: checkForEvent() sunset(with offset): 17:18
+2026-04-30 07:04T: checkForEvent() next day sunrise (with offset): 7:5
+2026-04-30 07:04T: checkForEvent() before sunrise
+2026-04-30 07:04T: startRecording()
+2026-04-30 07:04T: Filename = 'SR_2026_04_30_07_04.WAV'
+2026-04-30 07:04T: Started recording.
+2026-04-30 07:09T: stopRecording()2026-04-30 07:09T: Completed sunrise recordings, setting day record flag
+2026-04-30 07:09T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-04-30 07:09T: checkForEvent() [NZST] month = 4, day = 30, hour = 7, minute=9
+2026-04-30 07:09T: checkForEvent() index = 122
+2026-04-30 07:09T: checkForEvent() sunrise(without offset): 7:19
+2026-04-30 07:09T: checkForEvent() sunset(without offset): 17:33
+2026-04-30 07:09T: checkForEvent() next day sunrise (without offset): 7:20
+2026-04-30 07:09T:   checkNextEvent() At sunrise - calculating random sleep time 2026-04-30 07:09T: checkForEvent() start, end minutes: 529:963
+2026-04-30 07:09T: checkForEvent() random_minutes 308
+2026-04-30 07:09T: About to sleep for 5 hours and 8 minutes
+2026-04-30 12:17T: 
+
+
+******************************
+2026-04-30 12:17T: Logging started to SD card.
+2026-04-30 12:17T: SD Card Setup Complete.
+2026-04-30 12:17T: Initialization done.
+2026-04-30 12:17T: Record during day flag set to true - about to record 
+2026-04-30 12:17T: startRecording()
+2026-04-30 12:17T: Filename = 'DA_2026_04_30_12_17.WAV'
+2026-04-30 12:17T: Started recording.
+2026-04-30 12:22T: stopRecording()2026-04-30 12:22T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-30 12:22T: checkForEvent() [NZST] month = 4, day = 30, hour = 12, minute=22
+2026-04-30 12:22T: checkForEvent() index = 122
+2026-04-30 12:22T: checkForEvent() sunrise(without offset): 7:19
+2026-04-30 12:22T: checkForEvent() sunset(without offset): 17:33
+2026-04-30 12:22T: checkForEvent() next day sunrise (without offset): 7:20
+2026-04-30 12:22T: checkForEvent() sunrise(with offset): 7:4
+2026-04-30 12:22T: checkForEvent() sunset(with offset): 17:18
+2026-04-30 12:22T: checkForEvent() next day sunrise (with offset): 7:5
+2026-04-30 12:22T: checkForEvent() before sunset
+2026-04-30 12:22T: About to sleep for 4 hours and 56 minutes
+2026-04-30 17:18T: 
+
+
+******************************
+2026-04-30 17:18T: Logging started to SD card.
+2026-04-30 17:18T: SD Card Setup Complete.
+2026-04-30 17:18T: Initialization done.
+2026-04-30 17:18T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-30 17:18T: checkForEvent() [NZST] month = 4, day = 30, hour = 17, minute=18
+2026-04-30 17:18T: checkForEvent() index = 122
+2026-04-30 17:18T: checkForEvent() sunrise(without offset): 7:19
+2026-04-30 17:18T: checkForEvent() sunset(without offset): 17:33
+2026-04-30 17:18T: checkForEvent() next day sunrise (without offset): 7:20
+2026-04-30 17:18T: checkForEvent() sunrise(with offset): 7:4
+2026-04-30 17:18T: checkForEvent() sunset(with offset): 17:18
+2026-04-30 17:18T: checkForEvent() next day sunrise (with offset): 7:5
+2026-04-30 17:18T: checkForEvent() before sunset
+2026-04-30 17:18T: startRecording()
+2026-04-30 17:18T: Filename = 'SS_2026_04_30_17_18.WAV'
+2026-04-30 17:18T: Started recording.
+2026-04-30 17:23T: stopRecording()2026-04-30 17:23T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-04-30 17:23T: checkForEvent() [NZST] month = 4, day = 30, hour = 17, minute=23
+2026-04-30 17:23T: checkForEvent() index = 122
+2026-04-30 17:23T: checkForEvent() sunrise(without offset): 7:19
+2026-04-30 17:23T: checkForEvent() sunset(without offset): 17:33
+2026-04-30 17:23T: checkForEvent() next day sunrise (without offset): 7:20
+2026-04-30 17:23T: checkForEvent() sunrise(with offset): 7:4
+2026-04-30 17:23T: checkForEvent() sunset(with offset): 17:18
+2026-04-30 17:23T: checkForEvent() next day sunrise (with offset): 7:5
+2026-04-30 17:23T: checkForEvent() before next day
+2026-04-30 17:23T: About to sleep for 13 hours and 42 minutes
+2026-05-01 07:05T: 
+
+
+******************************
+2026-05-01 07:05T: Logging started to SD card.
+2026-05-01 07:05T: SD Card Setup Complete.
+2026-05-01 07:05T: Initialization done.
+2026-05-01 07:05T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-01 07:05T: checkForEvent() [NZST] month = 5, day = 1, hour = 7, minute=5
+2026-05-01 07:05T: checkForEvent() index = 124
+2026-05-01 07:05T: checkForEvent() sunrise(without offset): 7:20
+2026-05-01 07:05T: checkForEvent() sunset(without offset): 17:32
+2026-05-01 07:05T: checkForEvent() next day sunrise (without offset): 7:21
+2026-05-01 07:05T: checkForEvent() sunrise(with offset): 7:5
+2026-05-01 07:05T: checkForEvent() sunset(with offset): 17:17
+2026-05-01 07:05T: checkForEvent() next day sunrise (with offset): 7:6
+2026-05-01 07:05T: checkForEvent() before sunrise
+2026-05-01 07:05T: startRecording()
+2026-05-01 07:05T: Filename = 'SR_2026_05_01_07_05.WAV'
+2026-05-01 07:05T: Started recording.
+2026-05-01 07:10T: stopRecording()2026-05-01 07:10T: Completed sunrise recordings, setting day record flag
+2026-05-01 07:10T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-01 07:10T: checkForEvent() [NZST] month = 5, day = 1, hour = 7, minute=10
+2026-05-01 07:10T: checkForEvent() index = 124
+2026-05-01 07:10T: checkForEvent() sunrise(without offset): 7:20
+2026-05-01 07:10T: checkForEvent() sunset(without offset): 17:32
+2026-05-01 07:10T: checkForEvent() next day sunrise (without offset): 7:21
+2026-05-01 07:10T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-01 07:10T: checkForEvent() start, end minutes: 530:962
+2026-05-01 07:10T: checkForEvent() random_minutes 115
+2026-05-01 07:10T: About to sleep for 1 hours and 55 minutes
+2026-05-01 09:05T: 
+
+
+******************************
+2026-05-01 09:05T: Logging started to SD card.
+2026-05-01 09:05T: SD Card Setup Complete.
+2026-05-01 09:05T: Initialization done.
+2026-05-01 09:06T: Record during day flag set to true - about to record 
+2026-05-01 09:06T: startRecording()
+2026-05-01 09:06T: Filename = 'DA_2026_05_01_09_06.WAV'
+2026-05-01 09:06T: Started recording.
+2026-05-01 09:11T: stopRecording()2026-05-01 09:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-01 09:11T: checkForEvent() [NZST] month = 5, day = 1, hour = 9, minute=11
+2026-05-01 09:11T: checkForEvent() index = 124
+2026-05-01 09:11T: checkForEvent() sunrise(without offset): 7:20
+2026-05-01 09:11T: checkForEvent() sunset(without offset): 17:32
+2026-05-01 09:11T: checkForEvent() next day sunrise (without offset): 7:21
+2026-05-01 09:11T: checkForEvent() sunrise(with offset): 7:5
+2026-05-01 09:11T: checkForEvent() sunset(with offset): 17:17
+2026-05-01 09:11T: checkForEvent() next day sunrise (with offset): 7:6
+2026-05-01 09:11T: checkForEvent() before sunset
+2026-05-01 09:11T: About to sleep for 8 hours and 6 minutes
+2026-05-01 17:17T: 
+
+
+******************************
+2026-05-01 17:17T: Logging started to SD card.
+2026-05-01 17:17T: SD Card Setup Complete.
+2026-05-01 17:17T: Initialization done.
+2026-05-01 17:17T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-01 17:17T: checkForEvent() [NZST] month = 5, day = 1, hour = 17, minute=17
+2026-05-01 17:17T: checkForEvent() index = 124
+2026-05-01 17:17T: checkForEvent() sunrise(without offset): 7:20
+2026-05-01 17:17T: checkForEvent() sunset(without offset): 17:32
+2026-05-01 17:17T: checkForEvent() next day sunrise (without offset): 7:21
+2026-05-01 17:17T: checkForEvent() sunrise(with offset): 7:5
+2026-05-01 17:17T: checkForEvent() sunset(with offset): 17:17
+2026-05-01 17:17T: checkForEvent() next day sunrise (with offset): 7:6
+2026-05-01 17:17T: checkForEvent() before sunset
+2026-05-01 17:17T: startRecording()
+2026-05-01 17:17T: Filename = 'SS_2026_05_01_17_17.WAV'
+2026-05-01 17:17T: Started recording.
+2026-05-01 17:22T: stopRecording()2026-05-01 17:22T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-01 17:22T: checkForEvent() [NZST] month = 5, day = 1, hour = 17, minute=22
+2026-05-01 17:22T: checkForEvent() index = 124
+2026-05-01 17:22T: checkForEvent() sunrise(without offset): 7:20
+2026-05-01 17:22T: checkForEvent() sunset(without offset): 17:32
+2026-05-01 17:22T: checkForEvent() next day sunrise (without offset): 7:21
+2026-05-01 17:22T: checkForEvent() sunrise(with offset): 7:5
+2026-05-01 17:22T: checkForEvent() sunset(with offset): 17:17
+2026-05-01 17:22T: checkForEvent() next day sunrise (with offset): 7:6
+2026-05-01 17:22T: checkForEvent() before next day
+2026-05-01 17:22T: About to sleep for 13 hours and 44 minutes
+2026-05-02 07:06T: 
+
+
+******************************
+2026-05-02 07:06T: Logging started to SD card.
+2026-05-02 07:06T: SD Card Setup Complete.
+2026-05-02 07:06T: Initialization done.
+2026-05-02 07:06T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-02 07:06T: checkForEvent() [NZST] month = 5, day = 2, hour = 7, minute=6
+2026-05-02 07:06T: checkForEvent() index = 125
+2026-05-02 07:06T: checkForEvent() sunrise(without offset): 7:21
+2026-05-02 07:06T: checkForEvent() sunset(without offset): 17:30
+2026-05-02 07:06T: checkForEvent() next day sunrise (without offset): 7:22
+2026-05-02 07:06T: checkForEvent() sunrise(with offset): 7:6
+2026-05-02 07:06T: checkForEvent() sunset(with offset): 17:15
+2026-05-02 07:06T: checkForEvent() next day sunrise (with offset): 7:7
+2026-05-02 07:06T: checkForEvent() before sunrise
+2026-05-02 07:06T: startRecording()
+2026-05-02 07:06T: Filename = 'SR_2026_05_02_07_06.WAV'
+2026-05-02 07:06T: Started recording.
+2026-05-02 07:11T: stopRecording()2026-05-02 07:11T: Completed sunrise recordings, setting day record flag
+2026-05-02 07:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-02 07:11T: checkForEvent() [NZST] month = 5, day = 2, hour = 7, minute=11
+2026-05-02 07:11T: checkForEvent() index = 125
+2026-05-02 07:11T: checkForEvent() sunrise(without offset): 7:21
+2026-05-02 07:11T: checkForEvent() sunset(without offset): 17:30
+2026-05-02 07:11T: checkForEvent() next day sunrise (without offset): 7:22
+2026-05-02 07:11T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-02 07:11T: checkForEvent() start, end minutes: 531:960
+2026-05-02 07:11T: checkForEvent() random_minutes 404
+2026-05-02 07:11T: About to sleep for 6 hours and 44 minutes
+2026-05-02 13:55T: 
+
+
+******************************
+2026-05-02 13:55T: Logging started to SD card.
+2026-05-02 13:55T: SD Card Setup Complete.
+2026-05-02 13:55T: Initialization done.
+2026-05-02 13:55T: Record during day flag set to true - about to record 
+2026-05-02 13:55T: startRecording()
+2026-05-02 13:55T: Filename = 'DA_2026_05_02_13_55.WAV'
+2026-05-02 13:55T: Started recording.
+2026-05-02 14:00T: stopRecording()2026-05-02 14:00T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-02 14:00T: checkForEvent() [NZST] month = 5, day = 2, hour = 14, minute=0
+2026-05-02 14:00T: checkForEvent() index = 125
+2026-05-02 14:00T: checkForEvent() sunrise(without offset): 7:21
+2026-05-02 14:00T: checkForEvent() sunset(without offset): 17:30
+2026-05-02 14:00T: checkForEvent() next day sunrise (without offset): 7:22
+2026-05-02 14:00T: checkForEvent() sunrise(with offset): 7:6
+2026-05-02 14:00T: checkForEvent() sunset(with offset): 17:15
+2026-05-02 14:00T: checkForEvent() next day sunrise (with offset): 7:7
+2026-05-02 14:00T: checkForEvent() before sunset
+2026-05-02 14:00T: About to sleep for 3 hours and 15 minutes
+2026-05-02 17:15T: 
+
+
+******************************
+2026-05-02 17:15T: Logging started to SD card.
+2026-05-02 17:15T: SD Card Setup Complete.
+2026-05-02 17:15T: Initialization done.
+2026-05-02 17:15T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-02 17:15T: checkForEvent() [NZST] month = 5, day = 2, hour = 17, minute=15
+2026-05-02 17:15T: checkForEvent() index = 125
+2026-05-02 17:15T: checkForEvent() sunrise(without offset): 7:21
+2026-05-02 17:15T: checkForEvent() sunset(without offset): 17:30
+2026-05-02 17:15T: checkForEvent() next day sunrise (without offset): 7:22
+2026-05-02 17:15T: checkForEvent() sunrise(with offset): 7:6
+2026-05-02 17:15T: checkForEvent() sunset(with offset): 17:15
+2026-05-02 17:15T: checkForEvent() next day sunrise (with offset): 7:7
+2026-05-02 17:15T: checkForEvent() before sunset
+2026-05-02 17:15T: startRecording()
+2026-05-02 17:15T: Filename = 'SS_2026_05_02_17_15.WAV'
+2026-05-02 17:15T: Started recording.
+2026-05-02 17:20T: stopRecording()2026-05-02 17:20T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-02 17:20T: checkForEvent() [NZST] month = 5, day = 2, hour = 17, minute=20
+2026-05-02 17:20T: checkForEvent() index = 125
+2026-05-02 17:20T: checkForEvent() sunrise(without offset): 7:21
+2026-05-02 17:20T: checkForEvent() sunset(without offset): 17:30
+2026-05-02 17:20T: checkForEvent() next day sunrise (without offset): 7:22
+2026-05-02 17:20T: checkForEvent() sunrise(with offset): 7:6
+2026-05-02 17:20T: checkForEvent() sunset(with offset): 17:15
+2026-05-02 17:20T: checkForEvent() next day sunrise (with offset): 7:7
+2026-05-02 17:20T: checkForEvent() before next day
+2026-05-02 17:20T: About to sleep for 13 hours and 47 minutes
+2026-05-03 07:07T: 
+
+
+******************************
+2026-05-03 07:07T: Logging started to SD card.
+2026-05-03 07:07T: SD Card Setup Complete.
+2026-05-03 07:07T: Initialization done.
+2026-05-03 07:07T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-03 07:07T: checkForEvent() [NZST] month = 5, day = 3, hour = 7, minute=7
+2026-05-03 07:07T: checkForEvent() index = 126
+2026-05-03 07:07T: checkForEvent() sunrise(without offset): 7:22
+2026-05-03 07:07T: checkForEvent() sunset(without offset): 17:29
+2026-05-03 07:07T: checkForEvent() next day sunrise (without offset): 7:23
+2026-05-03 07:07T: checkForEvent() sunrise(with offset): 7:7
+2026-05-03 07:07T: checkForEvent() sunset(with offset): 17:14
+2026-05-03 07:07T: checkForEvent() next day sunrise (with offset): 7:8
+2026-05-03 07:07T: checkForEvent() before sunrise
+2026-05-03 07:07T: startRecording()
+2026-05-03 07:07T: Filename = 'SR_2026_05_03_07_07.WAV'
+2026-05-03 07:07T: Started recording.
+2026-05-03 07:12T: stopRecording()2026-05-03 07:12T: Completed sunrise recordings, setting day record flag
+2026-05-03 07:12T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-03 07:12T: checkForEvent() [NZST] month = 5, day = 3, hour = 7, minute=12
+2026-05-03 07:12T: checkForEvent() index = 126
+2026-05-03 07:12T: checkForEvent() sunrise(without offset): 7:22
+2026-05-03 07:12T: checkForEvent() sunset(without offset): 17:29
+2026-05-03 07:12T: checkForEvent() next day sunrise (without offset): 7:23
+2026-05-03 07:12T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-03 07:12T: checkForEvent() start, end minutes: 532:959
+2026-05-03 07:12T: checkForEvent() random_minutes 144
+2026-05-03 07:12T: About to sleep for 2 hours and 24 minutes
+2026-05-03 09:36T: 
+
+
+******************************
+2026-05-03 09:36T: Logging started to SD card.
+2026-05-03 09:36T: SD Card Setup Complete.
+2026-05-03 09:36T: Initialization done.
+2026-05-03 09:36T: Record during day flag set to true - about to record 
+2026-05-03 09:36T: startRecording()
+2026-05-03 09:36T: Filename = 'DA_2026_05_03_09_36.WAV'
+2026-05-03 09:36T: Started recording.
+2026-05-03 09:41T: stopRecording()2026-05-03 09:41T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-03 09:41T: checkForEvent() [NZST] month = 5, day = 3, hour = 9, minute=41
+2026-05-03 09:41T: checkForEvent() index = 126
+2026-05-03 09:41T: checkForEvent() sunrise(without offset): 7:22
+2026-05-03 09:41T: checkForEvent() sunset(without offset): 17:29
+2026-05-03 09:41T: checkForEvent() next day sunrise (without offset): 7:23
+2026-05-03 09:41T: checkForEvent() sunrise(with offset): 7:7
+2026-05-03 09:41T: checkForEvent() sunset(with offset): 17:14
+2026-05-03 09:41T: checkForEvent() next day sunrise (with offset): 7:8
+2026-05-03 09:41T: checkForEvent() before sunset
+2026-05-03 09:41T: About to sleep for 7 hours and 33 minutes
+2026-05-03 17:14T: 
+
+
+******************************
+2026-05-03 17:14T: Logging started to SD card.
+2026-05-03 17:14T: SD Card Setup Complete.
+2026-05-03 17:14T: Initialization done.
+2026-05-03 17:14T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-03 17:14T: checkForEvent() [NZST] month = 5, day = 3, hour = 17, minute=14
+2026-05-03 17:14T: checkForEvent() index = 126
+2026-05-03 17:14T: checkForEvent() sunrise(without offset): 7:22
+2026-05-03 17:14T: checkForEvent() sunset(without offset): 17:29
+2026-05-03 17:14T: checkForEvent() next day sunrise (without offset): 7:23
+2026-05-03 17:14T: checkForEvent() sunrise(with offset): 7:7
+2026-05-03 17:14T: checkForEvent() sunset(with offset): 17:14
+2026-05-03 17:14T: checkForEvent() next day sunrise (with offset): 7:8
+2026-05-03 17:14T: checkForEvent() before sunset
+2026-05-03 17:14T: startRecording()
+2026-05-03 17:14T: Filename = 'SS_2026_05_03_17_14.WAV'
+2026-05-03 17:14T: Started recording.
+2026-05-03 17:19T: stopRecording()2026-05-03 17:19T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-03 17:19T: checkForEvent() [NZST] month = 5, day = 3, hour = 17, minute=19
+2026-05-03 17:19T: checkForEvent() index = 126
+2026-05-03 17:19T: checkForEvent() sunrise(without offset): 7:22
+2026-05-03 17:19T: checkForEvent() sunset(without offset): 17:29
+2026-05-03 17:19T: checkForEvent() next day sunrise (without offset): 7:23
+2026-05-03 17:19T: checkForEvent() sunrise(with offset): 7:7
+2026-05-03 17:19T: checkForEvent() sunset(with offset): 17:14
+2026-05-03 17:19T: checkForEvent() next day sunrise (with offset): 7:8
+2026-05-03 17:19T: checkForEvent() before next day
+2026-05-03 17:19T: About to sleep for 13 hours and 49 minutes
+2026-05-04 07:08T: 
+
+
+******************************
+2026-05-04 07:08T: Logging started to SD card.
+2026-05-04 07:08T: SD Card Setup Complete.
+2026-05-04 07:08T: Initialization done.
+2026-05-04 07:08T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-04 07:08T: checkForEvent() [NZST] month = 5, day = 4, hour = 7, minute=8
+2026-05-04 07:08T: checkForEvent() index = 127
+2026-05-04 07:08T: checkForEvent() sunrise(without offset): 7:23
+2026-05-04 07:08T: checkForEvent() sunset(without offset): 17:28
+2026-05-04 07:08T: checkForEvent() next day sunrise (without offset): 7:24
+2026-05-04 07:08T: checkForEvent() sunrise(with offset): 7:8
+2026-05-04 07:08T: checkForEvent() sunset(with offset): 17:13
+2026-05-04 07:08T: checkForEvent() next day sunrise (with offset): 7:9
+2026-05-04 07:08T: checkForEvent() before sunrise
+2026-05-04 07:08T: startRecording()
+2026-05-04 07:08T: Filename = 'SR_2026_05_04_07_08.WAV'
+2026-05-04 07:08T: Started recording.
+2026-05-04 07:13T: stopRecording()2026-05-04 07:13T: Completed sunrise recordings, setting day record flag
+2026-05-04 07:13T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-04 07:13T: checkForEvent() [NZST] month = 5, day = 4, hour = 7, minute=13
+2026-05-04 07:13T: checkForEvent() index = 127
+2026-05-04 07:13T: checkForEvent() sunrise(without offset): 7:23
+2026-05-04 07:13T: checkForEvent() sunset(without offset): 17:28
+2026-05-04 07:13T: checkForEvent() next day sunrise (without offset): 7:24
+2026-05-04 07:13T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-04 07:13T: checkForEvent() start, end minutes: 533:958
+2026-05-04 07:13T: checkForEvent() random_minutes 193
+2026-05-04 07:13T: About to sleep for 3 hours and 13 minutes
+2026-05-04 10:26T: 
+
+
+******************************
+2026-05-04 10:26T: Logging started to SD card.
+2026-05-04 10:26T: SD Card Setup Complete.
+2026-05-04 10:26T: Initialization done.
+2026-05-04 10:26T: Record during day flag set to true - about to record 
+2026-05-04 10:26T: startRecording()
+2026-05-04 10:26T: Filename = 'DA_2026_05_04_10_26.WAV'
+2026-05-04 10:26T: Started recording.
+2026-05-04 10:31T: stopRecording()2026-05-04 10:31T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-04 10:31T: checkForEvent() [NZST] month = 5, day = 4, hour = 10, minute=31
+2026-05-04 10:31T: checkForEvent() index = 127
+2026-05-04 10:31T: checkForEvent() sunrise(without offset): 7:23
+2026-05-04 10:31T: checkForEvent() sunset(without offset): 17:28
+2026-05-04 10:31T: checkForEvent() next day sunrise (without offset): 7:24
+2026-05-04 10:31T: checkForEvent() sunrise(with offset): 7:8
+2026-05-04 10:31T: checkForEvent() sunset(with offset): 17:13
+2026-05-04 10:31T: checkForEvent() next day sunrise (with offset): 7:9
+2026-05-04 10:31T: checkForEvent() before sunset
+2026-05-04 10:31T: About to sleep for 6 hours and 42 minutes
+2026-05-04 17:13T: 
+
+
+******************************
+2026-05-04 17:13T: Logging started to SD card.
+2026-05-04 17:13T: SD Card Setup Complete.
+2026-05-04 17:13T: Initialization done.
+2026-05-04 17:13T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-04 17:13T: checkForEvent() [NZST] month = 5, day = 4, hour = 17, minute=13
+2026-05-04 17:13T: checkForEvent() index = 127
+2026-05-04 17:13T: checkForEvent() sunrise(without offset): 7:23
+2026-05-04 17:13T: checkForEvent() sunset(without offset): 17:28
+2026-05-04 17:13T: checkForEvent() next day sunrise (without offset): 7:24
+2026-05-04 17:13T: checkForEvent() sunrise(with offset): 7:8
+2026-05-04 17:13T: checkForEvent() sunset(with offset): 17:13
+2026-05-04 17:13T: checkForEvent() next day sunrise (with offset): 7:9
+2026-05-04 17:13T: checkForEvent() before sunset
+2026-05-04 17:13T: startRecording()
+2026-05-04 17:13T: Filename = 'SS_2026_05_04_17_13.WAV'
+2026-05-04 17:13T: Started recording.
+2026-05-04 17:18T: stopRecording()2026-05-04 17:18T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-04 17:18T: checkForEvent() [NZST] month = 5, day = 4, hour = 17, minute=18
+2026-05-04 17:18T: checkForEvent() index = 127
+2026-05-04 17:18T: checkForEvent() sunrise(without offset): 7:23
+2026-05-04 17:18T: checkForEvent() sunset(without offset): 17:28
+2026-05-04 17:18T: checkForEvent() next day sunrise (without offset): 7:24
+2026-05-04 17:18T: checkForEvent() sunrise(with offset): 7:8
+2026-05-04 17:18T: checkForEvent() sunset(with offset): 17:13
+2026-05-04 17:18T: checkForEvent() next day sunrise (with offset): 7:9
+2026-05-04 17:18T: checkForEvent() before next day
+2026-05-04 17:18T: About to sleep for 13 hours and 51 minutes
+2026-05-05 07:09T: 
+
+
+******************************
+2026-05-05 07:09T: Logging started to SD card.
+2026-05-05 07:09T: SD Card Setup Complete.
+2026-05-05 07:09T: Initialization done.
+2026-05-05 07:09T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-05 07:09T: checkForEvent() [NZST] month = 5, day = 5, hour = 7, minute=9
+2026-05-05 07:09T: checkForEvent() index = 128
+2026-05-05 07:09T: checkForEvent() sunrise(without offset): 7:24
+2026-05-05 07:09T: checkForEvent() sunset(without offset): 17:26
+2026-05-05 07:09T: checkForEvent() next day sunrise (without offset): 7:26
+2026-05-05 07:09T: checkForEvent() sunrise(with offset): 7:9
+2026-05-05 07:09T: checkForEvent() sunset(with offset): 17:11
+2026-05-05 07:09T: checkForEvent() next day sunrise (with offset): 7:11
+2026-05-05 07:09T: checkForEvent() before sunrise
+2026-05-05 07:09T: startRecording()
+2026-05-05 07:09T: Filename = 'SR_2026_05_05_07_09.WAV'
+2026-05-05 07:09T: Started recording.
+2026-05-05 07:14T: stopRecording()2026-05-05 07:14T: Completed sunrise recordings, setting day record flag
+2026-05-05 07:14T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-05 07:14T: checkForEvent() [NZST] month = 5, day = 5, hour = 7, minute=14
+2026-05-05 07:14T: checkForEvent() index = 128
+2026-05-05 07:14T: checkForEvent() sunrise(without offset): 7:24
+2026-05-05 07:14T: checkForEvent() sunset(without offset): 17:26
+2026-05-05 07:14T: checkForEvent() next day sunrise (without offset): 7:26
+2026-05-05 07:14T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-05 07:14T: checkForEvent() start, end minutes: 534:956
+2026-05-05 07:14T: checkForEvent() random_minutes 412
+2026-05-05 07:14T: About to sleep for 6 hours and 52 minutes
+2026-05-05 14:06T: 
+
+
+******************************
+2026-05-05 14:06T: Logging started to SD card.
+2026-05-05 14:06T: SD Card Setup Complete.
+2026-05-05 14:06T: Initialization done.
+2026-05-05 14:06T: Record during day flag set to true - about to record 
+2026-05-05 14:06T: startRecording()
+2026-05-05 14:06T: Filename = 'DA_2026_05_05_14_06.WAV'
+2026-05-05 14:06T: Started recording.
+2026-05-05 14:11T: stopRecording()2026-05-05 14:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-05 14:11T: checkForEvent() [NZST] month = 5, day = 5, hour = 14, minute=11
+2026-05-05 14:11T: checkForEvent() index = 128
+2026-05-05 14:11T: checkForEvent() sunrise(without offset): 7:24
+2026-05-05 14:11T: checkForEvent() sunset(without offset): 17:26
+2026-05-05 14:11T: checkForEvent() next day sunrise (without offset): 7:26
+2026-05-05 14:11T: checkForEvent() sunrise(with offset): 7:9
+2026-05-05 14:11T: checkForEvent() sunset(with offset): 17:11
+2026-05-05 14:11T: checkForEvent() next day sunrise (with offset): 7:11
+2026-05-05 14:11T: checkForEvent() before sunset
+2026-05-05 14:11T: About to sleep for 3 hours and 0 minutes
+2026-05-05 17:11T: 
+
+
+******************************
+2026-05-05 17:11T: Logging started to SD card.
+2026-05-05 17:11T: SD Card Setup Complete.
+2026-05-05 17:11T: Initialization done.
+2026-05-05 17:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-05 17:11T: checkForEvent() [NZST] month = 5, day = 5, hour = 17, minute=11
+2026-05-05 17:11T: checkForEvent() index = 128
+2026-05-05 17:11T: checkForEvent() sunrise(without offset): 7:24
+2026-05-05 17:11T: checkForEvent() sunset(without offset): 17:26
+2026-05-05 17:11T: checkForEvent() next day sunrise (without offset): 7:26
+2026-05-05 17:11T: checkForEvent() sunrise(with offset): 7:9
+2026-05-05 17:11T: checkForEvent() sunset(with offset): 17:11
+2026-05-05 17:11T: checkForEvent() next day sunrise (with offset): 7:11
+2026-05-05 17:11T: checkForEvent() before sunset
+2026-05-05 17:11T: startRecording()
+2026-05-05 17:11T: Filename = 'SS_2026_05_05_17_11.WAV'
+2026-05-05 17:11T: Started recording.
+2026-05-05 17:16T: stopRecording()2026-05-05 17:16T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-05 17:16T: checkForEvent() [NZST] month = 5, day = 5, hour = 17, minute=16
+2026-05-05 17:16T: checkForEvent() index = 128
+2026-05-05 17:16T: checkForEvent() sunrise(without offset): 7:24
+2026-05-05 17:16T: checkForEvent() sunset(without offset): 17:26
+2026-05-05 17:16T: checkForEvent() next day sunrise (without offset): 7:26
+2026-05-05 17:16T: checkForEvent() sunrise(with offset): 7:9
+2026-05-05 17:16T: checkForEvent() sunset(with offset): 17:11
+2026-05-05 17:16T: checkForEvent() next day sunrise (with offset): 7:11
+2026-05-05 17:16T: checkForEvent() before next day
+2026-05-05 17:16T: About to sleep for 13 hours and 55 minutes
+2026-05-06 07:11T: 
+
+
+******************************
+2026-05-06 07:11T: Logging started to SD card.
+2026-05-06 07:11T: SD Card Setup Complete.
+2026-05-06 07:11T: Initialization done.
+2026-05-06 07:11T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-06 07:11T: checkForEvent() [NZST] month = 5, day = 6, hour = 7, minute=11
+2026-05-06 07:11T: checkForEvent() index = 129
+2026-05-06 07:11T: checkForEvent() sunrise(without offset): 7:26
+2026-05-06 07:11T: checkForEvent() sunset(without offset): 17:25
+2026-05-06 07:11T: checkForEvent() next day sunrise (without offset): 7:27
+2026-05-06 07:11T: checkForEvent() sunrise(with offset): 7:11
+2026-05-06 07:11T: checkForEvent() sunset(with offset): 17:10
+2026-05-06 07:11T: checkForEvent() next day sunrise (with offset): 7:12
+2026-05-06 07:11T: checkForEvent() before sunrise
+2026-05-06 07:11T: startRecording()
+2026-05-06 07:11T: Filename = 'SR_2026_05_06_07_11.WAV'
+2026-05-06 07:11T: Started recording.
+2026-05-06 07:16T: stopRecording()2026-05-06 07:16T: Completed sunrise recordings, setting day record flag
+2026-05-06 07:16T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 1
+2026-05-06 07:16T: checkForEvent() [NZST] month = 5, day = 6, hour = 7, minute=16
+2026-05-06 07:16T: checkForEvent() index = 129
+2026-05-06 07:16T: checkForEvent() sunrise(without offset): 7:26
+2026-05-06 07:16T: checkForEvent() sunset(without offset): 17:25
+2026-05-06 07:16T: checkForEvent() next day sunrise (without offset): 7:27
+2026-05-06 07:16T:   checkNextEvent() At sunrise - calculating random sleep time 2026-05-06 07:16T: checkForEvent() start, end minutes: 536:955
+2026-05-06 07:16T: checkForEvent() random_minutes 146
+2026-05-06 07:16T: About to sleep for 2 hours and 26 minutes
+2026-05-06 09:42T: 
+
+
+******************************
+2026-05-06 09:42T: Logging started to SD card.
+2026-05-06 09:42T: SD Card Setup Complete.
+2026-05-06 09:42T: Initialization done.
+2026-05-06 09:42T: Record during day flag set to true - about to record 
+2026-05-06 09:42T: startRecording()
+2026-05-06 09:42T: Filename = 'DA_2026_05_06_09_42.WAV'
+2026-05-06 09:42T: Started recording.
+2026-05-06 09:47T: stopRecording()2026-05-06 09:47T: checkForEvent(sunrise_offset=-15,sunset_offset=-15, is_sunrise = 0
+2026-05-06 09:47T: checkForEvent() [NZST] month = 5, day = 6, hour = 9, minute=47
+2026-05-06 09:47T: checkForEvent() index = 129
+2026-05-06 09:47T: checkForEvent() sunrise(without offset): 7:26
+2026-05-06 09:47T: checkForEvent() sunset(without offset): 17:25
+2026-05-06 09:47T: checkForEvent() next day sunrise (without offset): 7:27
+2026-05-06 09:47T: checkForEvent() sunrise(with offset): 7:11
+2026-05-06 09:47T: checkForEvent() sunset(with offset): 17:10
+2026-05-06 09:47T: checkForEvent() next day sunrise (with offset): 7:12
+2026-05-06 09:47T: checkForEvent() before sunset
+2026-05-06 09:47T: About to sleep for 7 hours and 23 minutes

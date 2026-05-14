@@ -57,6 +57,8 @@ def extract_date_and_event( filename: str ) -> (datetime,str):
             event = "Sunset"
         if event == "NO":
             event = "Noon"
+        if event == "DA":
+            event = "Day"
         i=1
     return (datetime(year=int(components[i]),month=int(components[i+1]),
             day=int(components[i+2]),hour=int(components[i+3]), 
@@ -96,9 +98,16 @@ def process_rec(filename: str, conn ):
         min_conf=0.25
     )
     recording.analyze()
+    cur = conn.cursor()
+
+    # Insert a dummy record so that if there are no detections we'll at least
+    # know this file has been processed.
+    cur.execute("""
+    INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
+        (base_name, event,dt, "DUMMY", "DUMMY",
+             0.0,0.0,0.0))
     print()
     print(f"  Detections in file: {base_name}")
-    cur = conn.cursor()
     for dec in recording.detections:
         cur.execute("""
             INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
@@ -114,7 +123,12 @@ def proc_recordings(directory: str, conn ):
 
     print()
     print(f"""Processing all files in {directory}/ """)
-    for f in glob.glob(directory + "/*"):
+    files = []
+    for f in glob.glob(directory + "/*.WAV"):
+        files.append(f)
+
+    files.sort()
+    for f in files:
         process_rec(f, conn)
     
 

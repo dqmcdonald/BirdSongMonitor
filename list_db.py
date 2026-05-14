@@ -48,7 +48,10 @@ def list_db( conn, list_all :bool, confidence : float, species : str,
     for k in range(len(species_list)):
         print(f"    {species_list[k][0]:30s}:{species_list[k][1]:3d}")
 
-    species_set = set(species_list)
+    species_name_list = []
+    for s in species_list:
+        species_name_list.append(s[0])
+    species_set = set(species_name_list)
 
     if list_all:
         print()
@@ -87,7 +90,7 @@ def main():
         default=0.25, help="minimum confidence level")
     parser.add_argument('-e', '--event', dest="event", 
         default="", help="specific event to list data for", 
-        choices=['Sunrise','Sunset','Noon'])
+        choices=['Sunrise','Sunset','Noon','Day'])
     parser.add_argument('-s', '--species', dest="species", 
         default="", help="common name of species to list")
     args = parser.parse_args()
