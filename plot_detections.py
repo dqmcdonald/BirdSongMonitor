@@ -78,6 +78,28 @@ def _event_filter(event: str):
     return "", ()
 
 
+def _parse_date(date_str: str) -> str:
+    """Accept YYYY-MM-DD or DD-MM-YYYY and return YYYY-MM-DD."""
+    if not date_str:
+        return date_str
+    parts = date_str.split('-')
+    if len(parts) == 3 and len(parts[0]) == 2:
+        return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    return date_str
+
+
+def _date_filter(date_from: str, date_to: str):
+    """Return (sql_clause, params_tuple) for an optional date range filter."""
+    clause, params = "", ()
+    if date_from:
+        clause += " AND DATE(date) >= ?"
+        params += (date_from,)
+    if date_to:
+        clause += " AND DATE(date) <= ?"
+        params += (date_to,)
+    return clause, params
+
+
 def _species_filter(species: str):
     """Return (sql_clause, params_tuple) for an optional species filter."""
     if species:
@@ -97,20 +119,22 @@ def _default_out(db_name: str, plot_type: str, explicit: str | None) -> str:
 # daily — stacked bar of detections per day
 # ---------------------------------------------------------------------------
 
-def load_daily_counts(db_name: str, confidence: float, species: str, event: str):
+def load_daily_counts(db_name: str, confidence: float, species: str, event: str,
+                      date_from: str = "", date_to: str = ""):
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
     ec, ep = _event_filter(event)
     sc, sp = _species_filter(species)
+    dc, dp = _date_filter(date_from, date_to)
 
     if species:
         res = cur.execute(f"""
             SELECT DATE(date), COUNT(*)
             FROM detection
-            WHERE confidence > ? {sc} {ec}
+            WHERE confidence > ? {sc} {ec} {dc}
             GROUP BY DATE(date)
             ORDER BY DATE(date)
-        """, (confidence,) + sp + ep)
+        """, (confidence,) + sp + ep + dp)
         rows = res.fetchall()
         conn.close()
         dates = [datetime.strptime(r[0], "%Y-%m-%d") for r in rows]
@@ -119,10 +143,10 @@ def load_daily_counts(db_name: str, confidence: float, species: str, event: str)
     res = cur.execute(f"""
         SELECT DATE(date), common_name, COUNT(*)
         FROM detection
-        WHERE confidence > ? {sc} {ec}
+        WHERE confidence > ? {sc} {ec} {dc}
         GROUP BY DATE(date), common_name
         ORDER BY DATE(date), common_name
-    """, (confidence,) + sp + ep)
+    """, (confidence,) + sp + ep + dp)
     rows = res.fetchall()
     conn.close()
 
@@ -201,18 +225,20 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
 # heatmap — species × hour-of-day
 # ---------------------------------------------------------------------------
 
-def load_heatmap_data(db_name: str, confidence: float, species: str, event: str, n: int):
+def load_heatmap_data(db_name: str, confidence: float, species: str, event: str, n: int,
+                      date_from: str = "", date_to: str = ""):
     ec, ep = _event_filter(event)
     sc, sp = _species_filter(species)
+    dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
     if not species:
         top = cur.execute(f"""
             SELECT common_name FROM detection
-            WHERE confidence > ? {sc} {ec}
+            WHERE confidence > ? {sc} {ec} {dc}
             GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
-        """, (confidence,) + sp + ep + (n,)).fetchall()
+        """, (confidence,) + sp + ep + dp + (n,)).fetchall()
         top_species = [r[0] for r in top]
     else:
         top_species = [species]
@@ -225,9 +251,9 @@ def load_heatmap_data(db_name: str, confidence: float, species: str, event: str,
     rows = cur.execute(f"""
         SELECT common_name, CAST(strftime('%H', date) AS INTEGER), COUNT(*)
         FROM detection
-        WHERE confidence > ? AND common_name IN ({placeholders}) {ec}
+        WHERE confidence > ? AND common_name IN ({placeholders}) {ec} {dc}
         GROUP BY common_name, strftime('%H', date)
-    """, (confidence,) + tuple(top_species) + ep).fetchall()
+    """, (confidence,) + tuple(top_species) + ep + dp).fetchall()
     conn.close()
 
     sp_idx = {sp: i for i, sp in enumerate(top_species)}
@@ -276,22 +302,24 @@ def plot_heatmap(species_list, hours, matrix, confidence, label, species, event,
 # confidence — histogram of confidence scores per species
 # ---------------------------------------------------------------------------
 
-def load_confidence_data(db_name: str, confidence: float, species: str, event: str, n: int):
+def load_confidence_data(db_name: str, confidence: float, species: str, event: str, n: int,
+                         date_from: str = "", date_to: str = ""):
     ec, ep = _event_filter(event)
+    dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
     if species:
         rows = cur.execute(f"""
             SELECT common_name, confidence FROM detection
-            WHERE confidence > ? AND common_name = ? {ec}
-        """, (confidence, species) + ep).fetchall()
+            WHERE confidence > ? AND common_name = ? {ec} {dc}
+        """, (confidence, species) + ep + dp).fetchall()
     else:
         top = cur.execute(f"""
             SELECT common_name FROM detection
-            WHERE confidence > ? AND common_name != 'DUMMY' {ec}
+            WHERE confidence > ? AND common_name != 'DUMMY' {ec} {dc}
             GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
-        """, (confidence,) + ep + (n,)).fetchall()
+        """, (confidence,) + ep + dp + (n,)).fetchall()
         top_species = [r[0] for r in top]
 
         if not top_species:
@@ -301,8 +329,8 @@ def load_confidence_data(db_name: str, confidence: float, species: str, event: s
         placeholders = ",".join("?" * len(top_species))
         rows = cur.execute(f"""
             SELECT common_name, confidence FROM detection
-            WHERE confidence > ? AND common_name IN ({placeholders}) {ec}
-        """, (confidence,) + tuple(top_species) + ep).fetchall()
+            WHERE confidence > ? AND common_name IN ({placeholders}) {ec} {dc}
+        """, (confidence,) + tuple(top_species) + ep + dp).fetchall()
 
     conn.close()
     data: dict[str, list] = {}
@@ -350,18 +378,20 @@ def plot_confidence(data, confidence, label, species, event, out_path):
 # accumulation — cumulative unique species over time
 # ---------------------------------------------------------------------------
 
-def load_accumulation_data(db_name: str, confidence: float, species: str, event: str):
+def load_accumulation_data(db_name: str, confidence: float, species: str, event: str,
+                           date_from: str = "", date_to: str = ""):
     ec, ep = _event_filter(event)
     sc, sp = _species_filter(species)
+    dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
     rows = cur.execute(f"""
         SELECT DATE(date), common_name FROM detection
-        WHERE confidence > ? {sc} {ec}
+        WHERE confidence > ? {sc} {ec} {dc}
         GROUP BY DATE(date), common_name
         ORDER BY DATE(date)
-    """, (confidence,) + sp + ep).fetchall()
+    """, (confidence,) + sp + ep + dp).fetchall()
     conn.close()
 
     if not rows:
@@ -411,17 +441,19 @@ def plot_accumulation(dates, counts, confidence, label, species, event, out_path
 # topn — horizontal bar chart of top-N species
 # ---------------------------------------------------------------------------
 
-def load_topn_data(db_name: str, confidence: float, species: str, event: str, n: int):
+def load_topn_data(db_name: str, confidence: float, species: str, event: str, n: int,
+                   date_from: str = "", date_to: str = ""):
     ec, ep = _event_filter(event)
     sc, sp = _species_filter(species)
+    dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
     rows = cur.execute(f"""
         SELECT common_name, COUNT(*) as total FROM detection
-        WHERE confidence > ? {sc} {ec}
+        WHERE confidence > ? {sc} {ec} {dc}
         GROUP BY common_name ORDER BY total DESC LIMIT ?
-    """, (confidence,) + sp + ep + (n,)).fetchall()
+    """, (confidence,) + sp + ep + dp + (n,)).fetchall()
     conn.close()
     return rows
 
@@ -461,16 +493,18 @@ def plot_topn(data, confidence, label, species, event, n, out_path):
 # events — grouped bar comparing detections per recording event
 # ---------------------------------------------------------------------------
 
-def load_event_comparison_data(db_name: str, confidence: float, species: str, n: int):
+def load_event_comparison_data(db_name: str, confidence: float, species: str, n: int,
+                               date_from: str = "", date_to: str = ""):
     sc, sp = _species_filter(species)
+    dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
     top = cur.execute(f"""
         SELECT common_name FROM detection
-        WHERE confidence > ? {sc}
+        WHERE confidence > ? {sc} {dc}
         GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
-    """, (confidence,) + sp + (n,)).fetchall()
+    """, (confidence,) + sp + dp + (n,)).fetchall()
     top_species = [r[0] for r in top]
 
     if not top_species:
@@ -480,9 +514,9 @@ def load_event_comparison_data(db_name: str, confidence: float, species: str, n:
     placeholders = ",".join("?" * len(top_species))
     rows = cur.execute(f"""
         SELECT event, common_name, COUNT(*) FROM detection
-        WHERE confidence > ? AND common_name IN ({placeholders})
+        WHERE confidence > ? AND common_name IN ({placeholders}) {dc}
         GROUP BY event, common_name ORDER BY event
-    """, (confidence,) + tuple(top_species)).fetchall()
+    """, (confidence,) + tuple(top_species) + dp).fetchall()
     conn.close()
 
     data: dict[str, dict] = {}
@@ -588,9 +622,29 @@ def main():
         default=None,
         help="Site name for plot titles (default: database filename)",
     )
+    parser.add_argument(
+        "--from",
+        dest="date_from",
+        default="",
+        metavar="DATE",
+        help="Start date filter inclusive (YYYY-MM-DD or DD-MM-YYYY)",
+    )
+    parser.add_argument(
+        "--to",
+        dest="date_to",
+        default="",
+        metavar="DATE",
+        help="End date filter inclusive (YYYY-MM-DD or DD-MM-YYYY)",
+    )
     args = parser.parse_args()
 
+    date_from = _parse_date(args.date_from)
+    date_to = _parse_date(args.date_to)
+
     label = args.site if args.site else os.path.basename(args.db_name)
+    if date_from or date_to:
+        date_part = f"{date_from or ''}–{date_to or ''}"
+        label = f"{label} ({date_part})"
 
     if not os.path.exists(args.db_name):
         print(f"Error: database not found: {args.db_name}", file=sys.stderr)
@@ -600,7 +654,8 @@ def main():
 
     if args.plot == "daily":
         dates, species_counts = load_daily_counts(
-            args.db_name, args.confidence, args.species, args.event)
+            args.db_name, args.confidence, args.species, args.event,
+            date_from, date_to)
         if not dates:
             print("No detections found above the confidence threshold.")
             sys.exit(0)
@@ -610,31 +665,36 @@ def main():
 
     elif args.plot == "heatmap":
         species_list, hours, matrix = load_heatmap_data(
-            args.db_name, args.confidence, args.species, args.event, args.n)
+            args.db_name, args.confidence, args.species, args.event, args.n,
+            date_from, date_to)
         plot_heatmap(species_list, hours, matrix, args.confidence, label,
                      args.species, args.event, args.cmap, out_path)
 
     elif args.plot == "confidence":
         data = load_confidence_data(
-            args.db_name, args.confidence, args.species, args.event, args.n)
+            args.db_name, args.confidence, args.species, args.event, args.n,
+            date_from, date_to)
         plot_confidence(data, args.confidence, label,
                         args.species, args.event, out_path)
 
     elif args.plot == "accumulation":
         dates, counts = load_accumulation_data(
-            args.db_name, args.confidence, args.species, args.event)
+            args.db_name, args.confidence, args.species, args.event,
+            date_from, date_to)
         plot_accumulation(dates, counts, args.confidence, label,
                           args.species, args.event, out_path)
 
     elif args.plot == "topn":
         data = load_topn_data(
-            args.db_name, args.confidence, args.species, args.event, args.n)
+            args.db_name, args.confidence, args.species, args.event, args.n,
+            date_from, date_to)
         plot_topn(data, args.confidence, label,
                   args.species, args.event, args.n, out_path)
 
     elif args.plot == "events":
         data, top_species = load_event_comparison_data(
-            args.db_name, args.confidence, args.species, args.n)
+            args.db_name, args.confidence, args.species, args.n,
+            date_from, date_to)
         plot_event_comparison(data, top_species, args.confidence, label,
                               args.species, out_path)
 

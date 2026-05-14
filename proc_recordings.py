@@ -9,11 +9,13 @@ LATITUDE =  -43.62674558206582
 
 import sys
 import os.path
+import argparse
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 from datetime import datetime
 import sqlite3
 import glob
+from tqdm import tqdm
 
 # Module-level so the model is loaded once; initialisation takes several seconds.
 analyzer = Analyzer()
@@ -71,17 +73,16 @@ def load_processed_files(conn) -> set:
 
 
 
-def process_rec(filename: str, conn, processed: set):
+def process_rec(filename: str, conn, processed: set, confidence: float):
     base_name = os.path.basename(filename)
 
     try:
         (dt,event) = extract_date_and_event(filename)
     except (ValueError, IndexError) as e:
-        print(f"   Skipping {base_name}: {e}")
+        tqdm.write(f"   Skipping {base_name}: {e}")
         return
 
     if base_name in processed:
-        print(f"   {base_name} already in database")
         return
 
     try:
@@ -91,11 +92,11 @@ def process_rec(filename: str, conn, processed: set):
             lat=LATITUDE,
             lon=LONGITUDE,
             date=dt,
-            min_conf=0.25
+            min_conf=confidence
         )
         recording.analyze()
     except Exception as e:
-        print(f"   Error analyzing {base_name}: {e}")
+        tqdm.write(f"   Error analyzing {base_name}: {e}")
         return
     cur = conn.cursor()
 
@@ -105,45 +106,39 @@ def process_rec(filename: str, conn, processed: set):
     INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
         (base_name, event,dt, "DUMMY", "DUMMY",
              0.0,0.0,0.0))
-    print()
-    print(f"  Detections in file: {base_name}")
-    for dec in recording.detections:
-        cur.execute("""
-            INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
-            (base_name, event,dt, dec["common_name"],dec["scientific_name"],
-             dec["start_time"],dec["end_time"],dec["confidence"]))
-        
-        print(f"    {dec['common_name']:<20}  {dec['start_time']:3.0f} {dec['confidence']:3.2f}")
+    if recording.detections:
+        tqdm.write(f"  {base_name}")
+        for dec in recording.detections:
+            cur.execute("""
+                INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
+                (base_name, event,dt, dec["common_name"],dec["scientific_name"],
+                 dec["start_time"],dec["end_time"],dec["confidence"]))
+            tqdm.write(f"    {dec['common_name']:<20}  {dec['start_time']:3.0f} {dec['confidence']:3.2f}")
     conn.commit()
 
 
-def proc_recordings(directory: str, conn ):
-    print()
-    print(f"""Processing all files in {directory}/ """)
+def proc_recordings(directory: str, conn, confidence: float):
     files = sorted(glob.glob(directory + "/*.WAV") + glob.glob(directory + "/*.wav"))
-
     processed = load_processed_files(conn)
-    for f in files:
-        process_rec(f, conn, processed)
+    for f in tqdm(files, desc="Processing", unit="file"):
+        process_rec(f, conn, processed, confidence)
     
 
 def main():
+    parser = argparse.ArgumentParser(
+        prog='proc_recordings',
+        description='Process bird song recordings through BirdNET and store detections in a SQLite database',
+    )
+    parser.add_argument('directory', help='Directory of WAV recordings to process')
+    parser.add_argument('-c', '--confidence', dest='confidence', type=float, default=0.0,
+        help='Minimum confidence threshold (default: 0.0)')
+    args = parser.parse_args()
 
-    if len(sys.argv) < 2:
-        print()
-        sys.exit("Error: Specify a directory to process")
+    if not os.path.exists(args.directory):
+        sys.exit(f"Error: directory {args.directory} does not exist")
 
-    if not os.path.exists(sys.argv[1]):
-        print()
-        sys.exit(f"Error: directory {sys.argv[1]} does not exist")
-
-
-    conn = create_db(sys.argv[1]) 
-
-    print()
-    print("Setup done, about to process files")
-
-    proc_recordings(sys.argv[1], conn)
+    conn = create_db(args.directory)
+    proc_recordings(args.directory, conn, args.confidence)
 
 
 
