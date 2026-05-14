@@ -2,5 +2,7 @@ recordings/
 ranui/
 samsgully/
 hackthorne/
+bird_photos/
 *.db
+*.png
 *.swp
