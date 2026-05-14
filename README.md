@@ -98,7 +98,7 @@ python species_list.py
 Two formats are supported:
 
 - **Old (5 components):** `YYYY_MM_DD_HH_MM.WAV` — event defaults to `Sunrise`
-- **New (6 components):** `<EVENT>_YYYY_MM_DD_HH_MM.WAV` — event codes: `SR`=Sunrise, `SS`=Sunset, `NO`=Noon, `DA`=Day
+- **New (6 components):** `<EVENT>_YYYY_MM_DD_HH_MM.WAV` — event codes: `SR`=Sunrise, `SS`=Sunset, `DA`=Day
 
 ## Database Schema
 
@@ -107,7 +107,7 @@ Single table `detection`:
 | Column | Type | Notes |
 |--------|------|-------|
 | `file_name` | TEXT | Basename of the source WAV |
-| `event` | TEXT | `Sunrise`, `Sunset`, `Noon`, or `Day` |
+| `event` | TEXT | `Sunrise`, `Sunset`, or `Day` |
 | `date` | TEXT | ISO datetime parsed from filename |
 | `common_name` | TEXT | BirdNET common name; `DUMMY` for sentinel rows |
 | `scientific_name` | TEXT | BirdNET scientific name; `DUMMY` for sentinel rows |
