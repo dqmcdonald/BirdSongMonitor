@@ -55,7 +55,7 @@ def fetch_species_image(species: str):
         return None
 
 
-def load_daily_counts(db_name: str, confidence: float, species: str):
+def load_daily_counts(db_name: str, confidence: float, species: str, event: str):
     # Query the detection table, grouping rows by calendar day.
     # DATE() strips the time portion from the stored datetime string.
     # Returns (dates, species_counts) where species_counts is an ordered dict
@@ -63,28 +63,31 @@ def load_daily_counts(db_name: str, confidence: float, species: str):
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
+    event_clause = "AND event = ?" if event != "All" else ""
+    event_params = (event,) if event != "All" else ()
+
     if species:
         # Single-species mode: one entry in the dict.
-        res = cur.execute("""
+        res = cur.execute(f"""
             SELECT DATE(date), COUNT(*)
             FROM detection
-            WHERE confidence > ? AND common_name = ?
+            WHERE confidence > ? AND common_name = ? {event_clause}
             GROUP BY DATE(date)
             ORDER BY DATE(date)
-        """, (confidence, species))
+        """, (confidence, species) + event_params)
         rows = res.fetchall()
         conn.close()
         dates = [datetime.strptime(r[0], "%Y-%m-%d") for r in rows]
         return dates, {species: [r[1] for r in rows]}
 
     # All-species mode: one entry per species, counts aligned to a shared date list.
-    res = cur.execute("""
+    res = cur.execute(f"""
         SELECT DATE(date), common_name, COUNT(*)
         FROM detection
-        WHERE confidence > ? AND common_name != 'DUMMY'
+        WHERE confidence > ? AND common_name != 'DUMMY' {event_clause}
         GROUP BY DATE(date), common_name
         ORDER BY DATE(date), common_name
-    """, (confidence,))
+    """, (confidence,) + event_params)
     rows = res.fetchall()
     conn.close()
 
@@ -112,7 +115,7 @@ def load_daily_counts(db_name: str, confidence: float, species: str):
 
 
 def plot(dates: list, species_counts: dict, confidence: float, db_name: str,
-         species: str, img, out_path: str):
+         species: str, event: str, img, out_path: str):
 
     all_species = list(species_counts.keys())
     multi = len(all_species) > 1
@@ -150,8 +153,9 @@ def plot(dates: list, species_counts: dict, confidence: float, db_name: str,
     ax.set_xlabel("Date")
     ax.set_ylabel("Detections")
     species_label = f" — {species}" if species else ""
+    event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
-        f"Daily detections{species_label} — {os.path.basename(db_name)}  "
+        f"Daily detections{species_label}{event_label} — {os.path.basename(db_name)}  "
         f"(confidence > {confidence:.2f})"
     )
     # Draw horizontal grid lines behind the bars for easier reading.
@@ -200,6 +204,13 @@ def main():
         default="",
         help="Filter by common name (e.g. \"Silvereye\")",
     )
+    parser.add_argument(
+        "-e", "--event",
+        dest="event",
+        default="All",
+        choices=["All", "Sunrise", "Sunset", "Day"],
+        help="Filter by recording event (default: All)",
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.db_name):
@@ -209,7 +220,7 @@ def main():
     # Default output filename matches the database name (ranui.db → ranui.png).
     out_path = args.output or os.path.splitext(args.db_name)[0] + ".png"
 
-    dates, species_counts = load_daily_counts(args.db_name, args.confidence, args.species)
+    dates, species_counts = load_daily_counts(args.db_name, args.confidence, args.species, args.event)
 
     if not dates:
         print("No detections found above the confidence threshold.")
@@ -218,7 +229,7 @@ def main():
     # Fetch a bird photo only when a single species is being plotted.
     img = fetch_species_image(args.species) if args.species else None
 
-    plot(dates, species_counts, args.confidence, args.db_name, args.species, img, out_path)
+    plot(dates, species_counts, args.confidence, args.db_name, args.species, args.event, img, out_path)
 
 
 if __name__ == "__main__":
