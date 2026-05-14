@@ -78,6 +78,51 @@ def open_db( db_name: str):
     return conn
 
 
+def resolve_species(conn: sqlite3.Connection, pattern: str) -> str:
+    """Match pattern case-insensitively against DB species names.
+
+    Returns the resolved name, or the original pattern if nothing matches
+    (so the caller can still print 'Unknown species').  Prompts the user
+    when more than one species matches.
+    """
+    cur = conn.cursor()
+    all_names = [
+        row[0] for row in cur.execute(
+            "SELECT DISTINCT common_name FROM detection "
+            "WHERE common_name != 'DUMMY' ORDER BY common_name"
+        ).fetchall()
+    ]
+
+    lower = pattern.lower()
+    matches = [n for n in all_names if lower in n.lower()]
+
+    if not matches:
+        return pattern
+
+    if len(matches) == 1:
+        return matches[0]
+
+    # Prefer an exact case-insensitive match to avoid a prompt.
+    exact = [m for m in matches if m.lower() == lower]
+    if len(exact) == 1:
+        return exact[0]
+
+    print(f"\nMultiple species match '{pattern}':")
+    for i, name in enumerate(matches, 1):
+        print(f"  {i}. {name}")
+    while True:
+        choice = input(f"Select [1-{len(matches)}] or q to quit: ").strip()
+        if choice.lower() == 'q':
+            sys.exit("Cancelled.")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(matches):
+                return matches[idx]
+        except ValueError:
+            pass
+        print(f"  Enter a number between 1 and {len(matches)}.")
+
+
 def list_db( conn, list_all :bool, confidence : float, species : str,
     event : str, date_from: str = "", date_to: str = "") :
     # Selects all data from the db and lists it
@@ -198,7 +243,9 @@ def main():
 
     conn = open_db(args.db_name)
 
-    list_db(conn, args.all, args.confidence, args.species,
+    species = resolve_species(conn, args.species) if args.species else args.species
+
+    list_db(conn, args.all, args.confidence, species,
             args.event, date_from, date_to)
 
     if args.play:
@@ -214,14 +261,14 @@ def main():
                 FROM detection
                 WHERE confidence > ? AND common_name = ? AND event = ? {dc}
                 ORDER BY date, start_time
-            """, (args.confidence, args.species, args.event) + dp).fetchall()
+            """, (args.confidence, species, args.event) + dp).fetchall()
         else:
             rows = cur.execute(f"""
                 SELECT file_name, date, start_time, end_time, confidence
                 FROM detection
                 WHERE confidence > ? AND common_name = ? {dc}
                 ORDER BY date, start_time
-            """, (args.confidence, args.species) + dp).fetchall()
+            """, (args.confidence, species) + dp).fetchall()
 
         if not rows:
             sys.exit("No detections to play.")

@@ -107,6 +107,50 @@ def _species_filter(species: str):
     return "AND common_name != 'DUMMY'", ()
 
 
+def resolve_species(db_name: str, pattern: str) -> str:
+    """Match pattern case-insensitively against DB species names.
+
+    Returns the resolved name, or the original pattern if nothing matches.
+    Prompts the user when more than one species matches.
+    """
+    conn = sqlite3.connect(db_name)
+    all_names = [
+        row[0] for row in conn.execute(
+            "SELECT DISTINCT common_name FROM detection "
+            "WHERE common_name != 'DUMMY' ORDER BY common_name"
+        ).fetchall()
+    ]
+    conn.close()
+
+    lower = pattern.lower()
+    matches = [n for n in all_names if lower in n.lower()]
+
+    if not matches:
+        return pattern
+
+    if len(matches) == 1:
+        return matches[0]
+
+    exact = [m for m in matches if m.lower() == lower]
+    if len(exact) == 1:
+        return exact[0]
+
+    print(f"\nMultiple species match '{pattern}':")
+    for i, name in enumerate(matches, 1):
+        print(f"  {i}. {name}")
+    while True:
+        choice = input(f"Select [1-{len(matches)}] or q to quit: ").strip()
+        if choice.lower() == 'q':
+            sys.exit("Cancelled.")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(matches):
+                return matches[idx]
+        except ValueError:
+            pass
+        print(f"  Enter a number between 1 and {len(matches)}.")
+
+
 def _default_out(db_name: str, plot_type: str, explicit: str | None) -> str:
     if explicit:
         return explicit
@@ -650,53 +694,55 @@ def main():
         print(f"Error: database not found: {args.db_name}", file=sys.stderr)
         sys.exit(1)
 
+    species = resolve_species(args.db_name, args.species) if args.species else args.species
+
     out_path = _default_out(args.db_name, args.plot, args.output)
 
     if args.plot == "daily":
         dates, species_counts = load_daily_counts(
-            args.db_name, args.confidence, args.species, args.event,
+            args.db_name, args.confidence, species, args.event,
             date_from, date_to)
         if not dates:
             print("No detections found above the confidence threshold.")
             sys.exit(0)
-        img = fetch_species_image(args.species) if args.species else None
+        img = fetch_species_image(species) if species else None
         plot_daily(dates, species_counts, args.confidence, label,
-                   args.species, args.event, img, out_path)
+                   species, args.event, img, out_path)
 
     elif args.plot == "heatmap":
         species_list, hours, matrix = load_heatmap_data(
-            args.db_name, args.confidence, args.species, args.event, args.n,
+            args.db_name, args.confidence, species, args.event, args.n,
             date_from, date_to)
         plot_heatmap(species_list, hours, matrix, args.confidence, label,
-                     args.species, args.event, args.cmap, out_path)
+                     species, args.event, args.cmap, out_path)
 
     elif args.plot == "confidence":
         data = load_confidence_data(
-            args.db_name, args.confidence, args.species, args.event, args.n,
+            args.db_name, args.confidence, species, args.event, args.n,
             date_from, date_to)
         plot_confidence(data, args.confidence, label,
-                        args.species, args.event, out_path)
+                        species, args.event, out_path)
 
     elif args.plot == "accumulation":
         dates, counts = load_accumulation_data(
-            args.db_name, args.confidence, args.species, args.event,
+            args.db_name, args.confidence, species, args.event,
             date_from, date_to)
         plot_accumulation(dates, counts, args.confidence, label,
-                          args.species, args.event, out_path)
+                          species, args.event, out_path)
 
     elif args.plot == "topn":
         data = load_topn_data(
-            args.db_name, args.confidence, args.species, args.event, args.n,
+            args.db_name, args.confidence, species, args.event, args.n,
             date_from, date_to)
         plot_topn(data, args.confidence, label,
-                  args.species, args.event, args.n, out_path)
+                  species, args.event, args.n, out_path)
 
     elif args.plot == "events":
         data, top_species = load_event_comparison_data(
-            args.db_name, args.confidence, args.species, args.n,
+            args.db_name, args.confidence, species, args.n,
             date_from, date_to)
         plot_event_comparison(data, top_species, args.confidence, label,
-                              args.species, out_path)
+                              species, out_path)
 
 
 if __name__ == "__main__":
