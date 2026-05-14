@@ -6,9 +6,14 @@
 
 
 import sys
+import os
 import os.path
 import sqlite3
 import argparse
+import subprocess
+import tempfile
+import wave
+from datetime import datetime, timedelta
 
 def _parse_date(date_str: str) -> str:
     """Accept YYYY-MM-DD or DD-MM-YYYY and return YYYY-MM-DD."""
@@ -29,6 +34,41 @@ def _date_clause(date_from: str, date_to: str):
         clause += " AND DATE(date) <= ?"
         params += (date_to,)
     return clause, params
+
+
+def _fmt_time(s: float) -> str:
+    return f"{int(s)//60}:{int(s)%60:02d}"
+
+
+def play_detection(wav_dir: str, file_name: str, start_time: float, end_time: float):
+    wav_path = os.path.join(wav_dir, file_name)
+    if not os.path.exists(wav_path):
+        print(f"  Audio file not found: {wav_path}", file=sys.stderr)
+        return
+
+    with wave.open(wav_path, 'r') as wf:
+        params = wf.getparams()
+        rate = wf.getframerate()
+        start_frame = int(start_time * rate)
+        end_frame = int(end_time * rate)
+        wf.setpos(start_frame)
+        frames = wf.readframes(end_frame - start_frame)
+
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+            tmp_path = tmp.name
+        with wave.open(tmp_path, 'w') as wf_out:
+            wf_out.setparams(params)
+            wf_out.writeframes(frames)
+        subprocess.run(['afplay', tmp_path], check=True)
+    except FileNotFoundError:
+        print("Error: 'afplay' not found (macOS only).", file=sys.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"  Playback error: {e}", file=sys.stderr)
+    finally:
+        if tmp_path:
+            os.unlink(tmp_path)
 
 
 def open_db( db_name: str):
@@ -116,11 +156,8 @@ def list_db( conn, list_all :bool, confidence : float, species : str,
             print()
             print(f"  {'Date/Time':<22} {'Event':<10} {'Segment':<14} {'Conf':>6}  File")
             print(f"  {'-'*22} {'-'*10} {'-'*14} {'-'*6}  {'-'*30}")
-            def fmt(s):
-                return f"{int(s)//60}:{int(s)%60:02d}"
-
             for file_name, event, date, _, start_time, end_time, conf in rows:
-                segment = f"{fmt(start_time)}–{fmt(end_time)}"
+                segment = f"{_fmt_time(start_time)}–{_fmt_time(end_time)}"
                 print(f"  {str(date):<22} {event:<10} {segment:<14} {conf:>6.3f}  {file_name}")
         else:
             print(f"Unknown species: {species}")
@@ -143,15 +180,62 @@ def main():
         metavar="DATE", help="start date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
     parser.add_argument('--to', dest="date_to", default="",
         metavar="DATE", help="end date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
+    parser.add_argument('-p', '--play', action='store_true',
+        help="play audio for each detection (requires -s; uses afplay on macOS)")
+    parser.add_argument('--recordings-dir', dest="recordings_dir", default=None,
+        metavar="DIR",
+        help="directory containing WAV files (default: <db_stem>/)")
     args = parser.parse_args()
+
+    if args.play and not args.species:
+        sys.exit("Error: --play requires -s to specify a species")
 
     if not os.path.exists(args.db_name):
         sys.exit(f"Error: database not found: {args.db_name}")
 
+    date_from = _parse_date(args.date_from)
+    date_to   = _parse_date(args.date_to)
+
     conn = open_db(args.db_name)
 
     list_db(conn, args.all, args.confidence, args.species,
-            args.event, _parse_date(args.date_from), _parse_date(args.date_to))
+            args.event, date_from, date_to)
+
+    if args.play:
+        recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
+        if not os.path.isdir(recordings_dir):
+            sys.exit(f"Error: recordings directory not found: {recordings_dir}")
+
+        dc, dp = _date_clause(date_from, date_to)
+        cur = conn.cursor()
+        if args.event:
+            rows = cur.execute(f"""
+                SELECT file_name, date, start_time, end_time, confidence
+                FROM detection
+                WHERE confidence > ? AND common_name = ? AND event = ? {dc}
+                ORDER BY date, start_time
+            """, (args.confidence, args.species, args.event) + dp).fetchall()
+        else:
+            rows = cur.execute(f"""
+                SELECT file_name, date, start_time, end_time, confidence
+                FROM detection
+                WHERE confidence > ? AND common_name = ? {dc}
+                ORDER BY date, start_time
+            """, (args.confidence, args.species) + dp).fetchall()
+
+        if not rows:
+            sys.exit("No detections to play.")
+
+        print(f"\nPlaying {len(rows)} detections — Ctrl+C to stop.\n")
+        try:
+            for file_name, date, start_time, end_time, conf in rows:
+                rec_start = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+                t_start = (rec_start + timedelta(seconds=start_time)).strftime("%Y-%m-%d %H:%M:%S")
+                t_end   = (rec_start + timedelta(seconds=end_time)).strftime("%H:%M:%S")
+                print(f"  {t_start}–{t_end}  conf:{conf:.3f}")
+                play_detection(recordings_dir, file_name, start_time, end_time)
+        except KeyboardInterrupt:
+            print("\nStopped.")
 
 
 if __name__ == '__main__':
