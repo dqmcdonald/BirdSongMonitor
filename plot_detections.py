@@ -22,6 +22,7 @@ from itertools import groupby
 import numpy as np
 import requests
 from PIL import Image
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.cm as cm
@@ -242,7 +243,7 @@ def load_heatmap_data(db_name: str, confidence: float, species: str, event: str,
     return top_species, active_hours, matrix
 
 
-def plot_heatmap(species_list, hours, matrix, confidence, label, species, event, out_path):
+def plot_heatmap(species_list, hours, matrix, confidence, label, species, event, cmap, out_path):
     if not species_list:
         print("No data for heatmap.")
         return
@@ -251,7 +252,7 @@ def plot_heatmap(species_list, hours, matrix, confidence, label, species, event,
     n_h = len(hours)
     fig, ax = plt.subplots(figsize=(max(6, n_h * 0.6 + 2), max(4, n_sp * 0.35 + 1.5)))
 
-    im = ax.imshow(matrix, aspect="auto", cmap="YlOrRd", interpolation="nearest")
+    im = ax.imshow(matrix, aspect="auto", cmap=cmap, interpolation="nearest")
     ax.set_yticks(range(n_sp))
     ax.set_yticklabels(species_list, fontsize=8)
     ax.set_xticks(range(n_h))
@@ -575,6 +576,13 @@ def main():
         help="Output PNG path (default: <db_stem>[_<plot>].png)",
     )
     parser.add_argument(
+        "--cmap",
+        dest="cmap",
+        default="YlOrRd",
+        help="Matplotlib colormap for heatmap (default: YlOrRd). "
+             "Available: " + ", ".join(sorted(matplotlib.colormaps)) + ".",
+    )
+    parser.add_argument(
         "--site",
         dest="site",
         default=None,
@@ -604,7 +612,7 @@ def main():
         species_list, hours, matrix = load_heatmap_data(
             args.db_name, args.confidence, args.species, args.event, args.n)
         plot_heatmap(species_list, hours, matrix, args.confidence, label,
-                     args.species, args.event, out_path)
+                     args.species, args.event, args.cmap, out_path)
 
     elif args.plot == "confidence":
         data = load_confidence_data(
