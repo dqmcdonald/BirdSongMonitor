@@ -45,10 +45,10 @@ def extract_date_and_event( filename: str ) -> (datetime,str):
     name = os.path.basename(filename)
     base_name = os.path.splitext(name)[0]
     components = base_name.split('_')
-    event = "Sunrise" # defailt
+    event = "Sunrise"
     if len(components) == 5:
         i=0
-    else:
+    elif len(components) == 6:
         # Event is the first field for newer file formats
         event = components[0]
         if event == "SR":
@@ -60,8 +60,10 @@ def extract_date_and_event( filename: str ) -> (datetime,str):
         if event == "DA":
             event = "Day"
         i=1
+    else:
+        raise ValueError(f"Unexpected filename format: {name} ({len(components)} components)")
     return (datetime(year=int(components[i]),month=int(components[i+1]),
-            day=int(components[i+2]),hour=int(components[i+3]), 
+            day=int(components[i+2]),hour=int(components[i+3]),
             minute=int(components[i+4])), event )
 
 def file_in_database( filename: str, conn )  -> bool :
@@ -78,26 +80,35 @@ def file_in_database( filename: str, conn )  -> bool :
 
 
 def process_rec(filename: str, conn ):
-    # process the single file given by 'filename' into DB represented by 
+    # process the single file given by 'filename' into DB represented by
     # 'conn'
 
-    (dt,event) = extract_date_and_event(filename)
+    base_name = os.path.basename(filename)
+
+    try:
+        (dt,event) = extract_date_and_event(filename)
+    except (ValueError, IndexError) as e:
+        print(f"   Skipping {base_name}: {e}")
+        return
 
     # return if this file is already in the DB:
-    base_name = os.path.basename(filename)
     if file_in_database(base_name, conn ):
         print(f"   {base_name} already in database")
         return
 
-    recording = Recording(
-        analyzer,
-        filename,
-        lat=LATITUDE,
-        lon=LONGITUDE,
-        date=dt,
-        min_conf=0.25
-    )
-    recording.analyze()
+    try:
+        recording = Recording(
+            analyzer,
+            filename,
+            lat=LATITUDE,
+            lon=LONGITUDE,
+            date=dt,
+            min_conf=0.25
+        )
+        recording.analyze()
+    except Exception as e:
+        print(f"   Error analyzing {base_name}: {e}")
+        return
     cur = conn.cursor()
 
     # Insert a dummy record so that if there are no detections we'll at least
@@ -124,7 +135,7 @@ def proc_recordings(directory: str, conn ):
     print()
     print(f"""Processing all files in {directory}/ """)
     files = []
-    for f in glob.glob(directory + "/*.WAV"):
+    for f in glob.glob(directory + "/*.WAV") + glob.glob(directory + "/*.wav"):
         files.append(f)
 
     files.sort()
