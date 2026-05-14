@@ -339,7 +339,7 @@ def plot_confidence(data, confidence, db_name, species, event, out_path):
         f"Confidence distributions{event_label} — {os.path.basename(db_name)}",
         fontsize=11
     )
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     print(f"Saved plot to {out_path}")
     plt.close(fig)
