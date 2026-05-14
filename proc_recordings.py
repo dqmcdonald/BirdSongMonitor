@@ -1,12 +1,9 @@
-# Process a directory of bird monitor recordings in the directory that's
-# the single argument to this script
-# Any detections are added to a SQLite DB
+# Process a directory of bird song recordings through BirdNET and store
+# detections in a SQLite database.  Usage: proc_recordings.py <directory>
+#
+# D. Q. McDonald — August 2025
 
-# D. Q. McDonald   
-# August 2025
-
-
-
+# Recording location: Christchurch, New Zealand
 LONGITUDE =  172.72602916819974
 LATITUDE =  -43.62674558206582
 
@@ -18,15 +15,14 @@ from datetime import datetime
 import sqlite3
 import glob
 
-# Load and initialize the BirdNET-Analyzer event.
+# Module-level so the model is loaded once; initialisation takes several seconds.
 analyzer = Analyzer()
 
 
 
 def create_db(recordings_dir):
-    # create database and table if it doesn't already exist
-    # return connection
-
+    # DB is named after the directory and created in the current working directory.
+    # Existence must be checked before sqlite3.connect(), which creates the file.
     base_name = os.path.basename(recordings_dir)
 
     db_name = base_name + ".db"
@@ -41,7 +37,9 @@ def create_db(recordings_dir):
     return conn
 
 def extract_date_and_event( filename: str ) -> (datetime,str):
-    # parse the date and event (sunrise, noon, sunset) out of the filename
+    # Two filename formats are supported:
+    #   Old (5 components): YYYY_MM_DD_HH_MM.WAV           — event defaults to Sunrise
+    #   New (6 components): EVENT_YYYY_MM_DD_HH_MM.WAV     — SR/SS/NO/DA prefix
     name = os.path.basename(filename)
     base_name = os.path.splitext(name)[0]
     components = base_name.split('_')
@@ -49,7 +47,6 @@ def extract_date_and_event( filename: str ) -> (datetime,str):
     if len(components) == 5:
         i=0
     elif len(components) == 6:
-        # Event is the first field for newer file formats
         event = components[0]
         if event == "SR":
             event = "Sunrise"
@@ -66,23 +63,15 @@ def extract_date_and_event( filename: str ) -> (datetime,str):
             day=int(components[i+2]),hour=int(components[i+3]),
             minute=int(components[i+4])), event )
 
-def file_in_database( filename: str, conn )  -> bool :
-    # Returns true if the file is already in the database
-
+def load_processed_files(conn) -> set:
+    # Load all previously processed filenames in one query so per-file checks
+    # are O(1) set lookups rather than individual DB round-trips.
     cur = conn.cursor()
-    res = cur.execute("SELECT COUNT(*) FROM detection WHERE file_name = ?",
-        (filename,))
-
-    total_rows = cur.fetchone()[0]
-    file_exists = total_rows > 0
-    return file_exists
+    return {row[0] for row in cur.execute("SELECT DISTINCT file_name FROM detection")}
 
 
 
-def process_rec(filename: str, conn ):
-    # process the single file given by 'filename' into DB represented by
-    # 'conn'
-
+def process_rec(filename: str, conn, processed: set):
     base_name = os.path.basename(filename)
 
     try:
@@ -91,8 +80,7 @@ def process_rec(filename: str, conn ):
         print(f"   Skipping {base_name}: {e}")
         return
 
-    # return if this file is already in the DB:
-    if file_in_database(base_name, conn ):
+    if base_name in processed:
         print(f"   {base_name} already in database")
         return
 
@@ -111,8 +99,8 @@ def process_rec(filename: str, conn ):
         return
     cur = conn.cursor()
 
-    # Insert a dummy record so that if there are no detections we'll at least
-    # know this file has been processed.
+    # Sentinel row: marks the file as processed even when BirdNET finds nothing,
+    # so it is skipped on the next run without being re-analysed.
     cur.execute("""
     INSERT into detection VALUES(?,?,?,?,?,?,?,?) """,
         (base_name, event,dt, "DUMMY", "DUMMY",
@@ -130,17 +118,13 @@ def process_rec(filename: str, conn ):
 
 
 def proc_recordings(directory: str, conn ):
-    # process all the recordings in the given directory
-
     print()
     print(f"""Processing all files in {directory}/ """)
-    files = []
-    for f in glob.glob(directory + "/*.WAV") + glob.glob(directory + "/*.wav"):
-        files.append(f)
+    files = sorted(glob.glob(directory + "/*.WAV") + glob.glob(directory + "/*.wav"))
 
-    files.sort()
+    processed = load_processed_files(conn)
     for f in files:
-        process_rec(f, conn)
+        process_rec(f, conn, processed)
     
 
 def main():
