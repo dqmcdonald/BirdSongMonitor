@@ -145,7 +145,7 @@ def load_daily_counts(db_name: str, confidence: float, species: str, event: str)
     return dates, species_counts
 
 
-def plot_daily(dates, species_counts, confidence, db_name, species, event, img, out_path):
+def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path):
     all_species = list(species_counts.keys())
     multi = len(all_species) > 1
 
@@ -177,7 +177,7 @@ def plot_daily(dates, species_counts, confidence, db_name, species, event, img, 
     species_label = f" — {species}" if species else ""
     event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
-        f"Daily detections{species_label}{event_label} — {os.path.basename(db_name)}  "
+        f"Daily detections{species_label}{event_label} — {label}  "
         f"(confidence > {confidence:.2f})"
     )
     ax.yaxis.grid(True, linestyle="--", alpha=0.5)
@@ -242,7 +242,7 @@ def load_heatmap_data(db_name: str, confidence: float, species: str, event: str,
     return top_species, active_hours, matrix
 
 
-def plot_heatmap(species_list, hours, matrix, confidence, db_name, species, event, out_path):
+def plot_heatmap(species_list, hours, matrix, confidence, label, species, event, out_path):
     if not species_list:
         print("No data for heatmap.")
         return
@@ -262,7 +262,7 @@ def plot_heatmap(species_list, hours, matrix, confidence, db_name, species, even
 
     event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
-        f"Detection heatmap{event_label} — {os.path.basename(db_name)} "
+        f"Detection heatmap{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
     plt.tight_layout()
@@ -310,7 +310,7 @@ def load_confidence_data(db_name: str, confidence: float, species: str, event: s
     return data
 
 
-def plot_confidence(data, confidence, db_name, species, event, out_path):
+def plot_confidence(data, confidence, label, species, event, out_path):
     if not data:
         print("No confidence data found.")
         return
@@ -336,7 +336,7 @@ def plot_confidence(data, confidence, db_name, species, event, out_path):
 
     event_label = f" [{event}]" if event != "All" else ""
     fig.suptitle(
-        f"Confidence distributions{event_label} — {os.path.basename(db_name)}",
+        f"Confidence distributions{event_label} — {label}",
         fontsize=11
     )
     plt.tight_layout(rect=[0, 0, 1, 0.95])
@@ -377,7 +377,7 @@ def load_accumulation_data(db_name: str, confidence: float, species: str, event:
     return dates, counts
 
 
-def plot_accumulation(dates, counts, confidence, db_name, species, event, out_path):
+def plot_accumulation(dates, counts, confidence, label, species, event, out_path):
     if not dates:
         print("No accumulation data found.")
         return
@@ -397,7 +397,7 @@ def plot_accumulation(dates, counts, confidence, db_name, species, event, out_pa
 
     event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
-        f"Species accumulation{event_label} — {os.path.basename(db_name)} "
+        f"Species accumulation{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
     plt.tight_layout()
@@ -425,7 +425,7 @@ def load_topn_data(db_name: str, confidence: float, species: str, event: str, n:
     return rows
 
 
-def plot_topn(data, confidence, db_name, species, event, n, out_path):
+def plot_topn(data, confidence, label, species, event, n, out_path):
     if not data:
         print("No data for top-N chart.")
         return
@@ -447,7 +447,7 @@ def plot_topn(data, confidence, db_name, species, event, n, out_path):
 
     event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
-        f"Top {len(data)} species{event_label} — {os.path.basename(db_name)} "
+        f"Top {len(data)} species{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
     plt.tight_layout()
@@ -491,7 +491,7 @@ def load_event_comparison_data(db_name: str, confidence: float, species: str, n:
     return data, top_species
 
 
-def plot_event_comparison(data, top_species, confidence, db_name, species, out_path):
+def plot_event_comparison(data, top_species, confidence, label, species, out_path):
     if not data or not top_species:
         print("No event comparison data found.")
         return
@@ -515,7 +515,7 @@ def plot_event_comparison(data, top_species, confidence, db_name, species, out_p
     ax.set_axisbelow(True)
     ax.legend(title="Event")
     ax.set_title(
-        f"Detections by event — {os.path.basename(db_name)} "
+        f"Detections by event — {label} "
         f"(confidence > {confidence:.2f})"
     )
     plt.tight_layout()
@@ -574,7 +574,15 @@ def main():
         default=None,
         help="Output PNG path (default: <db_stem>[_<plot>].png)",
     )
+    parser.add_argument(
+        "--site",
+        dest="site",
+        default=None,
+        help="Site name for plot titles (default: database filename)",
+    )
     args = parser.parse_args()
+
+    label = args.site if args.site else os.path.basename(args.db_name)
 
     if not os.path.exists(args.db_name):
         print(f"Error: database not found: {args.db_name}", file=sys.stderr)
@@ -589,37 +597,37 @@ def main():
             print("No detections found above the confidence threshold.")
             sys.exit(0)
         img = fetch_species_image(args.species) if args.species else None
-        plot_daily(dates, species_counts, args.confidence, args.db_name,
+        plot_daily(dates, species_counts, args.confidence, label,
                    args.species, args.event, img, out_path)
 
     elif args.plot == "heatmap":
         species_list, hours, matrix = load_heatmap_data(
             args.db_name, args.confidence, args.species, args.event, args.n)
-        plot_heatmap(species_list, hours, matrix, args.confidence, args.db_name,
+        plot_heatmap(species_list, hours, matrix, args.confidence, label,
                      args.species, args.event, out_path)
 
     elif args.plot == "confidence":
         data = load_confidence_data(
             args.db_name, args.confidence, args.species, args.event, args.n)
-        plot_confidence(data, args.confidence, args.db_name,
+        plot_confidence(data, args.confidence, label,
                         args.species, args.event, out_path)
 
     elif args.plot == "accumulation":
         dates, counts = load_accumulation_data(
             args.db_name, args.confidence, args.species, args.event)
-        plot_accumulation(dates, counts, args.confidence, args.db_name,
+        plot_accumulation(dates, counts, args.confidence, label,
                           args.species, args.event, out_path)
 
     elif args.plot == "topn":
         data = load_topn_data(
             args.db_name, args.confidence, args.species, args.event, args.n)
-        plot_topn(data, args.confidence, args.db_name,
+        plot_topn(data, args.confidence, label,
                   args.species, args.event, args.n, out_path)
 
     elif args.plot == "events":
         data, top_species = load_event_comparison_data(
             args.db_name, args.confidence, args.species, args.n)
-        plot_event_comparison(data, top_species, args.confidence, args.db_name,
+        plot_event_comparison(data, top_species, args.confidence, label,
                               args.species, out_path)
 
 
