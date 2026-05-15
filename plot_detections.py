@@ -214,11 +214,14 @@ def load_daily_counts(db_name: str, confidence: float, species: str, event: str,
     return dates, species_counts
 
 
-def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path):
+def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path=None, *, fig=None, color="steelblue"):
     all_species = list(species_counts.keys())
     multi = len(all_species) > 1
 
-    fig, ax = plt.subplots(figsize=(16 if multi else 12, 6 if multi else 5))
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(16 if multi else 12, 6 if multi else 5))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
 
     if multi:
         def species_color(i):
@@ -235,7 +238,7 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
                   fontsize=7, ncol=2, frameon=True)
     else:
         ax.bar(dates, species_counts[all_species[0]], width=0.8,
-               color="steelblue", edgecolor="white", linewidth=0.4)
+               color=color, edgecolor="white", linewidth=0.4)
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
@@ -260,9 +263,11 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
             spine.set_visible(True)
             spine.set_linewidth(0.8)
 
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -313,14 +318,17 @@ def load_heatmap_data(db_name: str, confidence: float, species: str, event: str,
     return top_species, active_hours, matrix
 
 
-def plot_heatmap(species_list, hours, matrix, confidence, label, species, event, cmap, out_path):
+def plot_heatmap(species_list, hours, matrix, confidence, label, species, event, cmap, out_path=None, *, fig=None):
     if not species_list:
         print("No data for heatmap.")
         return
 
     n_sp = len(species_list)
     n_h = len(hours)
-    fig, ax = plt.subplots(figsize=(max(6, n_h * 0.6 + 2), max(4, n_sp * 0.35 + 1.5)))
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(max(6, n_h * 0.6 + 2), max(4, n_sp * 0.35 + 1.5)))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
 
     im = ax.imshow(matrix, aspect="auto", cmap=cmap, interpolation="nearest")
     ax.set_yticks(range(n_sp))
@@ -329,17 +337,19 @@ def plot_heatmap(species_list, hours, matrix, confidence, label, species, event,
     ax.set_xticklabels([f"{h:02d}:00" for h in hours],
                        rotation=45, ha="right", fontsize=8)
     ax.set_xlabel("Hour of day")
-    plt.colorbar(im, ax=ax, label="Detections")
+    fig.colorbar(im, ax=ax, label="Detections")
 
     event_label = f" [{event}]" if event != "All" else ""
     ax.set_title(
         f"Detection heatmap{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    fig.tight_layout()
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -383,7 +393,7 @@ def load_confidence_data(db_name: str, confidence: float, species: str, event: s
     return data
 
 
-def plot_confidence(data, confidence, label, species, event, out_path):
+def plot_confidence(data, confidence, label, species, event, out_path=None, *, fig=None):
     if not data:
         print("No confidence data found.")
         return
@@ -393,16 +403,29 @@ def plot_confidence(data, confidence, label, species, event, out_path):
     cols = min(3, n)
     rows = (n + cols - 1) // cols
 
-    fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 3), squeeze=False)
+    if fig is None:
+        fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 3), squeeze=False)
+    else:
+        axes = fig.subplots(rows, cols, squeeze=False)
 
     for idx, sp in enumerate(species_list):
         ax = axes[idx // cols][idx % cols]
-        ax.hist(data[sp], bins=20, range=(confidence, 1.0),
+        vals = data[sp]
+        mean = np.mean(vals)
+        std  = np.std(vals)
+        ax.hist(vals, bins=20, range=(confidence, 1.0),
                 color="steelblue", edgecolor="white", linewidth=0.4)
+        ax.axvline(mean, color="crimson", linewidth=1.2, linestyle="--")
+        ax.axvspan(max(confidence, mean - std), min(1.0, mean + std),
+                   alpha=0.12, color="crimson")
         ax.set_title(sp, fontsize=9)
         ax.set_xlabel("Confidence", fontsize=8)
         ax.set_ylabel("Count", fontsize=8)
         ax.tick_params(labelsize=7)
+        ax.text(0.97, 0.95, f"μ={mean:.3f}\nσ={std:.3f}",
+                transform=ax.transAxes, fontsize=7,
+                ha="right", va="top",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="crimson", alpha=0.8))
 
     for idx in range(n, rows * cols):
         axes[idx // cols][idx % cols].set_visible(False)
@@ -412,10 +435,12 @@ def plot_confidence(data, confidence, label, species, event, out_path):
         f"Confidence distributions{event_label} — {label}",
         fontsize=11
     )
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -452,14 +477,18 @@ def load_accumulation_data(db_name: str, confidence: float, species: str, event:
     return dates, counts
 
 
-def plot_accumulation(dates, counts, confidence, label, species, event, out_path):
+def plot_accumulation(dates, counts, confidence, label, species, event, out_path=None, *, fig=None, color="steelblue", linewidth=1.5):
     if not dates:
         print("No accumulation data found.")
         return
 
-    fig, ax = plt.subplots(figsize=(12, 5))
-    ax.step(dates, counts, where="post", color="steelblue", linewidth=1.5)
-    ax.fill_between(dates, counts, step="post", alpha=0.15, color="steelblue")
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(12, 5))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
+
+    ax.step(dates, counts, where="post", color=color, linewidth=linewidth)
+    ax.fill_between(dates, counts, step="post", alpha=0.15, color=color)
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
@@ -475,10 +504,12 @@ def plot_accumulation(dates, counts, confidence, label, species, event, out_path
         f"Species accumulation{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    fig.tight_layout()
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -502,7 +533,7 @@ def load_topn_data(db_name: str, confidence: float, species: str, event: str, n:
     return rows
 
 
-def plot_topn(data, confidence, label, species, event, n, out_path):
+def plot_topn(data, confidence, label, species, event, n, out_path=None, *, fig=None, color="steelblue"):
     if not data:
         print("No data for top-N chart.")
         return
@@ -510,8 +541,12 @@ def plot_topn(data, confidence, label, species, event, n, out_path):
     names = [r[0] for r in reversed(data)]
     counts = [r[1] for r in reversed(data)]
 
-    fig, ax = plt.subplots(figsize=(10, max(4, len(names) * 0.4 + 1)))
-    bars = ax.barh(names, counts, color="steelblue", edgecolor="white")
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(10, max(4, len(names) * 0.4 + 1)))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
+
+    bars = ax.barh(names, counts, color=color, edgecolor="white")
 
     for bar, count in zip(bars, counts):
         ax.text(bar.get_width() + 0.3, bar.get_y() + bar.get_height() / 2,
@@ -527,10 +562,12 @@ def plot_topn(data, confidence, label, species, event, n, out_path):
         f"Top {len(data)} species{event_label} — {label} "
         f"(confidence > {confidence:.2f})"
     )
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    fig.tight_layout()
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
@@ -570,7 +607,7 @@ def load_event_comparison_data(db_name: str, confidence: float, species: str, n:
     return data, top_species
 
 
-def plot_event_comparison(data, top_species, confidence, label, species, out_path):
+def plot_event_comparison(data, top_species, confidence, label, species, out_path=None, *, fig=None):
     if not data or not top_species:
         print("No event comparison data found.")
         return
@@ -579,7 +616,10 @@ def plot_event_comparison(data, top_species, confidence, label, species, out_pat
     x = np.arange(len(top_species))
     bar_width = 0.8 / len(events)
 
-    fig, ax = plt.subplots(figsize=(max(10, len(top_species) * 0.6 + 2), 6))
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(max(10, len(top_species) * 0.6 + 2), 6))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
 
     for i, evt in enumerate(events):
         counts = [data[evt].get(sp, 0) for sp in top_species]
@@ -597,10 +637,12 @@ def plot_event_comparison(data, top_species, confidence, label, species, out_pat
         f"Detections by event — {label} "
         f"(confidence > {confidence:.2f})"
     )
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
-    print(f"Saved plot to {out_path}")
-    plt.close(fig)
+    fig.tight_layout()
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
 
 
 # ---------------------------------------------------------------------------
