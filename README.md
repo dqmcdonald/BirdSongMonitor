@@ -32,7 +32,7 @@ python proc_recordings.py <directory> [-c CONFIDENCE]
 
 ### `query_detections.py` — query a database
 
-Lists detected species and their counts, with optional filtering. Use `-a` to dump every individual detection row. Use `-s` to drill into a specific species, and `--play` to listen to each detection via `afplay` (macOS only).
+Lists detected species and their counts, with optional filtering. Use `-a` to dump every individual detection row. Use `-s` to drill into a specific species, and `--play` to listen to each detection via `afplay` (macOS only). Multiple stat flags can be combined in one run.
 
 ```
 python query_detections.py <db_name.db> [options]
@@ -49,6 +49,18 @@ python query_detections.py <db_name.db> [options]
 | `--to DATE` | (none) | End date inclusive (`YYYY-MM-DD` or `DD-MM-YYYY`) |
 | `-p`, `--play` | off | Play audio for each detection (requires `-s`; macOS only) |
 | `--recordings-dir DIR` | `<db_stem>/` | Directory containing WAV files (for `--play`) |
+
+**Statistics flags** (all respect `-c`, `-e`, `-s`, `--from`, `--to`):
+
+| Option | Description |
+|--------|-------------|
+| `-A`, `--avg` | Average detections per day per species, sorted by rate descending |
+| `-m`, `--monthly` | With `--avg`: pivot the averages by calendar month |
+| `--first-last` | First and last detection date per species, sorted by first seen |
+| `--conf-stats` | Min / max / mean confidence score per species, sorted by mean descending |
+| `--life-list` | Species grouped by the date first detected; `*` marks species seen on only one day |
+| `--cooccur` | Top 20 species pairs co-occurring in the same recording file; with `-s`, lists all species sharing files with that species |
+| `--streaks` | Longest consecutive-day detection streak and longest gap between detection days per species |
 
 ### `plot_detections.py` — visualise detections
 

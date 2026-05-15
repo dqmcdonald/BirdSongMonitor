@@ -13,6 +13,7 @@ import argparse
 import subprocess
 import tempfile
 import wave
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 def _parse_date(date_str: str) -> str:
@@ -38,6 +39,36 @@ def _date_clause(date_from: str, date_to: str):
 
 def _fmt_time(s: float) -> str:
     return f"{int(s)//60}:{int(s)%60:02d}"
+
+
+def _where(confidence: float, species: str, event: str, dc: str):
+    """Return (where_clause_str, params_tuple) for standard detection filters."""
+    conds = ["confidence > ?", "common_name != 'DUMMY'"]
+    p: tuple = (confidence,)
+    if species:
+        conds.append("common_name = ?")
+        p += (species,)
+    if event:
+        conds.append("event = ?")
+        p += (event,)
+    return " AND ".join(conds) + dc, p
+
+
+def _print_header(label: str, confidence: float, species: str, event: str,
+                  date_from: str, date_to: str):
+    print()
+    print(f"{label} (confidence > {confidence:.2f})")
+    if date_from and date_to:
+        print(f"Date range: {date_from} to {date_to}")
+    elif date_from:
+        print(f"From: {date_from}")
+    elif date_to:
+        print(f"To: {date_to}")
+    if event:
+        print(f"For event: {event}")
+    if species:
+        print(f"Species: {species}")
+    print()
 
 
 def play_detection(wav_dir: str, file_name: str, start_time: float, end_time: float):
@@ -295,6 +326,213 @@ def avg_detections(conn, confidence: float, species: str, event: str,
             print(row_str)
 
 
+def first_last_seen(conn, confidence: float, species: str, event: str,
+                    date_from: str, date_to: str):
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+    where, params = _where(confidence, species, event, dc)
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT common_name,
+               MIN(DATE(date)) AS first_seen,
+               MAX(DATE(date)) AS last_seen,
+               COUNT(DISTINCT DATE(date)) AS days
+        FROM detection
+        WHERE {where}
+        GROUP BY common_name
+        ORDER BY first_seen
+    """, params).fetchall()
+
+    _print_header("First and last detection dates", confidence, species, event, date_from, date_to)
+    if not rows:
+        print("  No data found.")
+        return
+    print(f"  {'Species':<35} {'First seen':>12} {'Last seen':>12} {'Days':>5}")
+    print(f"  {'-'*35} {'-'*12} {'-'*12} {'-'*5}")
+    for name, first, last, days in rows:
+        print(f"  {name:<35} {first:>12} {last:>12} {days:>5}")
+
+
+def conf_stats(conn, confidence: float, species: str, event: str,
+               date_from: str, date_to: str):
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+    where, params = _where(confidence, species, event, dc)
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT common_name,
+               MIN(confidence), MAX(confidence), AVG(confidence), COUNT(*)
+        FROM detection
+        WHERE {where}
+        GROUP BY common_name
+        ORDER BY AVG(confidence) DESC
+    """, params).fetchall()
+
+    _print_header("Confidence score summary", confidence, species, event, date_from, date_to)
+    if not rows:
+        print("  No data found.")
+        return
+    print(f"  {'Species':<35} {'Min':>6} {'Max':>6} {'Mean':>6} {'Count':>6}")
+    print(f"  {'-'*35} {'-'*6} {'-'*6} {'-'*6} {'-'*6}")
+    for name, mn, mx, avg, cnt in rows:
+        print(f"  {name:<35} {mn:>6.3f} {mx:>6.3f} {avg:>6.3f} {cnt:>6}")
+
+
+def life_list(conn, confidence: float, species: str, event: str,
+              date_from: str, date_to: str):
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+    where, params = _where(confidence, species, event, dc)
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT common_name,
+               MIN(DATE(date)) AS first_date,
+               COUNT(DISTINCT DATE(date)) AS obs_days,
+               COUNT(*) AS total
+        FROM detection
+        WHERE {where}
+        GROUP BY common_name
+        ORDER BY first_date, common_name
+    """, params).fetchall()
+
+    _print_header("Species life list", confidence, species, event, date_from, date_to)
+    if not rows:
+        print("  No data found.")
+        return
+
+    by_date: dict = defaultdict(list)
+    for name, first_date, obs_days, total in rows:
+        by_date[first_date].append((name, obs_days, total))
+
+    print(f"  {'Date':<12} {'Species':<35} {'Days':>5} {'Total':>7}")
+    print(f"  {'-'*12} {'-'*35} {'-'*5} {'-'*7}")
+    for date in sorted(by_date):
+        for name, obs_days, total in by_date[date]:
+            rare = " *" if obs_days == 1 else ""
+            print(f"  {date:<12} {name:<35} {obs_days:>5} {total:>7}{rare}")
+    print("\n  * = detected on only one day")
+
+
+def cooccurrence(conn, confidence: float, species: str, event: str,
+                 date_from: str, date_to: str, top_n: int = 20):
+    cur = conn.cursor()
+    # Build date clause with explicit alias to avoid ambiguity in JOINs
+    a_dc = ""
+    a_dp: tuple = ()
+    if date_from:
+        a_dc += " AND DATE(a.date) >= ?"
+        a_dp += (date_from,)
+    if date_to:
+        a_dc += " AND DATE(a.date) <= ?"
+        a_dp += (date_to,)
+
+    event_clause = "AND a.event = ?" if event else ""
+    event_params = (event,) if event else ()
+
+    _print_header("Species co-occurrence (same recording)", confidence, species, event, date_from, date_to)
+
+    if species:
+        rows = cur.execute(f"""
+            SELECT b.common_name, COUNT(DISTINCT a.file_name) AS shared_files
+            FROM detection a
+            JOIN detection b
+              ON a.file_name = b.file_name AND b.common_name != a.common_name
+            WHERE a.common_name = ?
+              AND a.confidence > ? AND b.confidence > ?
+              AND b.common_name != 'DUMMY'
+              {event_clause} {a_dc}
+            GROUP BY b.common_name
+            ORDER BY shared_files DESC
+            LIMIT ?
+        """, (species, confidence, confidence) + event_params + a_dp + (top_n,)).fetchall()
+
+        if not rows:
+            print("  No data found.")
+            return
+        print(f"  {'Co-occurring species':<35} {'Shared files':>12}")
+        print(f"  {'-'*35} {'-'*12}")
+        for name, files in rows:
+            print(f"  {name:<35} {files:>12}")
+    else:
+        rows = cur.execute(f"""
+            SELECT a.common_name, b.common_name, COUNT(DISTINCT a.file_name) AS shared_files
+            FROM detection a
+            JOIN detection b
+              ON a.file_name = b.file_name AND a.common_name < b.common_name
+            WHERE a.confidence > ? AND b.confidence > ?
+              AND a.common_name != 'DUMMY' AND b.common_name != 'DUMMY'
+              {event_clause} {a_dc}
+            GROUP BY a.common_name, b.common_name
+            ORDER BY shared_files DESC
+            LIMIT ?
+        """, (confidence, confidence) + event_params + a_dp + (top_n,)).fetchall()
+
+        if not rows:
+            print("  No data found.")
+            return
+        print(f"  {'Species A':<35} {'Species B':<35} {'Shared files':>12}")
+        print(f"  {'-'*35} {'-'*35} {'-'*12}")
+        for name_a, name_b, files in rows:
+            print(f"  {name_a:<35} {name_b:<35} {files:>12}")
+
+
+def detection_streaks(conn, confidence: float, species: str, event: str,
+                      date_from: str, date_to: str):
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+    where, params = _where(confidence, species, event, dc)
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT common_name, DATE(date) AS day
+        FROM detection
+        WHERE {where}
+        GROUP BY common_name, DATE(date)
+        ORDER BY common_name, day
+    """, params).fetchall()
+
+    _print_header("Detection streaks", confidence, species, event, date_from, date_to)
+    if not rows:
+        print("  No data found.")
+        return
+
+    species_dates: dict = defaultdict(list)
+    for name, day in rows:
+        species_dates[name].append(datetime.strptime(day, '%Y-%m-%d').date())
+
+    results = []
+    for name, dates in species_dates.items():
+        dates = sorted(dates)
+        if len(dates) == 1:
+            results.append((name, 1, 0, 1))
+            continue
+        max_streak = cur_streak = 1
+        max_gap = 0
+        for i in range(1, len(dates)):
+            gap = (dates[i] - dates[i - 1]).days
+            if gap == 1:
+                cur_streak += 1
+                if cur_streak > max_streak:
+                    max_streak = cur_streak
+            else:
+                cur_streak = 1
+                if gap > max_gap:
+                    max_gap = gap
+        results.append((name, max_streak, max_gap, len(dates)))
+
+    results.sort(key=lambda x: -x[1])
+
+    print(f"  {'Species':<35} {'Max streak':>10} {'Max gap':>8} {'Days':>5}")
+    print(f"  {'-'*35} {'-'*10} {'-'*8} {'-'*5}")
+    for name, streak, gap, days in results:
+        gap_str = str(gap) if gap > 0 else "—"
+        print(f"  {name:<35} {streak:>10} {gap_str:>8} {days:>5}")
+    print("\n  Max streak = longest consecutive-day run; Max gap = longest gap (days) between detections")
+
+
 def main():
     parser = argparse.ArgumentParser(prog='query_detections',
                     description='List observations in bird monitoring database')
@@ -317,6 +555,16 @@ def main():
         help="show average detections per day per species")
     parser.add_argument('-m', '--monthly', action='store_true',
         help="with --avg, break down averages by month (pivot table)")
+    parser.add_argument('--first-last', action='store_true',
+        help="show first and last detection date per species")
+    parser.add_argument('--conf-stats', action='store_true',
+        help="show min/max/mean confidence score per species")
+    parser.add_argument('--life-list', action='store_true',
+        help="life list: species ordered by date first detected (* = seen on one day only)")
+    parser.add_argument('--cooccur', action='store_true',
+        help="show top species co-occurrences within the same recording file")
+    parser.add_argument('--streaks', action='store_true',
+        help="show longest consecutive-day detection streak and longest gap per species")
     parser.add_argument('-p', '--play', action='store_true',
         help="play audio for each detection (requires -s; uses afplay on macOS)")
     parser.add_argument('--recordings-dir', dest="recordings_dir", default=None,
@@ -343,6 +591,21 @@ def main():
     if args.avg:
         avg_detections(conn, args.confidence, species, args.event,
                        date_from, date_to, monthly=args.monthly)
+
+    if args.first_last:
+        first_last_seen(conn, args.confidence, species, args.event, date_from, date_to)
+
+    if args.conf_stats:
+        conf_stats(conn, args.confidence, species, args.event, date_from, date_to)
+
+    if args.life_list:
+        life_list(conn, args.confidence, species, args.event, date_from, date_to)
+
+    if args.cooccur:
+        cooccurrence(conn, args.confidence, species, args.event, date_from, date_to)
+
+    if args.streaks:
+        detection_streaks(conn, args.confidence, species, args.event, date_from, date_to)
 
     if args.play:
         recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
