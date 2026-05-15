@@ -85,6 +85,45 @@ python plot_detections.py <db_name.db> [options]
 
 For a single-species `daily` plot, a photo is inset from `bird_photos/<Species_Name>.png` or fetched from Wikipedia if no local file exists.
 
+### `gui_plot_detections.py` — interactive plot GUI
+
+Tkinter-based GUI for exploring detections interactively. Provides the same six chart types as `plot_detections.py` in a tabbed window, with live controls and a Save button to export the current plot.
+
+```
+python gui_plot_detections.py [db_name.db] [options]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `db_name` | (none) | Database to open on launch; can also be selected via Browse |
+| `-c`, `--confidence` | `0.25` | Initial confidence threshold |
+| `-e`, `--event` | `All` | Initial event filter |
+| `-s`, `--species` | (all) | Initial species filter (partial match supported) |
+| `--site NAME` | (db filename) | Initial site label for plot titles |
+
+**Controls:**
+
+| Control | Description |
+|---------|-------------|
+| Database / Browse | Path to the SQLite database |
+| Confidence | Slider (0–1) filtering detections by minimum BirdNET score |
+| Event | Filter by recording event: All, Sunrise, Sunset, or Day |
+| Species | Partial, case-insensitive species name filter — shows a picker if ambiguous |
+| From / To | Date range filter (`YYYY-MM-DD` or `DD-MM-YYYY`) |
+| Site | Label shown in plot titles |
+| Top-N | Number of species for heatmap, confidence, top-N, and events charts |
+| Plot / Save | Manually regenerate or export the current chart |
+
+**Appearance group** (controls enabled only when relevant to the active tab):
+
+| Control | Applies to |
+|---------|-----------|
+| Color | Single-species daily bars, accumulation line, top-N bars |
+| Line width | Accumulation step-line thickness |
+| Colormap | Heatmap colour scale |
+
+Plots regenerate automatically on tab switch, database selection, colormap change, color pick, and linewidth adjustment.
+
 ### `species_list.py` — print expected species
 
 Prints the BirdNET species list expected for the Christchurch, NZ location and season (hardcoded to September). No arguments.
