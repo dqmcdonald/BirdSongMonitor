@@ -144,6 +144,36 @@ Prints the BirdNET species list expected for the Christchurch, NZ location and s
 python species_list.py
 ```
 
+## Tests
+
+The test suite uses [pytest](https://docs.pytest.org/) and covers `proc_recordings.py`, `query_detections.py`, and `plot_detections.py`.
+
+Install pytest if needed:
+
+```
+pip install pytest
+```
+
+**Fast unit tests** (no BirdNET model load, ~1 second):
+
+```
+pytest -m "not integration"
+```
+
+**End-to-end integration tests** — run `proc_recordings.py` against the recordings in `test_recordings/` using the real BirdNET model (~1–5 minutes):
+
+```
+pytest tests/test_integration.py -v
+```
+
+**Full suite:**
+
+```
+pytest
+```
+
+The integration tests are tagged `@pytest.mark.integration` and are deselected by default when using `-m "not integration"`. They verify that all 17 test recordings are processed, events and dates are parsed correctly, detections have valid confidence scores, and re-running is idempotent (no duplicate rows).
+
 ## WAV Filename Format
 
 Two formats are supported:
