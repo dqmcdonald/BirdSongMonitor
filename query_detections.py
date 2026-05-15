@@ -207,6 +207,94 @@ def list_db( conn, list_all :bool, confidence : float, species : str,
         else:
             print(f"Unknown species: {species}")
 
+def avg_detections(conn, confidence: float, species: str, event: str,
+                   date_from: str, date_to: str, monthly: bool = False):
+    """Print average detections per day per species, optionally pivoted by month."""
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+
+    conditions = ["confidence > ?", "common_name != 'DUMMY'"]
+    params: tuple = (confidence,)
+    if species:
+        conditions.append("common_name = ?")
+        params += (species,)
+    if event:
+        conditions.append("event = ?")
+        params += (event,)
+    where = " AND ".join(conditions) + dc
+    params += dp
+
+    print()
+    print(f"Average detections per day (confidence > {confidence:.2f})")
+    if date_from and date_to:
+        print(f"Date range: {date_from} to {date_to}")
+    elif date_from:
+        print(f"From: {date_from}")
+    elif date_to:
+        print(f"To: {date_to}")
+    if event:
+        print(f"For event: {event}")
+
+    if not monthly:
+        rows = cur.execute(f"""
+            SELECT common_name,
+                   CAST(COUNT(*) AS REAL) / COUNT(DISTINCT DATE(date)) AS avg_per_day,
+                   COUNT(DISTINCT DATE(date)) AS obs_days
+            FROM detection
+            WHERE {where}
+            GROUP BY common_name
+            ORDER BY avg_per_day DESC
+        """, params).fetchall()
+
+        if not rows:
+            print("  No data found.")
+            return
+
+        print()
+        print(f"  {'Species':<35} {'Avg/day':>8}  {'Days':>5}")
+        print(f"  {'-'*35} {'-'*8}  {'-'*5}")
+        for name, avg, days in rows:
+            print(f"  {name:<35} {avg:>8.2f}  {days:>5}")
+
+    else:
+        # Monthly pivot: total detections / distinct recording days per month
+        rows = cur.execute(f"""
+            SELECT common_name,
+                   strftime('%Y-%m', date) AS month,
+                   CAST(COUNT(*) AS REAL) / COUNT(DISTINCT DATE(date)) AS avg_per_day
+            FROM detection
+            WHERE {where}
+            GROUP BY common_name, strftime('%Y-%m', date)
+            ORDER BY common_name, month
+        """, params).fetchall()
+
+        if not rows:
+            print("  No data found.")
+            return
+
+        all_months = sorted({r[1] for r in rows})
+        cell: dict[str, dict[str, float]] = {}
+        for name, month, avg in rows:
+            cell.setdefault(name, {})[month] = avg
+
+        # Sort species by overall mean avg descending
+        species_order = sorted(cell.keys(),
+                               key=lambda n: -sum(cell[n].values()) / len(cell[n]))
+
+        col_w = 8
+        name_w = 35
+        print()
+        header = f"  {'Species':<{name_w}}" + "".join(f" {m:>{col_w}}" for m in all_months)
+        print(header)
+        print(f"  {'-'*name_w}" + "".join(f" {'-'*col_w}" for _ in all_months))
+        for name in species_order:
+            row_str = f"  {name:<{name_w}}"
+            for m in all_months:
+                val = cell[name].get(m)
+                row_str += f" {val:>{col_w}.2f}" if val is not None else f" {'—':>{col_w}}"
+            print(row_str)
+
+
 def main():
     parser = argparse.ArgumentParser(prog='query_detections',
                     description='List observations in bird monitoring database')
@@ -225,6 +313,10 @@ def main():
         metavar="DATE", help="start date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
     parser.add_argument('--to', dest="date_to", default="",
         metavar="DATE", help="end date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
+    parser.add_argument('-A', '--avg', action='store_true',
+        help="show average detections per day per species")
+    parser.add_argument('-m', '--monthly', action='store_true',
+        help="with --avg, break down averages by month (pivot table)")
     parser.add_argument('-p', '--play', action='store_true',
         help="play audio for each detection (requires -s; uses afplay on macOS)")
     parser.add_argument('--recordings-dir', dest="recordings_dir", default=None,
@@ -247,6 +339,10 @@ def main():
 
     list_db(conn, args.all, args.confidence, species,
             args.event, date_from, date_to)
+
+    if args.avg:
+        avg_detections(conn, args.confidence, species, args.event,
+                       date_from, date_to, monthly=args.monthly)
 
     if args.play:
         recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
