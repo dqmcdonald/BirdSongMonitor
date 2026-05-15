@@ -130,8 +130,9 @@ def main():
         description='Process bird song recordings through BirdNET and store detections in a SQLite database',
     )
     parser.add_argument('directory', help='Directory of WAV recordings to process')
-    parser.add_argument('-c', '--confidence', dest='confidence', type=float, default=0.0,
-        help='Minimum confidence threshold (default: 0.0)')
+    parser.add_argument('-c', '--confidence', dest='confidence', type=float,
+    default=0.25,
+        help='Minimum confidence threshold (default: 0.25)')
     args = parser.parse_args()
 
     if not os.path.exists(args.directory):

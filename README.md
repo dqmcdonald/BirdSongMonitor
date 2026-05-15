@@ -28,7 +28,7 @@ python proc_recordings.py <directory> [-c CONFIDENCE]
 | Option | Default | Description |
 |--------|---------|-------------|
 | `directory` | (required) | Directory of WAV recordings |
-| `-c`, `--confidence` | `0.0` | Minimum BirdNET confidence threshold |
+| `-c`, `--confidence` | `0.25` | Minimum BirdNET confidence threshold |
 
 ### `query_detections.py` — query a database
 
