@@ -28,7 +28,7 @@ python proc_recordings.py <directory> [-c CONFIDENCE]
 | Option | Default | Description |
 |--------|---------|-------------|
 | `directory` | (required) | Directory of WAV recordings |
-| `-c`, `--confidence` | `0.25` | Minimum BirdNET confidence threshold |
+| `-c`, `--confidence` | `0.75` | Minimum BirdNET confidence threshold |
 
 ### `query_detections.py` — query a database
 
@@ -41,7 +41,7 @@ python query_detections.py <db_name.db> [options]
 | Option | Default | Description |
 |--------|---------|-------------|
 | `db_name` | (required) | Path to the SQLite database |
-| `-c`, `--confidence` | `0.25` | Minimum confidence threshold |
+| `-c`, `--confidence` | `0.75` | Minimum confidence threshold |
 | `-e`, `--event` | (all) | Filter by event: `Sunrise`, `Sunset`, or `Day` |
 | `-s`, `--species` | (all) | Show detailed rows for a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-a`, `--all` | off | Dump every detection row |
@@ -74,7 +74,7 @@ python plot_detections.py <db_name.db> [options]
 |--------|---------|-------------|
 | `db_name` | (required) | Path to the SQLite database |
 | `--plot TYPE` | `daily` | Chart type — see below |
-| `-c`, `--confidence` | `0.25` | Minimum confidence threshold |
+| `-c`, `--confidence` | `0.75` | Minimum confidence threshold |
 | `-e`, `--event` | `All` | Filter by event: `All`, `Sunrise`, `Sunset`, `Day` |
 | `-s`, `--species` | (all) | Limit to a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-n`, `--top-n` | `20` | Number of species for heatmap / topn / confidence / events plots |
@@ -108,7 +108,7 @@ python gui_plot_detections.py [db_name.db] [options]
 | Option | Default | Description |
 |--------|---------|-------------|
 | `db_name` | (none) | Database to open on launch; can also be selected via Browse |
-| `-c`, `--confidence` | `0.25` | Initial confidence threshold |
+| `-c`, `--confidence` | `0.75` | Initial confidence threshold |
 | `-e`, `--event` | `All` | Initial event filter |
 | `-s`, `--species` | (all) | Initial species filter (partial match supported) |
 | `--site NAME` | (db filename) | Initial site label for plot titles |

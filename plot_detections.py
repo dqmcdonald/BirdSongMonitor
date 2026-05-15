@@ -666,8 +666,8 @@ def main():
         "-c", "--confidence",
         dest="confidence",
         type=float,
-        default=0.25,
-        help="Minimum confidence threshold (default: 0.25)",
+        default=0.75,
+        help="Minimum confidence threshold (default: 0.75)",
     )
     parser.add_argument(
         "-e", "--event",

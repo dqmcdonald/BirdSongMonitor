@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import calendar
+import datetime
 import os
 import sqlite3
 import tkinter as tk
@@ -98,61 +100,102 @@ def _tip(widget: tk.Widget, text: str) -> tk.Widget:
 
 
 # ---------------------------------------------------------------------------
-# Species picker dialog
+# Date picker dialog
 # ---------------------------------------------------------------------------
 
-def _pick_species(db_path: str, pattern: str, parent: tk.Tk) -> str | None:
-    conn = sqlite3.connect(db_path)
-    all_names = [row[0] for row in conn.execute(
-        "SELECT DISTINCT common_name FROM detection "
-        "WHERE common_name != 'DUMMY' ORDER BY common_name"
-    ).fetchall()]
-    conn.close()
+class _DatePickerDialog(tk.Toplevel):
+    """Modal calendar dialog.  .result is 'YYYY-MM-DD', '' (cleared), or None (cancelled)."""
 
-    lower = pattern.lower()
-    matches = [n for n in all_names if lower in n.lower()]
-
-    if not matches:
-        messagebox.showwarning("No match", f"No species match '{pattern}'.", parent=parent)
-        return None
-    if len(matches) == 1:
-        return matches[0]
-    exact = [m for m in matches if m.lower() == lower]
-    if len(exact) == 1:
-        return exact[0]
-
-    return _SpeciesDialog(parent, matches, pattern).result
-
-
-class _SpeciesDialog(tk.Toplevel):
-    def __init__(self, parent: tk.Tk, matches: list[str], pattern: str):
+    def __init__(self, parent: tk.Tk, initial: str = ""):
         super().__init__(parent)
-        self.title("Select species")
+        self.title("Pick a date")
         self.resizable(False, False)
         self.result: str | None = None
         self.transient(parent)
 
-        ttk.Label(self, text=f"Multiple species match '{pattern}':").pack(padx=12, pady=(12, 4))
+        today = datetime.date.today()
+        try:
+            self._selected = datetime.date.fromisoformat(initial) if initial else today
+        except ValueError:
+            self._selected = today
+        self._year  = self._selected.year
+        self._month = self._selected.month
 
-        lb = tk.Listbox(self, height=min(12, len(matches)), width=42, selectmode=tk.SINGLE)
-        for name in matches:
-            lb.insert(tk.END, name)
-        lb.selection_set(0)
-        lb.pack(padx=12, pady=4)
-        lb.bind("<Double-Button-1>", lambda _: self._ok(lb))
-
-        btns = ttk.Frame(self)
-        btns.pack(pady=(4, 12))
-        ttk.Button(btns, text="Select", command=lambda: self._ok(lb)).pack(side=tk.LEFT, padx=4)
-        ttk.Button(btns, text="Cancel", command=self.destroy).pack(side=tk.LEFT, padx=4)
-
+        self._build()
         self.grab_set()
         self.wait_window()
 
-    def _ok(self, lb: tk.Listbox):
-        sel = lb.curselection()
-        if sel:
-            self.result = lb.get(sel[0])
+    def _build(self):
+        hdr = ttk.Frame(self, padding=(4, 6, 4, 2))
+        hdr.pack(fill=tk.X)
+        ttk.Button(hdr, text="◀", width=2, command=self._prev_month).pack(side=tk.LEFT)
+        self._hdr_lbl = ttk.Label(hdr, anchor=tk.CENTER, width=16)
+        self._hdr_lbl.pack(side=tk.LEFT, expand=True)
+        ttk.Button(hdr, text="▶", width=2, command=self._next_month).pack(side=tk.RIGHT)
+
+        grid = ttk.Frame(self, padding=(4, 2))
+        grid.pack()
+        for col, name in enumerate(["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]):
+            ttk.Label(grid, text=name, width=4, anchor=tk.CENTER,
+                      font=("TkDefaultFont", 9, "bold")).grid(row=0, column=col, pady=(0, 2))
+
+        self._cells: list[tk.Label] = []
+        for i in range(42):
+            cell = tk.Label(grid, width=4, anchor=tk.CENTER,
+                            font=("TkDefaultFont", 9), relief=tk.FLAT, padx=2, pady=2)
+            cell.grid(row=i // 7 + 1, column=i % 7, padx=1, pady=1)
+            self._cells.append(cell)
+        self._cell_default_bg = self._cells[0].cget("bg")
+
+        foot = ttk.Frame(self, padding=(4, 2, 4, 6))
+        foot.pack(fill=tk.X)
+        ttk.Button(foot, text="Clear",  command=self._clear).pack(side=tk.LEFT, padx=2)
+        ttk.Button(foot, text="Today",  command=lambda: self._select(datetime.date.today())).pack(side=tk.LEFT, padx=2)
+        ttk.Button(foot, text="Cancel", command=self.destroy).pack(side=tk.RIGHT, padx=2)
+
+        self._refresh()
+
+    def _refresh(self):
+        today = datetime.date.today()
+        self._hdr_lbl.config(
+            text=datetime.date(self._year, self._month, 1).strftime("%B %Y"))
+        first_wd   = datetime.date(self._year, self._month, 1).weekday()
+        days_in    = calendar.monthrange(self._year, self._month)[1]
+        for i, cell in enumerate(self._cells):
+            day = i - first_wd + 1
+            if day < 1 or day > days_in:
+                cell.config(text="", bg=self._cell_default_bg, cursor="arrow", relief=tk.FLAT)
+                cell.unbind("<Button-1>")
+            else:
+                d        = datetime.date(self._year, self._month, day)
+                selected = (d == self._selected)
+                cell.config(
+                    text=str(day),
+                    bg="steelblue" if selected else ("#ddeeff" if d == today else self._cell_default_bg),
+                    fg="white" if selected else "black",
+                    cursor="hand2",
+                    relief=tk.RAISED if selected else tk.FLAT,
+                )
+                cell.bind("<Button-1>", lambda _e, dt=d: self._select(dt))
+
+    def _prev_month(self):
+        self._month -= 1
+        if self._month < 1:
+            self._month, self._year = 12, self._year - 1
+        self._refresh()
+
+    def _next_month(self):
+        self._month += 1
+        if self._month > 12:
+            self._month, self._year = 1, self._year + 1
+        self._refresh()
+
+    def _select(self, date: datetime.date):
+        self.result = date.strftime("%Y-%m-%d")
+        self.destroy()
+
+    def _clear(self):
+        self.result = ""
         self.destroy()
 
 
@@ -168,7 +211,7 @@ class App:
 
         # Shared controls
         self.db_path    = tk.StringVar(value=args.db_name    if args and args.db_name    else "")
-        self.confidence = tk.DoubleVar(value=args.confidence if args                     else 0.25)
+        self.confidence = tk.DoubleVar(value=args.confidence if args                     else 0.75)
         self.event      = tk.StringVar(value=args.event      if args and args.event      else "All")
         self.species    = tk.StringVar(value=args.species    if args and args.species    else "")
         self.date_from  = tk.StringVar()
@@ -186,9 +229,11 @@ class App:
 
         self._build()
         self._update_controls()
+        self._load_species()
 
         # Re-plot automatically when colormap changes
         self.cmap.trace_add("write", lambda *_: self._plot(silent=True))
+        self.db_path.trace_add("write", lambda *_: self._load_species())
 
         if self.db_path.get():
             self.root.after(100, self._plot)
@@ -220,13 +265,15 @@ class App:
 
         _tip(ttk.Label(r1, text="Confidence:"),
              "Minimum BirdNET confidence score (0–1). Detections below this value are excluded.").pack(side=tk.LEFT)
-        _tip(ttk.Scale(
-            r1, from_=0, to=1, orient=tk.HORIZONTAL,
-            variable=self.confidence, length=110,
-            command=lambda _: self._conf_lbl.config(text=f"{self.confidence.get():.2f}"),
-        ), "Minimum BirdNET confidence score (0–1). Detections below this value are excluded.").pack(side=tk.LEFT, padx=2)
-        self._conf_lbl = ttk.Label(r1, text=f"{self.confidence.get():.2f}", width=4)
-        self._conf_lbl.pack(side=tk.LEFT, padx=(0, 12))
+        vcmd = (self.root.register(self._validate_conf_key), "%P")
+        self._conf_entry = _tip(
+            ttk.Entry(r1, width=5, validate="key", validatecommand=vcmd),
+            "Minimum BirdNET confidence score (0–1). Press Enter or Tab to apply.",
+        )
+        self._conf_entry.insert(0, f"{self.confidence.get():.2f}")
+        self._conf_entry.bind("<Return>", self._commit_confidence)
+        self._conf_entry.bind("<FocusOut>", self._commit_confidence)
+        self._conf_entry.pack(side=tk.LEFT, padx=(2, 12))
 
         _tip(ttk.Label(r1, text="Event:"),
              "Filter detections by recording event type.").pack(side=tk.LEFT)
@@ -240,18 +287,28 @@ class App:
         r2.pack(fill=tk.X, pady=2)
 
         _tip(ttk.Label(r2, text="Species:"),
-             "Filter by species common name. Accepts partial, case-insensitive text — prompts if ambiguous.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.species, width=20),
-             "Filter by species common name. Accepts partial, case-insensitive text — prompts if ambiguous.").pack(side=tk.LEFT, padx=(2, 8))
+             "Filter by species. Select from the list or leave blank for all species.").pack(side=tk.LEFT)
+        self._species_combo = _tip(
+            ttk.Combobox(r2, textvariable=self.species, width=22, state="readonly"),
+            "Filter by species. Select from the list or leave blank for all species.",
+        )
+        self._species_combo.pack(side=tk.LEFT, padx=(2, 8))
 
         _tip(ttk.Label(r2, text="From:"),
-             "Start date filter, inclusive (YYYY-MM-DD or DD-MM-YYYY). Leave blank for no lower bound.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.date_from, width=12),
-             "Start date filter, inclusive (YYYY-MM-DD or DD-MM-YYYY). Leave blank for no lower bound.").pack(side=tk.LEFT, padx=(2, 6))
+             "Start date filter, inclusive. Leave blank for no lower bound.").pack(side=tk.LEFT)
+        _tip(ttk.Entry(r2, textvariable=self.date_from, width=10),
+             "Start date filter (YYYY-MM-DD). Leave blank for no lower bound.").pack(side=tk.LEFT, padx=(2, 1))
+        _tip(ttk.Button(r2, text="▾", width=2,
+                        command=lambda: self._pick_date(self.date_from)),
+             "Open calendar to pick start date.").pack(side=tk.LEFT, padx=(0, 6))
+
         _tip(ttk.Label(r2, text="To:"),
-             "End date filter, inclusive (YYYY-MM-DD or DD-MM-YYYY). Leave blank for no upper bound.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.date_to, width=12),
-             "End date filter, inclusive (YYYY-MM-DD or DD-MM-YYYY). Leave blank for no upper bound.").pack(side=tk.LEFT, padx=(2, 8))
+             "End date filter, inclusive. Leave blank for no upper bound.").pack(side=tk.LEFT)
+        _tip(ttk.Entry(r2, textvariable=self.date_to, width=10),
+             "End date filter (YYYY-MM-DD). Leave blank for no upper bound.").pack(side=tk.LEFT, padx=(2, 1))
+        _tip(ttk.Button(r2, text="▾", width=2,
+                        command=lambda: self._pick_date(self.date_to)),
+             "Open calendar to pick end date.").pack(side=tk.LEFT, padx=(0, 8))
 
         _tip(ttk.Label(r2, text="Site:"),
              "Site name shown in plot titles. Defaults to the database filename if left blank.").pack(side=tk.LEFT)
@@ -279,10 +336,14 @@ class App:
             "Bar/line colour for single-species daily, accumulation, and top-N plots.")
         self._color_lbl.pack(side=tk.LEFT)
         self._color_btn = _tip(
-            tk.Button(grp, bg=self.plot_color.get(), width=3, relief=tk.RAISED,
-                      command=self._pick_color),
+            tk.Canvas(grp, width=24, height=24, highlightthickness=1,
+                      highlightbackground="gray", cursor="hand2"),
             "Click to choose the bar/line colour for single-species daily, accumulation, and top-N plots.",
         )
+        self._color_swatch = self._color_btn.create_rectangle(
+            2, 2, 22, 22, fill=self.plot_color.get(), outline="")
+        self._color_btn.bind("<Button-1>", lambda e: self._pick_color()
+                             if self._color_btn["cursor"] == "hand2" else None)
         self._color_btn.pack(side=tk.LEFT, padx=(2, 12))
 
         self._lw_lbl = _tip(ttk.Label(grp, text="Line width:"),
@@ -347,7 +408,7 @@ class App:
             return "readonly" if name in relevant else tk.DISABLED
 
         self._color_lbl.config(state=_state("color"))
-        self._color_btn.config(state=_state("color"))
+        self._color_btn.config(cursor="hand2" if _state("color") == tk.NORMAL else "")
         self._lw_lbl.config(state=_state("linewidth"))
         self._lw_spin.config(state=_state("linewidth"))
         self._cmap_lbl.config(state=_state("colormap"))
@@ -357,12 +418,35 @@ class App:
     # Actions
     # ------------------------------------------------------------------
 
+    def _validate_conf_key(self, value):
+        """Allow only partial numeric input while typing (e.g. "0.", "0.2")."""
+        if value == "":
+            return True
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return value in (".", "-")
+
+    def _commit_confidence(self, event=None):
+        try:
+            v = float(self._conf_entry.get())
+        except ValueError:
+            self._conf_entry.delete(0, tk.END)
+            self._conf_entry.insert(0, f"{self.confidence.get():.2f}")
+            return
+        v = max(0.0, min(1.0, v))
+        self.confidence.set(v)
+        self._conf_entry.delete(0, tk.END)
+        self._conf_entry.insert(0, f"{v:.2f}")
+        self._plot(silent=True)
+
     def _pick_color(self):
         _, hex_color = colorchooser.askcolor(
             color=self.plot_color.get(), title="Choose color", parent=self.root)
         if hex_color:
             self.plot_color.set(hex_color)
-            self._color_btn.config(bg=hex_color)
+            self._color_btn.itemconfig(self._color_swatch, fill=hex_color)
             self._plot(silent=True)
 
     def _browse(self):
@@ -377,11 +461,30 @@ class App:
     def _active_tab(self) -> str:
         return PLOT_TYPES[self._nb.index(self._nb.select())]
 
+    def _load_species(self):
+        db = self.db_path.get().strip()
+        if not db or not os.path.exists(db):
+            self._species_combo["values"] = [""]
+            return
+        try:
+            conn  = sqlite3.connect(db)
+            names = [row[0] for row in conn.execute(
+                "SELECT DISTINCT common_name FROM detection "
+                "WHERE common_name != 'DUMMY' ORDER BY common_name"
+            ).fetchall()]
+            conn.close()
+            self._species_combo["values"] = [""] + names
+        except Exception:
+            self._species_combo["values"] = [""]
+
+    def _pick_date(self, var: tk.StringVar):
+        dlg = _DatePickerDialog(self.root, initial=var.get().strip())
+        if dlg.result is not None:
+            var.set(dlg.result)
+            self._plot(silent=True)
+
     def _resolve_species(self, db: str) -> str | None:
-        pattern = self.species.get().strip()
-        if not pattern:
-            return ""
-        return _pick_species(db, pattern, self.root)
+        return self.species.get().strip()
 
     def _plot(self, silent: bool = False):
         db = self.db_path.get().strip()
@@ -479,9 +582,9 @@ def main():
     )
     parser.add_argument("db_name", nargs="?", default=None,
                         help="SQLite database to open on launch")
-    parser.add_argument("-c", "--confidence", type=float, default=0.25,
+    parser.add_argument("-c", "--confidence", type=float, default=0.75,
                         metavar="CONF",
-                        help="minimum confidence threshold (default: 0.25)")
+                        help="minimum confidence threshold (default: 0.75)")
     parser.add_argument("-e", "--event", default=None,
                         choices=["All", "Sunrise", "Sunset", "Day"],
                         help="recording event filter (default: All)")

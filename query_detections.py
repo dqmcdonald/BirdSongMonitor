@@ -541,7 +541,7 @@ def main():
     parser.add_argument('-a', '--all', action='store_true', 
         help="list all detections in the database")
     parser.add_argument('-c', '--confidence', dest="confidence",
-        type=float, default=0.25, help="minimum confidence threshold (default: 0.25)")
+        type=float, default=0.75, help="minimum confidence threshold (default: 0.75)")
     parser.add_argument('-e', '--event', dest="event", 
         default="", help="specific event to list data for", 
         choices=['Sunrise','Sunset','Day'])
