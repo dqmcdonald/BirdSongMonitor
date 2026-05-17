@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 for _mod in ("birdnetlib", "birdnetlib.analyzer"):
     sys.modules.setdefault(_mod, MagicMock())
 
-import pytest
+import pytest  # noqa: E402
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)

@@ -3,10 +3,6 @@
 #
 # D. Q. McDonald — August 2025
 
-# Recording location: Christchurch, New Zealand
-LONGITUDE =  172.72602916819974
-LATITUDE =  -43.62674558206582
-
 import sys
 import os.path
 import argparse
@@ -16,6 +12,10 @@ from datetime import datetime
 import sqlite3
 import glob
 from tqdm import tqdm
+
+# Recording location: Christchurch, New Zealand
+LONGITUDE = 172.72602916819974
+LATITUDE = -43.62674558206582
 
 # Module-level so the model is loaded once; initialisation takes several seconds.
 analyzer = Analyzer()

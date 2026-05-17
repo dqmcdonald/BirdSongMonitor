@@ -11,8 +11,6 @@ Fixture species summary (threshold 0.25):
 import os
 import sys
 
-import pytest
-
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
@@ -266,8 +264,8 @@ class TestLifeList:
         out = capsys.readouterr().out
         # Starling: both detections on 2026-03-12 → obs_days = 1 → marked *
         assert "detected on only one day" in out
-        lines = [l for l in out.splitlines() if "European Starling" in l]
-        assert any("*" in l for l in lines)
+        lines = [line for line in out.splitlines() if "European Starling" in line]
+        assert any("*" in line for line in lines)
 
     def test_no_data_message(self, fixture_conn, capsys):
         query_detections.life_list(fixture_conn, 0.99, "", "", "", "")
@@ -277,8 +275,8 @@ class TestLifeList:
     def test_silvereye_first_seen_january(self, fixture_conn, capsys):
         query_detections.life_list(fixture_conn, 0.25, "", "", "", "")
         out = capsys.readouterr().out
-        lines = [l for l in out.splitlines() if "Silvereye" in l]
-        assert any("03/01/2026" in l for l in lines)
+        lines = [line for line in out.splitlines() if "Silvereye" in line]
+        assert any("03/01/2026" in line for line in lines)
 
 
 # ===========================================================================

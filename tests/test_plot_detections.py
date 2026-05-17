@@ -9,8 +9,6 @@ import sys
 import matplotlib
 matplotlib.use("Agg")  # must be set before pyplot is imported anywhere
 
-import pytest
-
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
@@ -185,7 +183,6 @@ class TestLoadHeatmapData:
     def test_active_hours_only_includes_hours_with_data(self, fixture_db_path):
         _, hours, matrix = plot_detections.load_heatmap_data(
             fixture_db_path, 0.25, "", "All", 10)
-        import numpy as np
         for i, h in enumerate(hours):
             assert matrix[:, i].sum() > 0
 
