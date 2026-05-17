@@ -1,0 +1,204 @@
+BirdSong Monitor — Architecture
+================================
+
+Overview
+--------
+Python pipeline for processing bird song recordings captured at sunrise/sunset/noon
+using a custom hardware recorder (Teensy 3.6 + MEMS microphone).  Recordings are
+analysed with BirdNET via the birdnetlib library and results are stored in SQLite
+databases.
+
+Location is hardcoded for Christchurch, New Zealand:
+  LATITUDE  = -43.62674558206582
+  LONGITUDE = 172.72602916819974
+
+Pipeline
+--------
+WAV files  →  proc_recordings.py  →  SQLite DB  →  query_detections.py
+                                                 →  plot_detections.py
+                                                 →  gui_plot_detections.py
+
+
+Scripts
+-------
+
+proc_recordings.py
+  Processes a directory of WAV recordings through BirdNET and stores detections in
+  a SQLite database.
+
+  Usage:
+    python proc_recordings.py <directory> [-c CONFIDENCE]
+
+  Arguments:
+    directory     Directory of .WAV recordings to process
+    -c CONFIDENCE Minimum confidence threshold (default: 0.25)
+
+  Behaviour:
+    - The BirdNET Analyzer model is loaded once at module import (takes several seconds).
+    - The SQLite database is named after the recording directory (<basename>.db) and
+      created in the current working directory.
+    - All previously processed filenames are loaded into a set on startup so per-file
+      duplicate checks are O(1).
+    - For each WAV file: parses date/event from filename, skips if already in DB,
+      runs birdnetlib Recording.analyze(), then inserts one DUMMY sentinel row (so
+      empty files are not re-analysed) followed by one row per detection.
+    - Uses tqdm for progress display.
+
+  Key functions:
+    create_db(recordings_dir)          Create or open the SQLite DB.
+    extract_date_and_event(filename)   Parse date and event from filename.
+    load_processed_files(conn)         Return set of already-processed filenames.
+    process_rec(filename, conn, ...)   Analyse one WAV and insert results.
+    proc_recordings(directory, conn)   Iterate over all WAV files in directory.
+
+
+query_detections.py
+  CLI query and statistics tool for the SQLite detection database.
+
+  Usage:
+    python query_detections.py <db_name.db> [options]
+
+  Options:
+    -c CONFIDENCE       Minimum confidence (default: 0.75)
+    -e EVENT            Filter by event: Sunrise, Sunset, or Day
+    -s SPECIES          Filter by common name (partial/case-insensitive match)
+    --from DATE         Start date inclusive (DD/MM/YYYY)
+    --to   DATE         End date inclusive (DD/MM/YYYY)
+    -a / --all          List every individual detection row
+    -A / --avg          Average detections per day per species
+    -m / --monthly      With --avg: monthly pivot table
+    --first-last        First and last detection date per species
+    --conf-stats        Min/max/mean confidence per species
+    --life-list         Species ordered by date first detected
+    --cooccur           Top species co-occurrences within same recording
+    --streaks           Longest consecutive-day detection streak per species
+    -p / --play         Play audio for detections (requires -s; uses afplay, macOS only)
+    --recordings-dir    Directory containing WAV files for playback
+
+  Key functions:
+    resolve_species(conn, pattern)     Case-insensitive partial match against DB names.
+    list_db(...)                       Print species counts and optionally all rows.
+    avg_detections(...)                Average detections per day, optionally by month.
+    first_last_seen(...)               First and last detection date per species.
+    conf_stats(...)                    Confidence score summary per species.
+    life_list(...)                     Species ordered by first detection date.
+    cooccurrence(...)                  Species co-occurrence within the same file.
+    detection_streaks(...)             Longest consecutive-day streaks and gaps.
+    play_detection(...)                Extract and play a WAV segment via afplay.
+
+
+plot_detections.py
+  Matplotlib plotting tool with six chart types.
+
+  Usage:
+    python plot_detections.py <db_name.db> [options]
+
+  Options:
+    --plot TYPE         Chart type: daily (default), heatmap, confidence,
+                        accumulation, topn, events
+    -c CONFIDENCE       Minimum confidence (default: 0.75)
+    -e EVENT            Filter by event: All (default), Sunrise, Sunset, Day
+    -s SPECIES          Filter by common name
+    -n TOP_N            Number of species for heatmap/topn/confidence/events (default: 20)
+    -o OUTPUT           Output PNG path (default: <db_stem>[_<plot>].png)
+    --cmap CMAP         Matplotlib colormap for heatmap (default: YlOrRd)
+    --site NAME         Site name for plot titles
+    --from / --to DATE  Date range filter (DD/MM/YYYY)
+
+  Chart types:
+    daily         Stacked bar chart of detections per day.
+    heatmap       Species × hour-of-day detection heatmap.
+    confidence    Confidence score histograms per species.
+    accumulation  Cumulative unique-species count over time (step chart).
+    topn          Horizontal bar chart of top-N species by total detections.
+    events        Grouped bar chart comparing detections across recording events.
+
+  For single-species daily plots, a bird photo is fetched from
+  bird_photos/<Species_Name>.png or (fallback) the Wikipedia MediaWiki API.
+
+
+gui_plot_detections.py
+  Tkinter GUI front-end that wraps all six plot types from plot_detections.py.
+
+  Usage:
+    python gui_plot_detections.py [db_name.db] [-c CONFIDENCE] [-e EVENT]
+                                  [-s SPECIES] [--site NAME]
+
+  Features:
+    - Tabbed notebook with one tab per chart type.
+    - Shared controls: database path (Browse button), confidence threshold,
+      event filter, species dropdown (populated from DB), date-from/to with
+      calendar picker, and site label.
+    - Appearance panel (context-sensitive): bar/line colour picker, line-width
+      spinner, and colormap selector (only controls relevant to the active tab
+      are enabled).
+    - Plots re-render automatically on most control changes.
+    - Save button exports the current plot to PNG, PDF, or SVG.
+
+  Key components:
+    App                  Main application class; owns all tk variables and figures.
+    _DatePickerDialog    Modal calendar widget for date selection.
+    _Tooltip             Hover-delay tooltip for all interactive controls.
+
+
+species_list.py
+  Utility that prints the BirdNET expected species list for the hardcoded
+  Christchurch, NZ location using birdnetlib.SpeciesList.
+
+  Usage:
+    python species_list.py
+
+
+Database Schema
+---------------
+Single SQLite table: detection
+
+  Column          Type    Notes
+  --------------- ------- -------------------------------------------------------
+  file_name       TEXT    Basename of the source WAV file
+  event           TEXT    Recording event: Sunrise, Sunset, or Day
+  date            TEXT    ISO datetime parsed from filename (YYYY-MM-DD HH:MM:SS)
+  common_name     TEXT    BirdNET common name; DUMMY for sentinel rows
+  scientific_name TEXT    BirdNET scientific name; DUMMY for sentinel rows
+  start_time      REAL    Seconds into the recording where detection starts
+  end_time        REAL    Seconds into the recording where detection ends
+  confidence      REAL    BirdNET confidence 0–1; 0.0 for sentinel rows
+
+  Sentinel rows (common_name = 'DUMMY', confidence = 0.0) are inserted for every
+  processed file so that files with no detections are not re-analysed on the next
+  run.  Exclude them in queries with:
+    WHERE confidence > 0 AND common_name != 'DUMMY'
+
+
+WAV Filename Format
+-------------------
+Two formats are parsed by extract_date_and_event():
+
+  Old (5 components):  YYYY_MM_DD_HH_MM.WAV         — event defaults to Sunrise
+  New (6 components):  <EVENT>_YYYY_MM_DD_HH_MM.WAV — event prefix codes:
+                         SR = Sunrise
+                         SS = Sunset
+                         DA = Day
+
+
+Data Layout
+-----------
+Recordings for each site are kept in their own directory.  The processing script
+creates a database named after that directory (<site>.db) in the current working
+directory.
+
+Bird photos (PNG) live in bird_photos/ named <Common_Name_With_Underscores>.png
+and are used by plot_detections.py when plotting a single species.
+
+
+Dependencies
+------------
+  birdnetlib    BirdNET-Analyzer Python wrapper
+  matplotlib    Plotting
+  numpy         Numerical operations in plot_detections.py
+  Pillow (PIL)  Bird photo handling
+  requests      Wikipedia image fallback
+  tqdm          Progress bar in proc_recordings.py
+  tkinter       GUI (standard library on macOS/Windows)
+
+Install with pip — no requirements.txt exists.
