@@ -130,8 +130,9 @@ gui_plot_detections.py
       event filter, species dropdown (populated from DB), date-from/to with
       calendar picker, and site label.
     - Appearance panel (context-sensitive): bar/line colour picker, line-width
-      spinner, and colormap selector (only controls relevant to the active tab
-      are enabled).
+      spinner, colormap selector (only controls relevant to the active tab are
+      enabled), and a Style dropdown populated from plt.style.available that
+      applies a matplotlib style sheet to all plots.
     - Plots re-render automatically on most control changes.
     - Save button exports the current plot to PNG, PDF, or SVG.
 
