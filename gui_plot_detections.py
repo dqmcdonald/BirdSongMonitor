@@ -534,30 +534,36 @@ class App:
                                     parent=self.root)
                 return
             img = fetch_species_image(species) if species else None
-            plot_daily(dates, counts, conf, label, species, event, img, fig=fig, color=color)
+            plot_daily(dates, counts, conf, label, species, event, img, fig=fig,
+                       color=color, date_from=date_from, date_to=date_to)
 
         elif plot_type == "heatmap":
             sp_list, hours, matrix = load_heatmap_data(
                 db, conf, species, event, n, date_from, date_to)
-            plot_heatmap(sp_list, hours, matrix, conf, label, species, event, cmap, fig=fig)
+            plot_heatmap(sp_list, hours, matrix, conf, label, species, event, cmap, fig=fig,
+                         date_from=date_from, date_to=date_to)
 
         elif plot_type == "confidence":
             data = load_confidence_data(db, conf, species, event, n, date_from, date_to)
-            plot_confidence(data, conf, label, species, event, fig=fig)
+            plot_confidence(data, conf, label, species, event, fig=fig,
+                            date_from=date_from, date_to=date_to)
 
         elif plot_type == "accumulation":
             dates, counts = load_accumulation_data(
                 db, conf, species, event, date_from, date_to)
             plot_accumulation(dates, counts, conf, label, species, event, fig=fig,
-                              color=color, linewidth=linewidth)
+                              color=color, linewidth=linewidth,
+                              date_from=date_from, date_to=date_to)
 
         elif plot_type == "topn":
             data = load_topn_data(db, conf, species, event, n, date_from, date_to)
-            plot_topn(data, conf, label, species, event, n, fig=fig, color=color)
+            plot_topn(data, conf, label, species, event, n, fig=fig, color=color,
+                      date_from=date_from, date_to=date_to)
 
         elif plot_type == "events":
             data, top_sp = load_event_comparison_data(db, conf, species, n, date_from, date_to)
-            plot_event_comparison(data, top_sp, conf, label, species, fig=fig)
+            plot_event_comparison(data, top_sp, conf, label, species, fig=fig,
+                                  date_from=date_from, date_to=date_to)
 
     def _save(self):
         plot_type = self._active_tab()
