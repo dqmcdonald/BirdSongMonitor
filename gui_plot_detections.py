@@ -12,6 +12,7 @@ from tkinter import ttk, filedialog, messagebox, colorchooser
 
 import matplotlib
 matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
@@ -29,6 +30,7 @@ from plot_detections import (
 PLOT_TYPES = ["daily", "heatmap", "confidence", "accumulation", "topn", "events"]
 TAB_LABELS = ["Daily", "Heatmap", "Confidence", "Accumulation", "Top-N", "Events"]
 COLORMAPS  = ["YlOrRd", "viridis", "plasma", "Blues", "Greens", "Oranges", "hot", "cool", "RdYlBu"]
+STYLES     = ["default"] + sorted(s for s in plt.style.available if not s.startswith("_"))
 
 TAB_HELP = {
     "daily":        "Stacked bar chart of detections per day.",
@@ -239,6 +241,7 @@ class App:
         self.cmap       = tk.StringVar(value="YlOrRd")
         self.plot_color = tk.StringVar(value="steelblue")
         self.linewidth  = tk.DoubleVar(value=1.5)
+        self.plot_style = tk.StringVar(value="default")
 
         self._figs:    dict[str, Figure]             = {}
         self._canvases: dict[str, FigureCanvasTkAgg] = {}
@@ -247,8 +250,9 @@ class App:
         self._update_controls()
         self._load_species()
 
-        # Re-plot automatically when colormap changes
-        self.cmap.trace_add("write", lambda *_: self._plot(silent=True))
+        # Re-plot automatically when colormap or style changes
+        self.cmap.trace_add("write",       lambda *_: self._plot(silent=True))
+        self.plot_style.trace_add("write", lambda *_: self._plot(silent=True))
         self.db_path.trace_add("write", lambda *_: self._load_species())
 
         if self.db_path.get():
@@ -396,7 +400,15 @@ class App:
                          values=COLORMAPS, state="readonly"),
             "Matplotlib colormap used for the heatmap plot.",
         )
-        self._cmap_combo.pack(side=tk.LEFT, padx=2)
+        self._cmap_combo.pack(side=tk.LEFT, padx=(2, 12))
+
+        _tip(ttk.Label(grp, text="Style:"),
+             "Matplotlib style sheet applied to all plots.").pack(side=tk.LEFT)
+        _tip(
+            ttk.Combobox(grp, textvariable=self.plot_style, width=18,
+                         values=STYLES, state="readonly"),
+            "Matplotlib style sheet applied to all plots.",
+        ).pack(side=tk.LEFT, padx=2)
 
     def _build_notebook(self, parent: ttk.Frame):
         self._nb = ttk.Notebook(parent)
@@ -545,8 +557,9 @@ class App:
         fig.clear()
 
         try:
-            self._render(plot_type, fig, db, conf, event, sp,
-                         date_from, date_to, label, n, cmap, color, linewidth)
+            with plt.style.context(self.plot_style.get()):
+                self._render(plot_type, fig, db, conf, event, sp,
+                             date_from, date_to, label, n, cmap, color, linewidth)
         except Exception as exc:
             messagebox.showerror("Plot error", str(exc), parent=self.root)
             return
