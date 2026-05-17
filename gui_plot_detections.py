@@ -104,7 +104,7 @@ def _tip(widget: tk.Widget, text: str) -> tk.Widget:
 # ---------------------------------------------------------------------------
 
 class _DatePickerDialog(tk.Toplevel):
-    """Modal calendar dialog.  .result is 'YYYY-MM-DD', '' (cleared), or None (cancelled)."""
+    """Modal calendar dialog.  .result is 'DD/MM/YYYY', '' (cleared), or None (cancelled)."""
 
     def __init__(self, parent: tk.Tk, initial: str = ""):
         super().__init__(parent)
@@ -115,7 +115,13 @@ class _DatePickerDialog(tk.Toplevel):
 
         today = datetime.date.today()
         try:
-            self._selected = datetime.date.fromisoformat(initial) if initial else today
+            if initial:
+                if '/' in initial:
+                    self._selected = datetime.datetime.strptime(initial, "%d/%m/%Y").date()
+                else:
+                    self._selected = datetime.date.fromisoformat(initial)
+            else:
+                self._selected = today
         except ValueError:
             self._selected = today
         self._year  = self._selected.year
@@ -147,6 +153,16 @@ class _DatePickerDialog(tk.Toplevel):
             self._cells.append(cell)
         self._cell_default_bg = self._cells[0].cget("bg")
 
+        # Detect dark background so text remains readable
+        try:
+            r, g, b = self._cells[0].winfo_rgb(self._cell_default_bg)
+            _dark = (0.299 * r + 0.587 * g + 0.114 * b) / 65535 < 0.5
+        except Exception:
+            _dark = False
+        self._cell_fg    = "white"   if _dark else "black"
+        self._today_bg   = "#1a3a5c" if _dark else "#ddeeff"
+        self._today_fg   = "white"   if _dark else "black"
+
         foot = ttk.Frame(self, padding=(4, 2, 4, 6))
         foot.pack(fill=tk.X)
         ttk.Button(foot, text="Clear",  command=self._clear).pack(side=tk.LEFT, padx=2)
@@ -171,8 +187,8 @@ class _DatePickerDialog(tk.Toplevel):
                 selected = (d == self._selected)
                 cell.config(
                     text=str(day),
-                    bg="steelblue" if selected else ("#ddeeff" if d == today else self._cell_default_bg),
-                    fg="white" if selected else "black",
+                    bg="steelblue" if selected else (self._today_bg if d == today else self._cell_default_bg),
+                    fg="white" if selected else (self._today_fg if d == today else self._cell_fg),
                     cursor="hand2",
                     relief=tk.RAISED if selected else tk.FLAT,
                 )
@@ -191,7 +207,7 @@ class _DatePickerDialog(tk.Toplevel):
         self._refresh()
 
     def _select(self, date: datetime.date):
-        self.result = date.strftime("%Y-%m-%d")
+        self.result = date.strftime("%d/%m/%Y")
         self.destroy()
 
     def _clear(self):
@@ -277,10 +293,12 @@ class App:
 
         _tip(ttk.Label(r1, text="Event:"),
              "Filter detections by recording event type.").pack(side=tk.LEFT)
-        _tip(ttk.Combobox(
+        self._event_combo = _tip(ttk.Combobox(
             r1, textvariable=self.event, width=9,
             values=["All", "Sunrise", "Sunset", "Day"], state="readonly",
-        ), "Filter detections by recording event type: Sunrise, Sunset, Day, or All.").pack(side=tk.LEFT, padx=2)
+        ), "Filter detections by recording event type: Sunrise, Sunset, Day, or All.")
+        self._event_combo.pack(side=tk.LEFT, padx=2)
+        self._event_combo.bind("<<ComboboxSelected>>", lambda _: self._plot(silent=True))
 
         # Row 2 — species, dates, site, top-n, buttons
         r2 = ttk.Frame(parent)
@@ -293,27 +311,37 @@ class App:
             "Filter by species. Select from the list or leave blank for all species.",
         )
         self._species_combo.pack(side=tk.LEFT, padx=(2, 8))
+        self._species_combo.bind("<<ComboboxSelected>>", lambda _: self._plot(silent=True))
 
         _tip(ttk.Label(r2, text="From:"),
              "Start date filter, inclusive. Leave blank for no lower bound.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.date_from, width=10),
-             "Start date filter (YYYY-MM-DD). Leave blank for no lower bound.").pack(side=tk.LEFT, padx=(2, 1))
+        df_entry = _tip(ttk.Entry(r2, textvariable=self.date_from, width=10),
+             "Start date filter (DD/MM/YYYY). Leave blank for no lower bound.")
+        df_entry.pack(side=tk.LEFT, padx=(2, 1))
+        df_entry.bind("<Return>",   lambda _: self._plot(silent=True))
+        df_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
         _tip(ttk.Button(r2, text="▾", width=2,
                         command=lambda: self._pick_date(self.date_from)),
              "Open calendar to pick start date.").pack(side=tk.LEFT, padx=(0, 6))
 
         _tip(ttk.Label(r2, text="To:"),
              "End date filter, inclusive. Leave blank for no upper bound.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.date_to, width=10),
-             "End date filter (YYYY-MM-DD). Leave blank for no upper bound.").pack(side=tk.LEFT, padx=(2, 1))
+        dt_entry = _tip(ttk.Entry(r2, textvariable=self.date_to, width=10),
+             "End date filter (DD/MM/YYYY). Leave blank for no upper bound.")
+        dt_entry.pack(side=tk.LEFT, padx=(2, 1))
+        dt_entry.bind("<Return>",   lambda _: self._plot(silent=True))
+        dt_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
         _tip(ttk.Button(r2, text="▾", width=2,
                         command=lambda: self._pick_date(self.date_to)),
              "Open calendar to pick end date.").pack(side=tk.LEFT, padx=(0, 8))
 
         _tip(ttk.Label(r2, text="Site:"),
              "Site name shown in plot titles. Defaults to the database filename if left blank.").pack(side=tk.LEFT)
-        _tip(ttk.Entry(r2, textvariable=self.site, width=14),
-             "Site name shown in plot titles. Defaults to the database filename if left blank.").pack(side=tk.LEFT, padx=(2, 8))
+        site_entry = _tip(ttk.Entry(r2, textvariable=self.site, width=14),
+             "Site name shown in plot titles. Defaults to the database filename if left blank.")
+        site_entry.pack(side=tk.LEFT, padx=(2, 8))
+        site_entry.bind("<Return>",   lambda _: self._plot(silent=True))
+        site_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
 
         ttk.Separator(r2, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=6)
 

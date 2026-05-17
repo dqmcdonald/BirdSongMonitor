@@ -17,12 +17,23 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 def _parse_date(date_str: str) -> str:
-    """Accept YYYY-MM-DD or DD-MM-YYYY and return YYYY-MM-DD."""
+    """Accept DD/MM/YYYY or YYYY-MM-DD and return YYYY-MM-DD for SQLite."""
+    if not date_str:
+        return date_str
+    if '/' in date_str:
+        parts = date_str.split('/')
+        if len(parts) == 3:
+            return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    return date_str
+
+
+def _fmt_date(date_str: str) -> str:
+    """Convert YYYY-MM-DD to DD/MM/YYYY for display."""
     if not date_str:
         return date_str
     parts = date_str.split('-')
-    if len(parts) == 3 and len(parts[0]) == 2:
-        return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    if len(parts) == 3:
+        return f"{parts[2]}/{parts[1]}/{parts[0]}"
     return date_str
 
 
@@ -59,11 +70,11 @@ def _print_header(label: str, confidence: float, species: str, event: str,
     print()
     print(f"{label} (confidence > {confidence:.2f})")
     if date_from and date_to:
-        print(f"Date range: {date_from} to {date_to}")
+        print(f"Date range: {_fmt_date(date_from)} to {_fmt_date(date_to)}")
     elif date_from:
-        print(f"From: {date_from}")
+        print(f"From: {_fmt_date(date_from)}")
     elif date_to:
-        print(f"To: {date_to}")
+        print(f"To: {_fmt_date(date_to)}")
     if event:
         print(f"For event: {event}")
     if species:
@@ -234,7 +245,9 @@ def list_db( conn, list_all :bool, confidence : float, species : str,
             print(f"  {'-'*22} {'-'*10} {'-'*14} {'-'*6}  {'-'*30}")
             for file_name, event, date, _, start_time, end_time, conf in rows:
                 segment = f"{_fmt_time(start_time)}–{_fmt_time(end_time)}"
-                print(f"  {str(date):<22} {event:<10} {segment:<14} {conf:>6.3f}  {file_name}")
+                dt = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+                date_display = dt.strftime("%d/%m/%Y %H:%M:%S")
+                print(f"  {date_display:<22} {event:<10} {segment:<14} {conf:>6.3f}  {file_name}")
         else:
             print(f"Unknown species: {species}")
 
@@ -258,11 +271,11 @@ def avg_detections(conn, confidence: float, species: str, event: str,
     print()
     print(f"Average detections per day (confidence > {confidence:.2f})")
     if date_from and date_to:
-        print(f"Date range: {date_from} to {date_to}")
+        print(f"Date range: {_fmt_date(date_from)} to {_fmt_date(date_to)}")
     elif date_from:
-        print(f"From: {date_from}")
+        print(f"From: {_fmt_date(date_from)}")
     elif date_to:
-        print(f"To: {date_to}")
+        print(f"To: {_fmt_date(date_to)}")
     if event:
         print(f"For event: {event}")
 
@@ -351,7 +364,7 @@ def first_last_seen(conn, confidence: float, species: str, event: str,
     print(f"  {'Species':<35} {'First seen':>12} {'Last seen':>12} {'Days':>5}")
     print(f"  {'-'*35} {'-'*12} {'-'*12} {'-'*5}")
     for name, first, last, days in rows:
-        print(f"  {name:<35} {first:>12} {last:>12} {days:>5}")
+        print(f"  {name:<35} {_fmt_date(first):>12} {_fmt_date(last):>12} {days:>5}")
 
 
 def conf_stats(conn, confidence: float, species: str, event: str,
@@ -412,7 +425,7 @@ def life_list(conn, confidence: float, species: str, event: str,
     for date in sorted(by_date):
         for name, obs_days, total in by_date[date]:
             rare = " *" if obs_days == 1 else ""
-            print(f"  {date:<12} {name:<35} {obs_days:>5} {total:>7}{rare}")
+            print(f"  {_fmt_date(date):<12} {name:<35} {obs_days:>5} {total:>7}{rare}")
     print("\n  * = detected on only one day")
 
 
@@ -548,9 +561,9 @@ def main():
     parser.add_argument('-s', '--species', dest="species",
         default="", help="common name of species to list")
     parser.add_argument('--from', dest="date_from", default="",
-        metavar="DATE", help="start date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
+        metavar="DATE", help="start date inclusive (DD/MM/YYYY)")
     parser.add_argument('--to', dest="date_to", default="",
-        metavar="DATE", help="end date inclusive (YYYY-MM-DD or DD-MM-YYYY)")
+        metavar="DATE", help="end date inclusive (DD/MM/YYYY)")
     parser.add_argument('-A', '--avg', action='store_true',
         help="show average detections per day per species")
     parser.add_argument('-m', '--monthly', action='store_true',
@@ -636,7 +649,7 @@ def main():
         try:
             for file_name, date, start_time, end_time, conf in rows:
                 rec_start = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
-                t_start = (rec_start + timedelta(seconds=start_time)).strftime("%Y-%m-%d %H:%M:%S")
+                t_start = (rec_start + timedelta(seconds=start_time)).strftime("%d/%m/%Y %H:%M:%S")
                 t_end   = (rec_start + timedelta(seconds=end_time)).strftime("%H:%M:%S")
                 print(f"  {t_start}–{t_end}  conf:{conf:.3f}")
                 play_detection(recordings_dir, file_name, start_time, end_time)

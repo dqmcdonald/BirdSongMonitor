@@ -45,8 +45,8 @@ python query_detections.py <db_name.db> [options]
 | `-e`, `--event` | (all) | Filter by event: `Sunrise`, `Sunset`, or `Day` |
 | `-s`, `--species` | (all) | Show detailed rows for a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-a`, `--all` | off | Dump every detection row |
-| `--from DATE` | (none) | Start date inclusive (`YYYY-MM-DD` or `DD-MM-YYYY`) |
-| `--to DATE` | (none) | End date inclusive (`YYYY-MM-DD` or `DD-MM-YYYY`) |
+| `--from DATE` | (none) | Start date inclusive (`DD/MM/YYYY`) |
+| `--to DATE` | (none) | End date inclusive (`DD/MM/YYYY`) |
 | `-p`, `--play` | off | Play audio for each detection (requires `-s`; macOS only) |
 | `--recordings-dir DIR` | `<db_stem>/` | Directory containing WAV files (for `--play`) |
 
@@ -121,7 +121,7 @@ python gui_plot_detections.py [db_name.db] [options]
 | Confidence | Slider (0–1) filtering detections by minimum BirdNET score |
 | Event | Filter by recording event: All, Sunrise, Sunset, or Day |
 | Species | Partial, case-insensitive species name filter — shows a picker if ambiguous |
-| From / To | Date range filter (`YYYY-MM-DD` or `DD-MM-YYYY`) |
+| From / To | Date range filter (`DD/MM/YYYY`) |
 | Site | Label shown in plot titles |
 | Top-N | Number of species for heatmap, confidence, top-N, and events charts |
 | Plot / Save | Manually regenerate or export the current chart |

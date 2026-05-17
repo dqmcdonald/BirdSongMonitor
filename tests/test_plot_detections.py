@@ -52,7 +52,7 @@ class TestParseDate:
         assert plot_detections._parse_date("2026-03-12") == "2026-03-12"
 
     def test_dd_mm_yyyy_converted(self):
-        assert plot_detections._parse_date("12-03-2026") == "2026-03-12"
+        assert plot_detections._parse_date("12/03/2026") == "2026-03-12"
 
     def test_empty_string_passthrough(self):
         assert plot_detections._parse_date("") == ""

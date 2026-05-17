@@ -79,12 +79,23 @@ def _event_filter(event: str):
 
 
 def _parse_date(date_str: str) -> str:
-    """Accept YYYY-MM-DD or DD-MM-YYYY and return YYYY-MM-DD."""
+    """Accept DD/MM/YYYY or YYYY-MM-DD and return YYYY-MM-DD for SQLite."""
+    if not date_str:
+        return date_str
+    if '/' in date_str:
+        parts = date_str.split('/')
+        if len(parts) == 3:
+            return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    return date_str
+
+
+def _fmt_date(date_str: str) -> str:
+    """Convert YYYY-MM-DD to DD/MM/YYYY for display."""
     if not date_str:
         return date_str
     parts = date_str.split('-')
-    if len(parts) == 3 and len(parts[0]) == 2:
-        return f"{parts[2]}-{parts[1]}-{parts[0]}"
+    if len(parts) == 3:
+        return f"{parts[2]}/{parts[1]}/{parts[0]}"
     return date_str
 
 
@@ -115,7 +126,7 @@ def _build_subtitle(event: str, species: str, confidence: float,
     if species:
         parts.append(f"Species: {species}")
     if date_from or date_to:
-        parts.append(f"Dates: {date_from or 'start'} to {date_to or 'end'}")
+        parts.append(f"Dates: {_fmt_date(date_from) or 'start'} to {_fmt_date(date_to) or 'end'}")
     return "  |  ".join(parts)
 
 
@@ -259,7 +270,7 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
         ax.bar(dates, species_counts[all_species[0]], width=0.8,
                color=color, edgecolor="white", linewidth=0.4)
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%Y"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     fig.autofmt_xdate(rotation=45)
 
@@ -503,7 +514,7 @@ def plot_accumulation(dates, counts, confidence, label, species, event, out_path
     ax.step(dates, counts, where="post", color=color, linewidth=linewidth)
     ax.fill_between(dates, counts, step="post", alpha=0.15, color=color)
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%Y"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     fig.autofmt_xdate(rotation=45)
 
@@ -721,14 +732,14 @@ def main():
         dest="date_from",
         default="",
         metavar="DATE",
-        help="Start date filter inclusive (YYYY-MM-DD or DD-MM-YYYY)",
+        help="Start date filter inclusive (DD/MM/YYYY)",
     )
     parser.add_argument(
         "--to",
         dest="date_to",
         default="",
         metavar="DATE",
-        help="End date filter inclusive (YYYY-MM-DD or DD-MM-YYYY)",
+        help="End date filter inclusive (DD/MM/YYYY)",
     )
     args = parser.parse_args()
 

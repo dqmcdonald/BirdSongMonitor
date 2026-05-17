@@ -29,7 +29,7 @@ class TestParseDate:
         assert query_detections._parse_date("2026-03-12") == "2026-03-12"
 
     def test_dd_mm_yyyy_converted(self):
-        assert query_detections._parse_date("12-03-2026") == "2026-03-12"
+        assert query_detections._parse_date("12/03/2026") == "2026-03-12"
 
     def test_empty_string_passthrough(self):
         assert query_detections._parse_date("") == ""
@@ -38,7 +38,7 @@ class TestParseDate:
         assert query_detections._parse_date(None) is None
 
     def test_single_digit_day_month(self):
-        assert query_detections._parse_date("03-01-2026") == "2026-01-03"
+        assert query_detections._parse_date("03/01/2026") == "2026-01-03"
 
 
 # ===========================================================================
@@ -208,8 +208,8 @@ class TestFirstLastSeen:
         query_detections.first_last_seen(fixture_conn, 0.25, "", "", "", "")
         out = capsys.readouterr().out
         assert "Eurasian Blackbird" in out
-        # Blackbird first seen 2026-03-02
-        assert "2026-03-02" in out
+        # Blackbird first seen 02/03/2026
+        assert "02/03/2026" in out
 
     def test_no_data_message(self, fixture_conn, capsys):
         query_detections.first_last_seen(fixture_conn, 0.99, "", "", "", "")
@@ -219,8 +219,8 @@ class TestFirstLastSeen:
     def test_silvereye_spans_jan_to_mar(self, fixture_conn, capsys):
         query_detections.first_last_seen(fixture_conn, 0.25, "Silvereye", "", "", "")
         out = capsys.readouterr().out
-        assert "2026-01-03" in out
-        assert "2026-03-12" in out
+        assert "03/01/2026" in out
+        assert "12/03/2026" in out
 
 
 # ===========================================================================
@@ -278,7 +278,7 @@ class TestLifeList:
         query_detections.life_list(fixture_conn, 0.25, "", "", "", "")
         out = capsys.readouterr().out
         lines = [l for l in out.splitlines() if "Silvereye" in l]
-        assert any("2026-01-03" in l for l in lines)
+        assert any("03/01/2026" in l for l in lines)
 
 
 # ===========================================================================
