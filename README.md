@@ -32,7 +32,7 @@ python proc_recordings.py <directory> [-c CONFIDENCE]
 
 ### `query_detections.py` — query a database
 
-Lists detected species and their counts, with optional filtering. Use `-a` to dump every individual detection row. Use `-s` to drill into a specific species, and `--play` to listen to each detection via `afplay` (macOS only). Multiple stat flags can be combined in one run.
+Lists detected species and their counts, with optional filtering. Use `-a` to dump every individual detection row. Use `-s` to drill into a specific species, `--play` to listen to each detection via `afplay` (macOS only), or `--extract` to save each matching audio segment as its own WAV file. Multiple stat flags can be combined in one run.
 
 ```
 python query_detections.py <db_name.db> [options]
@@ -48,7 +48,9 @@ python query_detections.py <db_name.db> [options]
 | `--from DATE` | (none) | Start date inclusive (`DD/MM/YYYY`) |
 | `--to DATE` | (none) | End date inclusive (`DD/MM/YYYY`) |
 | `-p`, `--play` | off | Play audio for each detection (requires `-s`; macOS only) |
-| `--recordings-dir DIR` | `<db_stem>/` | Directory containing WAV files (for `--play`) |
+| `--extract` | off | Extract each matching detection as an individual WAV file |
+| `--extract-dir DIR` | `extracted/` | Output directory for extracted WAV files |
+| `--recordings-dir DIR` | `<db_stem>/` | Directory containing WAV files (for `--play` and `--extract`) |
 
 **Statistics flags** (all respect `-c`, `-e`, `-s`, `--from`, `--to`):
 

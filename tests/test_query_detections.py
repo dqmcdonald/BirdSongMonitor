@@ -9,9 +9,12 @@ Fixture species summary (threshold 0.25):
   Silvereye           — 2 detections on 2 days (Jan + Mar)
 """
 import os
+import re
 import sys
+import wave
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_RECORDINGS_DIR = os.path.join(PROJECT_ROOT, "test_recordings")
 sys.path.insert(0, PROJECT_ROOT)
 
 import query_detections  # noqa: E402
@@ -358,3 +361,94 @@ class TestResolveSpecies:
     def test_partial_match_for_silvereye(self, fixture_conn):
         result = query_detections.resolve_species(fixture_conn, "silver")
         assert result == "Silvereye"
+
+
+# ===========================================================================
+# extract_detections
+# ===========================================================================
+
+class TestExtractDetections:
+    # Fixture counts (threshold 0.25):
+    #   Silvereye:        2 (DA_2026_01_03 @0-3s conf 0.55, DA_2026_03_12 @12-15s conf 0.61)
+    #   Blackbird total:  5 (SR x3, DA x2)
+    #   Blackbird Sunrise: 3 (SR_2026_03_12 0.85, SR_2026_03_17 0.90, SR_2026_04_03 0.78)
+    #   Blackbird conf>0.80: 2 (0.85, 0.90)
+
+    def test_creates_output_directory(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Silvereye", "", "", "", out_dir)
+        assert os.path.isdir(out_dir)
+
+    def test_extracts_correct_file_count(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Silvereye", "", "", "", out_dir)
+        wavs = [f for f in os.listdir(out_dir) if f.endswith('.wav')]
+        assert len(wavs) == 2
+
+    def test_filename_format(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Silvereye", "", "", "", out_dir)
+        for fname in os.listdir(out_dir):
+            assert fname.startswith("Silvereye_")
+            assert re.search(r'_\d+s-\d+s\.wav$', fname)
+
+    def test_extracted_files_are_valid_wav(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Silvereye", "", "", "", out_dir)
+        for fname in os.listdir(out_dir):
+            with wave.open(os.path.join(out_dir, fname), 'r') as wf:
+                assert wf.getnframes() > 0
+
+    def test_event_filter_restricts_extraction(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Eurasian Blackbird", "Sunrise", "", "", out_dir)
+        wavs = [f for f in os.listdir(out_dir) if f.endswith('.wav')]
+        assert len(wavs) == 3
+
+    def test_confidence_filter_respected(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.80, "Eurasian Blackbird", "", "", "", out_dir)
+        wavs = [f for f in os.listdir(out_dir) if f.endswith('.wav')]
+        assert len(wavs) == 2
+
+    def test_no_detections_prints_message(self, fixture_conn, tmp_path, capsys):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.99, "", "", "", "", out_dir)
+        out = capsys.readouterr().out
+        assert "No detections to extract" in out
+
+    def test_missing_source_wavs_reported_on_stderr(self, fixture_conn, tmp_path, capsys):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, str(tmp_path / "no_such_dir"), 0.25, "Silvereye", "", "", "", out_dir)
+        err = capsys.readouterr().err
+        assert "not found" in err
+
+    def test_missing_source_wavs_produces_no_output_files(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, str(tmp_path / "no_such_dir"), 0.25, "Silvereye", "", "", "", out_dir)
+        wavs = [f for f in os.listdir(out_dir) if f.endswith('.wav')]
+        assert len(wavs) == 0
+
+    def test_output_summary_printed(self, fixture_conn, tmp_path, capsys):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Silvereye", "", "", "", out_dir)
+        out = capsys.readouterr().out
+        assert "Extracting" in out
+        assert "Extracted" in out
+
+    def test_blackbird_total_across_all_events(self, fixture_conn, tmp_path):
+        out_dir = str(tmp_path / "out")
+        query_detections.extract_detections(
+            fixture_conn, TEST_RECORDINGS_DIR, 0.25, "Eurasian Blackbird", "", "", "", out_dir)
+        wavs = [f for f in os.listdir(out_dir) if f.endswith('.wav')]
+        assert len(wavs) == 5

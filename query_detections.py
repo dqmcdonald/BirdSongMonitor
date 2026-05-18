@@ -546,10 +546,75 @@ def detection_streaks(conn, confidence: float, species: str, event: str,
     print("\n  Max streak = longest consecutive-day run; Max gap = longest gap (days) between detections")
 
 
+def extract_detections(conn, wav_dir: str, confidence: float, species: str,
+                       event: str, date_from: str, date_to: str, out_dir: str = "extracted"):
+    dc, dp = _date_clause(date_from, date_to)
+    cur = conn.cursor()
+
+    conds = ["confidence > ?", "common_name != 'DUMMY'"]
+    params: tuple = (confidence,)
+    if species:
+        conds.append("common_name = ?")
+        params += (species,)
+    if event:
+        conds.append("event = ?")
+        params += (event,)
+    where = " AND ".join(conds) + dc
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT file_name, common_name, date, start_time, end_time, confidence
+        FROM detection
+        WHERE {where}
+        ORDER BY common_name, date, start_time
+    """, params).fetchall()
+
+    if not rows:
+        print("No detections to extract.")
+        return
+
+    os.makedirs(out_dir, exist_ok=True)
+    print(f"\nExtracting {len(rows)} detections to '{out_dir}'...\n")
+
+    extracted = skipped = 0
+    for file_name, common_name, date, start_time, end_time, conf in rows:
+        wav_path = os.path.join(wav_dir, file_name)
+        if not os.path.exists(wav_path):
+            print(f"  Skipped (not found): {wav_path}", file=sys.stderr)
+            skipped += 1
+            continue
+
+        safe_name = common_name.replace(' ', '_').replace('/', '_')
+        file_stem = os.path.splitext(file_name)[0]
+        out_name = f"{safe_name}_{file_stem}_{int(start_time)}s-{int(end_time)}s.wav"
+        out_path = os.path.join(out_dir, out_name)
+
+        try:
+            with wave.open(wav_path, 'r') as wf:
+                wav_params = wf.getparams()
+                rate = wf.getframerate()
+                wf.setpos(int(start_time * rate))
+                frames = wf.readframes(int(end_time * rate) - int(start_time * rate))
+            with wave.open(out_path, 'w') as wf_out:
+                wf_out.setparams(wav_params)
+                wf_out.writeframes(frames)
+            dt = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+            print(f"  {dt.strftime('%d/%m/%Y %H:%M:%S')}  "
+                  f"{_fmt_time(start_time)}-{_fmt_time(end_time)}  "
+                  f"conf:{conf:.3f}  -> {out_name}")
+            extracted += 1
+        except Exception as e:
+            print(f"  Error extracting {out_name}: {e}", file=sys.stderr)
+            skipped += 1
+
+    print(f"\nExtracted {extracted} file(s)" +
+          (f" ({skipped} skipped)" if skipped else "") + ".")
+
+
 def main():
     parser = argparse.ArgumentParser(prog='query_detections',
                     description='List observations in bird monitoring database')
-    parser.add_argument('db_name', 
+    parser.add_argument('db_name',
         help="Database name")
     parser.add_argument('-a', '--all', action='store_true', 
         help="list all detections in the database")
@@ -580,6 +645,11 @@ def main():
         help="show longest consecutive-day detection streak and longest gap per species")
     parser.add_argument('-p', '--play', action='store_true',
         help="play audio for each detection (requires -s; uses afplay on macOS)")
+    parser.add_argument('--extract', action='store_true',
+        help="extract matching detections as individual WAV files")
+    parser.add_argument('--extract-dir', dest="extract_dir", default="extracted",
+        metavar="DIR",
+        help="output directory for extracted WAV files (default: extracted/)")
     parser.add_argument('--recordings-dir', dest="recordings_dir", default=None,
         metavar="DIR",
         help="directory containing WAV files (default: <db_stem>/)")
@@ -655,6 +725,13 @@ def main():
                 play_detection(recordings_dir, file_name, start_time, end_time)
         except KeyboardInterrupt:
             print("\nStopped.")
+
+    if args.extract:
+        recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
+        if not os.path.isdir(recordings_dir):
+            sys.exit(f"Error: recordings directory not found: {recordings_dir}")
+        extract_detections(conn, recordings_dir, args.confidence, species,
+                           args.event, date_from, date_to, out_dir=args.extract_dir)
 
 
 if __name__ == '__main__':
