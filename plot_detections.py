@@ -16,7 +16,7 @@ import os.path
 import sqlite3
 import argparse
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import groupby
 
 import numpy as np
@@ -244,7 +244,30 @@ def load_daily_counts(db_name: str, confidence: float, species: str, event: str,
     return dates, species_counts
 
 
-def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path=None, *, fig=None, color="steelblue", date_from="", date_to=""):
+def load_missing_dates(db_name: str, date_from: str = "", date_to: str = "") -> list:
+    """Return dates within the DB's recorded range that have no rows at all."""
+    dc, dp = _date_filter(date_from, date_to)
+    where = f"WHERE {dc[5:]}" if dc else ""
+    conn = sqlite3.connect(db_name)
+    rows = conn.execute(
+        f"SELECT DISTINCT DATE(date) FROM detection {where} ORDER BY DATE(date)", dp
+    ).fetchall()
+    conn.close()
+    if not rows:
+        return []
+    present = {r[0] for r in rows}
+    min_date = datetime.strptime(rows[0][0], "%Y-%m-%d")
+    max_date = datetime.strptime(rows[-1][0], "%Y-%m-%d")
+    missing, current = [], min_date
+    while current <= max_date:
+        if current.strftime("%Y-%m-%d") not in present:
+            missing.append(current)
+        current += timedelta(days=1)
+    return missing
+
+
+def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path=None, *, fig=None, color="steelblue", date_from="", date_to="", missing_dates=None):
+    from matplotlib.patches import Patch
     all_species = list(species_counts.keys())
     multi = len(all_species) > 1
 
@@ -252,6 +275,11 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
         fig, ax = plt.subplots(figsize=(16 if multi else 12, 6 if multi else 5))
     else:
         ax = fig.add_subplot(1, 1, 1)
+
+    if missing_dates:
+        half = timedelta(days=0.45)
+        for md in missing_dates:
+            ax.axvspan(md - half, md + half, color="#d0d0d0", zorder=0)
 
     if multi:
         def species_color(i):
@@ -264,11 +292,18 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
                    color=species_color(i), label=sp, edgecolor="white", linewidth=0.2)
             bottom = [b + c for b, c in zip(bottom, counts)]
 
-        ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0,
-                  fontsize=7, ncol=2, frameon=True)
+        handles, labels = ax.get_legend_handles_labels()
+        if missing_dates:
+            handles.append(Patch(facecolor="#d0d0d0", label="No data"))
+            labels.append("No data")
+        ax.legend(handles, labels, loc="upper left", bbox_to_anchor=(1.01, 1),
+                  borderaxespad=0, fontsize=7, ncol=2, frameon=True)
     else:
         ax.bar(dates, species_counts[all_species[0]], width=0.8,
                color=color, edgecolor="white", linewidth=0.4)
+        if missing_dates:
+            ax.legend(handles=[Patch(facecolor="#d0d0d0", label="No data")],
+                      loc="upper right", fontsize=8, frameon=True)
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%Y"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
@@ -763,10 +798,12 @@ def main():
         if not dates:
             print("No detections found above the confidence threshold.")
             sys.exit(0)
+        missing = load_missing_dates(args.db_name, date_from, date_to)
         img = fetch_species_image(species) if species else None
         plot_daily(dates, species_counts, args.confidence, label,
                    species, args.event, img, out_path,
-                   date_from=date_from, date_to=date_to)
+                   date_from=date_from, date_to=date_to,
+                   missing_dates=missing)
 
     elif args.plot == "heatmap":
         species_list, hours, matrix = load_heatmap_data(

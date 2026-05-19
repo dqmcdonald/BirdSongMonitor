@@ -19,7 +19,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from plot_detections import (
     _parse_date,
     fetch_species_image,
-    load_daily_counts,          plot_daily,
+    load_daily_counts,          load_missing_dates, plot_daily,
     load_heatmap_data,          plot_heatmap,
     load_confidence_data,       plot_confidence,
     load_accumulation_data,     plot_accumulation,
@@ -574,9 +574,11 @@ class App:
                 messagebox.showinfo("No data", "No detections found above the confidence threshold.",
                                     parent=self.root)
                 return
+            missing = load_missing_dates(db, date_from, date_to)
             img = fetch_species_image(species) if species else None
             plot_daily(dates, counts, conf, label, species, event, img, fig=fig,
-                       color=color, date_from=date_from, date_to=date_to)
+                       color=color, date_from=date_from, date_to=date_to,
+                       missing_dates=missing)
 
         elif plot_type == "heatmap":
             sp_list, hours, matrix = load_heatmap_data(
