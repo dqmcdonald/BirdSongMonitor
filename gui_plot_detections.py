@@ -34,10 +34,11 @@ from plot_detections import (
 PLOT_TYPES = ["daily", "heatmap", "confidence", "accumulation", "topn", "events"]
 TAB_LABELS = ["Daily", "Heatmap", "Confidence", "Accumulation", "Top-N", "Events"]
 COLORMAPS  = ["YlOrRd", "viridis", "plasma", "Blues", "Greens", "Oranges", "hot", "cool", "RdYlBu"]
+PALETTES   = ["tab10", "tab20", "tab20b", "tab20c", "Set1", "Set2", "Set3", "Paired", "Dark2", "Accent"]
 STYLES     = ["default"] + sorted(s for s in plt.style.available if not s.startswith("_"))
 
 TAB_HELP = {
-    "daily":        "Stacked bar chart of detections per day.",
+    "daily":        "Stacked bar chart of detections per day. Uses Color (single species) or Colormap (multiple species).",
     "heatmap":      "Species × hour-of-day detection heatmap. Uses Top-N and Colormap settings.",
     "confidence":   "Confidence score histograms per species. Uses Top-N setting.",
     "accumulation": "Cumulative unique-species count over time.",
@@ -47,7 +48,7 @@ TAB_HELP = {
 
 # Which appearance controls are relevant for each tab
 APPEARANCE_RELEVANT: dict[str, set[str]] = {
-    "daily":        {"color"},
+    "daily":        {"color", "colormap"},
     "heatmap":      {"colormap"},
     "confidence":   set(),
     "accumulation": {"color", "linewidth"},
@@ -505,12 +506,12 @@ class App:
         self._lw_spin.bind("<FocusOut>",     lambda _: self._plot(silent=True))
 
         self._cmap_lbl = _tip(ttk.Label(grp, text="Colormap:"),
-            "Matplotlib colormap used for the heatmap plot.")
+            "Matplotlib colormap used for multi-species daily bars and the heatmap.")
         self._cmap_lbl.pack(side=tk.LEFT)
         self._cmap_combo = _tip(
             ttk.Combobox(grp, textvariable=self.cmap, width=10,
                          values=COLORMAPS, state="readonly"),
-            "Matplotlib colormap used for the heatmap plot.",
+            "Matplotlib colormap used for multi-species daily bars and the heatmap.",
         )
         self._cmap_combo.pack(side=tk.LEFT, padx=(2, 12))
 
@@ -568,6 +569,19 @@ class App:
         self._lw_spin.config(state=_state("linewidth"))
         self._cmap_lbl.config(state=_state("colormap"))
         self._cmap_combo.config(state=_cstate("colormap"))
+
+        # Swap combobox options and label between qualitative palettes (daily)
+        # and sequential colormaps (heatmap).
+        if tab == "daily":
+            self._cmap_combo.config(values=PALETTES)
+            self._cmap_lbl.config(text="Palette:")
+            if self.cmap.get() not in PALETTES:
+                self.cmap.set(PALETTES[0])
+        else:
+            self._cmap_combo.config(values=COLORMAPS)
+            self._cmap_lbl.config(text="Colormap:")
+            if self.cmap.get() not in COLORMAPS:
+                self.cmap.set(COLORMAPS[0])
 
     # ------------------------------------------------------------------
     # Actions
@@ -723,7 +737,7 @@ class App:
             single_sp = species[0] if isinstance(species, list) and len(species) == 1 else (species if isinstance(species, str) and species else None)
             img = fetch_species_image(single_sp) if single_sp else None
             plot_daily(dates, counts, conf, label, species, event, img, fig=fig,
-                       color=color, date_from=date_from, date_to=date_to,
+                       color=color, cmap=cmap, date_from=date_from, date_to=date_to,
                        missing_dates=missing)
 
         elif plot_type == "heatmap":

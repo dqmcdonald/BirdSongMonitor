@@ -279,7 +279,7 @@ def load_missing_dates(db_name: str, date_from: str = "", date_to: str = "") -> 
     return missing
 
 
-def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path=None, *, fig=None, color="steelblue", date_from="", date_to="", missing_dates=None):
+def plot_daily(dates, species_counts, confidence, label, species, event, img, out_path=None, *, fig=None, color="steelblue", cmap="tab10", date_from="", date_to="", missing_dates=None):
     from matplotlib.patches import Patch
     all_species = list(species_counts.keys())
     multi = len(all_species) > 1
@@ -295,8 +295,11 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
             ax.axvspan(md - half, md + half, color="#d0d0d0", zorder=0)
 
     if multi:
+        _cmap_fn = cm.get_cmap(cmap)  # pylint: disable=no-member
+        _n = len(all_species)
+
         def species_color(i):
-            return cm.tab20(i) if i < 20 else cm.tab20b((i - 20) % 20)  # pylint: disable=no-member
+            return _cmap_fn(i / _n)
 
         bottom = [0] * len(dates)
         for i, sp in enumerate(all_species):
@@ -779,7 +782,9 @@ def main():
         "--cmap",
         dest="cmap",
         default="YlOrRd",
-        help="Matplotlib colormap for heatmap (default: YlOrRd). "
+        help="Matplotlib colormap for heatmap (default: YlOrRd) or qualitative "
+             "palette for multi-species daily bars (e.g. tab10, tab20, Set1, Set2, "
+             "Set3, Paired, Dark2, Accent). "
              "Available: " + ", ".join(sorted(matplotlib.colormaps)) + ".",
     )
     parser.add_argument(
@@ -828,7 +833,7 @@ def main():
         img = fetch_species_image(species) if species else None
         plot_daily(dates, species_counts, args.confidence, label,
                    species, args.event, img, out_path,
-                   date_from=date_from, date_to=date_to,
+                   cmap=args.cmap, date_from=date_from, date_to=date_to,
                    missing_dates=missing)
 
     elif args.plot == "heatmap":
