@@ -122,11 +122,12 @@ python gui_plot_detections.py [db_name.db] [options]
 | Database / Browse | Path to the SQLite database |
 | Confidence | Slider (0–1) filtering detections by minimum BirdNET score |
 | Event | Filter by recording event: All, Sunrise, Sunset, or Day |
-| Species | Partial, case-insensitive species name filter — shows a picker if ambiguous |
+| Species | Scrollable multi-select listbox populated from the database — select one or more species to filter plots |
 | From / To | Date range filter (`DD/MM/YYYY`) |
 | Site | Label shown in plot titles |
 | Top-N | Number of species for heatmap, confidence, top-N, and events charts |
 | Plot / Save | Manually regenerate or export the current chart |
+| Extract… | Extract all detections currently shown in the plot as individual WAV clips, saved to a chosen directory |
 
 **Appearance group** (controls enabled only when relevant to the active tab):
 
@@ -135,8 +136,49 @@ python gui_plot_detections.py [db_name.db] [options]
 | Color | Single-species daily bars, accumulation line, top-N bars |
 | Line width | Accumulation step-line thickness |
 | Colormap | Heatmap colour scale |
+| Style | Matplotlib style sheet applied to all plots |
 
-Plots regenerate automatically on tab switch, database selection, colormap change, color pick, and linewidth adjustment.
+Plots regenerate automatically on tab switch, database selection, colormap change, color pick, linewidth adjustment, and style change.
+
+The daily chart marks days within the selected date range that have no recordings with a small grey indicator, distinguishing days with zero detections from days that were simply not recorded.
+
+### `upload_to_inaturalist.py` — upload detections to iNaturalist
+
+Uploads BirdNET detections to [iNaturalist](https://www.inaturalist.org) as audio observations. One observation is created per date per species, using the highest-confidence detection of the day for the timestamp. Optionally attaches the best detection as an audio clip.
+
+Requires an iNaturalist API token from `https://www.inaturalist.org/users/api_token`, stored in the `INATURALIST_TOKEN` environment variable or passed via `--token`.
+
+Per-database locations are read from `locations.json` (see below). Falls back to the default Christchurch coordinates if the database name is not found.
+
+```
+python upload_to_inaturalist.py <db_name.db> -s <species> [options]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `db_name` | (required) | Path to the SQLite database |
+| `-s`, `--species` | (required) | Common name of species to upload |
+| `-d`, `--date` | (all dates) | Restrict to a single date (`DD/MM/YYYY` or `YYYY-MM-DD`) |
+| `-c`, `--confidence` | `0.75` | Minimum confidence threshold |
+| `--lat` | (from `locations.json`) | Latitude override |
+| `--lon` | (from `locations.json`) | Longitude override |
+| `--token` | `$INATURALIST_TOKEN` | iNaturalist API token |
+| `--recordings-dir DIR` | `<db_stem>/` | Directory with source WAV files |
+| `--attach-audio` | off | Attach the best-confidence detection as a WAV clip |
+| `--dry-run` | off | Preview what would be uploaded without making API calls |
+
+#### `locations.json`
+
+Optional file in the project root mapping database stem names to coordinates and a human-readable place name:
+
+```json
+{
+    "samsgully": {"lat": -43.627, "lon": 172.726, "name": "Sam's Gully"},
+    "ranui":     {"lat": -43.627, "lon": 172.726, "name": "Ranui"}
+}
+```
+
+This file is excluded from version control (`.gitignore`) as it may contain precise home coordinates.
 
 ### `species_list.py` — print expected species
 
@@ -214,4 +256,4 @@ Local bird photos (PNG, named `<Common_Name_With_Underscores>.png`) live in `bir
 
 ---
 
-D. Q. McDonald — August 2025
+D. Q. McDonald — June 2026

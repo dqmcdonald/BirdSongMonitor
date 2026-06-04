@@ -9,3 +9,5 @@ bird_photos/
 *.db
 *.png
 *.swp
+extracted_files/
+locations.json
