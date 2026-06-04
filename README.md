@@ -128,6 +128,7 @@ python gui_plot_detections.py [db_name.db] [options]
 | Top-N | Number of species for heatmap, confidence, top-N, and events charts |
 | Plot / Save | Manually regenerate or export the current chart |
 | Extract… | Extract all detections currently shown in the plot as individual WAV clips, saved to a chosen directory |
+| iNaturalist… | Upload detections for the selected species to iNaturalist — one observation per day; supports dry-run preview and optional audio clip attachment |
 
 **Appearance group** (controls enabled only when relevant to the active tab):
 
