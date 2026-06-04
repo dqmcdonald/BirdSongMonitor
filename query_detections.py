@@ -546,14 +546,20 @@ def detection_streaks(conn, confidence: float, species: str, event: str,
     print("\n  Max streak = longest consecutive-day run; Max gap = longest gap (days) between detections")
 
 
-def extract_detections(conn, wav_dir: str, confidence: float, species: str,
-                       event: str, date_from: str, date_to: str, out_dir: str = "extracted"):
+def extract_detections(conn, wav_dir: str, confidence: float, species,
+                       event: str, date_from: str, date_to: str,
+                       out_dir: str = "extracted") -> tuple[int, int]:
+    """Extract matching detections as WAV clips. Returns (extracted, skipped) counts."""
     dc, dp = _date_clause(date_from, date_to)
     cur = conn.cursor()
 
     conds = ["confidence > ?", "common_name != 'DUMMY'"]
     params: tuple = (confidence,)
-    if species:
+    if isinstance(species, list) and species:
+        placeholders = ",".join("?" * len(species))
+        conds.append(f"common_name IN ({placeholders})")
+        params += tuple(species)
+    elif species:
         conds.append("common_name = ?")
         params += (species,)
     if event:
@@ -609,6 +615,7 @@ def extract_detections(conn, wav_dir: str, confidence: float, species: str,
 
     print(f"\nExtracted {extracted} file(s)" +
           (f" ({skipped} skipped)" if skipped else "") + ".")
+    return extracted, skipped
 
 
 def main():

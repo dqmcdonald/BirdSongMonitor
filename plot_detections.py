@@ -111,19 +111,32 @@ def _date_filter(date_from: str, date_to: str):
     return clause, params
 
 
-def _species_filter(species: str):
-    """Return (sql_clause, params_tuple) for an optional species filter."""
+def _species_filter(species):
+    """Return (sql_clause, params_tuple) for an optional species filter.
+
+    Accepts a string (single species or empty) or a list of species names.
+    """
+    if isinstance(species, list):
+        if not species:
+            return "AND common_name != 'DUMMY'", ()
+        placeholders = ",".join("?" * len(species))
+        return f"AND common_name IN ({placeholders})", tuple(species)
     if species:
         return "AND common_name = ?", (species,)
     return "AND common_name != 'DUMMY'", ()
 
 
-def _build_subtitle(event: str, species: str, confidence: float,
+def _build_subtitle(event: str, species, confidence: float,
                     date_from: str = "", date_to: str = "") -> str:
     parts = [f"confidence > {confidence:.2f}"]
     if event and event != "All":
         parts.append(f"Event: {event}")
-    if species:
+    if isinstance(species, list) and species:
+        if len(species) <= 3:
+            parts.append(f"Species: {', '.join(species)}")
+        else:
+            parts.append(f"Species: {len(species)} selected")
+    elif isinstance(species, str) and species:
         parts.append(f"Species: {species}")
     if date_from or date_to:
         parts.append(f"Dates: {_fmt_date(date_from) or 'start'} to {_fmt_date(date_to) or 'end'}")
@@ -201,7 +214,7 @@ def load_daily_counts(db_name: str, confidence: float, species: str, event: str,
     sc, sp = _species_filter(species)
     dc, dp = _date_filter(date_from, date_to)
 
-    if species:
+    if species and not isinstance(species, list):
         res = cur.execute(f"""
             SELECT DATE(date), COUNT(*)
             FROM detection
@@ -344,7 +357,9 @@ def load_heatmap_data(db_name: str, confidence: float, species: str, event: str,
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
-    if not species:
+    if isinstance(species, list) and species:
+        top_species = list(species)
+    elif not species:
         top = cur.execute(f"""
             SELECT common_name FROM detection
             WHERE confidence > ? {sc} {ec} {dc}
@@ -423,7 +438,13 @@ def load_confidence_data(db_name: str, confidence: float, species: str, event: s
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
-    if species:
+    if isinstance(species, list) and species:
+        placeholders = ",".join("?" * len(species))
+        rows = cur.execute(f"""
+            SELECT common_name, confidence FROM detection
+            WHERE confidence > ? AND common_name IN ({placeholders}) {ec} {dc}
+        """, (confidence,) + tuple(species) + ep + dp).fetchall()
+    elif species:
         rows = cur.execute(f"""
             SELECT common_name, confidence FROM detection
             WHERE confidence > ? AND common_name = ? {ec} {dc}
@@ -636,12 +657,17 @@ def load_event_comparison_data(db_name: str, confidence: float, species: str, n:
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
-    top = cur.execute(f"""
-        SELECT common_name FROM detection
-        WHERE confidence > ? {sc} {dc}
-        GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
-    """, (confidence,) + sp + dp + (n,)).fetchall()
-    top_species = [r[0] for r in top]
+    if isinstance(species, list) and species:
+        top_species = list(species)
+    elif species:
+        top_species = [species]
+    else:
+        top = cur.execute(f"""
+            SELECT common_name FROM detection
+            WHERE confidence > ? {sc} {dc}
+            GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
+        """, (confidence,) + sp + dp + (n,)).fetchall()
+        top_species = [r[0] for r in top]
 
     if not top_species:
         conn.close()

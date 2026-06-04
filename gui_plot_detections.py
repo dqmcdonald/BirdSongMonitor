@@ -7,15 +7,18 @@ import calendar
 import datetime
 import os
 import sqlite3
+import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, colorchooser
 
 import matplotlib
 matplotlib.use("TkAgg")
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
+from query_detections import play_detection, extract_detections
 from plot_detections import (
     _parse_date,
     fetch_species_image,
@@ -228,13 +231,14 @@ class App:
         self.root.minsize(960, 640)
 
         # Shared controls
-        self.db_path    = tk.StringVar(value=args.db_name    if args and args.db_name    else "")
-        self.confidence = tk.DoubleVar(value=args.confidence if args                     else 0.75)
-        self.event      = tk.StringVar(value=args.event      if args and args.event      else "All")
-        self.species    = tk.StringVar(value=args.species    if args and args.species    else "")
-        self.date_from  = tk.StringVar()
-        self.date_to    = tk.StringVar()
-        self.site       = tk.StringVar(value=args.site       if args and args.site       else "")
+        self.db_path        = tk.StringVar(value=args.db_name    if args and args.db_name    else "")
+        self.confidence     = tk.DoubleVar(value=args.confidence if args                     else 0.75)
+        self.event          = tk.StringVar(value=args.event      if args and args.event      else "All")
+        self._initial_species = args.species if args and args.species else ""
+        self.date_from      = tk.StringVar()
+        self.date_to        = tk.StringVar()
+        self.site           = tk.StringVar(value=args.site       if args and args.site       else "")
+        self.recordings_dir = tk.StringVar()
 
         # Plot-specific controls
         self.top_n      = tk.IntVar(value=20)
@@ -246,6 +250,11 @@ class App:
         self._figs:    dict[str, Figure]             = {}
         self._canvases: dict[str, FigureCanvasTkAgg] = {}
 
+        # Playback state
+        self._daily_dates: list = []
+        self._stop_event   = threading.Event()
+        self._play_thread: threading.Thread | None = None
+
         self._build()
         self._update_controls()
         self._load_species()
@@ -253,7 +262,7 @@ class App:
         # Re-plot automatically when colormap or style changes
         self.cmap.trace_add("write",       lambda *_: self._plot(silent=True))
         self.plot_style.trace_add("write", lambda *_: self._plot(silent=True))
-        self.db_path.trace_add("write", lambda *_: self._load_species())
+        self.db_path.trace_add("write", lambda *_: self._on_db_changed())
 
         if self.db_path.get():
             self.root.after(100, self._plot)
@@ -267,8 +276,16 @@ class App:
         ctrl.pack(side=tk.TOP, fill=tk.X)
         self._build_controls(ctrl)
 
+        # Status bar (pack before notebook so it stays anchored at bottom)
+        sb = ttk.Frame(self.root, relief=tk.SUNKEN, padding=(4, 2))
+        sb.pack(side=tk.BOTTOM, fill=tk.X)
+        self._status_lbl = ttk.Label(sb, text="Click a bar in the Daily chart to play detections.", anchor=tk.W)
+        self._status_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self._cancel_btn = ttk.Button(sb, text="Cancel", command=self._cancel_playback, state=tk.DISABLED)
+        self._cancel_btn.pack(side=tk.RIGHT, padx=(4, 0))
+
         nb_frame = ttk.Frame(self.root)
-        nb_frame.pack(fill=tk.BOTH, expand=True, padx=6, pady=(0, 6))
+        nb_frame.pack(fill=tk.BOTH, expand=True, padx=6, pady=(0, 4))
         self._build_notebook(nb_frame)
 
     def _build_controls(self, parent: ttk.Frame):
@@ -282,6 +299,14 @@ class App:
              "Path to the SQLite detection database (.db file).").pack(side=tk.LEFT, padx=2)
         _tip(ttk.Button(r1, text="Browse…", command=self._browse),
              "Open a file browser to select the database.").pack(side=tk.LEFT, padx=(0, 12))
+
+        _tip(ttk.Label(r1, text="WAV dir:"),
+             "Directory containing the WAV recording files (used for audio playback).").pack(side=tk.LEFT)
+        _tip(ttk.Entry(r1, textvariable=self.recordings_dir, width=26),
+             "Directory containing WAV files. Auto-derived from database path; override if needed.").pack(
+            side=tk.LEFT, padx=2)
+        _tip(ttk.Button(r1, text="Browse…", command=self._browse_recordings),
+             "Browse for the directory containing WAV recording files.").pack(side=tk.LEFT, padx=(0, 12))
 
         _tip(ttk.Label(r1, text="Confidence:"),
              "Minimum BirdNET confidence score (0–1). Detections below this value are excluded.").pack(side=tk.LEFT)
@@ -304,61 +329,92 @@ class App:
         self._event_combo.pack(side=tk.LEFT, padx=2)
         self._event_combo.bind("<<ComboboxSelected>>", lambda _: self._plot(silent=True))
 
-        # Row 2 — species, dates, site, top-n, buttons
+        # Row 2 — species listbox (left) + dates/site/top-n/buttons (right)
         r2 = ttk.Frame(parent)
         r2.pack(fill=tk.X, pady=2)
 
-        _tip(ttk.Label(r2, text="Species:"),
-             "Filter by species. Select from the list or leave blank for all species.").pack(side=tk.LEFT)
-        self._species_combo = _tip(
-            ttk.Combobox(r2, textvariable=self.species, width=22, state="readonly"),
-            "Filter by species. Select from the list or leave blank for all species.",
-        )
-        self._species_combo.pack(side=tk.LEFT, padx=(2, 8))
-        self._species_combo.bind("<<ComboboxSelected>>", lambda _: self._plot(silent=True))
+        # Species multi-select listbox
+        sp_lf = _tip(ttk.LabelFrame(r2, text="Species", padding=(4, 2)),
+                     "Select one or more species to filter plots. "
+                     "No selection = all species shown.")
+        sp_lf.pack(side=tk.LEFT, padx=(0, 8), anchor=tk.N)
 
-        _tip(ttk.Label(r2, text="From:"),
+        sp_list_frame = ttk.Frame(sp_lf)
+        sp_list_frame.pack()
+        self._species_listbox = tk.Listbox(
+            sp_list_frame, selectmode=tk.MULTIPLE, height=5, width=24,
+            exportselection=False, activestyle="none",
+        )
+        _sp_scroll = ttk.Scrollbar(sp_list_frame, orient=tk.VERTICAL,
+                                   command=self._species_listbox.yview)
+        self._species_listbox.configure(yscrollcommand=_sp_scroll.set)
+        self._species_listbox.pack(side=tk.LEFT, fill=tk.Y)
+        _sp_scroll.pack(side=tk.LEFT, fill=tk.Y)
+        self._species_listbox.bind("<<ListboxSelect>>", lambda _: self._plot(silent=True))
+
+        sp_btn_frame = ttk.Frame(sp_lf)
+        sp_btn_frame.pack(fill=tk.X, pady=(2, 0))
+        _tip(ttk.Button(sp_btn_frame, text="All", command=self._species_select_all, width=7),
+             "Select all species in the list.").pack(side=tk.LEFT, padx=2)
+        _tip(ttk.Button(sp_btn_frame, text="None", command=self._species_select_none, width=7),
+             "Deselect all species (shows all species).").pack(side=tk.LEFT, padx=2)
+
+        # Right side: dates, site, top-n, action buttons stacked in two sub-rows
+        r2_right = ttk.Frame(r2)
+        r2_right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Sub-row a: date pickers
+        r2a = ttk.Frame(r2_right)
+        r2a.pack(fill=tk.X, pady=1)
+
+        _tip(ttk.Label(r2a, text="From:"),
              "Start date filter, inclusive. Leave blank for no lower bound.").pack(side=tk.LEFT)
-        df_entry = _tip(ttk.Entry(r2, textvariable=self.date_from, width=10),
+        df_entry = _tip(ttk.Entry(r2a, textvariable=self.date_from, width=10),
              "Start date filter (DD/MM/YYYY). Leave blank for no lower bound.")
         df_entry.pack(side=tk.LEFT, padx=(2, 1))
         df_entry.bind("<Return>",   lambda _: self._plot(silent=True))
         df_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
-        _tip(ttk.Button(r2, text="▾", width=2,
+        _tip(ttk.Button(r2a, text="▾", width=2,
                         command=lambda: self._pick_date(self.date_from)),
-             "Open calendar to pick start date.").pack(side=tk.LEFT, padx=(0, 6))
+             "Open calendar to pick start date.").pack(side=tk.LEFT, padx=(0, 8))
 
-        _tip(ttk.Label(r2, text="To:"),
+        _tip(ttk.Label(r2a, text="To:"),
              "End date filter, inclusive. Leave blank for no upper bound.").pack(side=tk.LEFT)
-        dt_entry = _tip(ttk.Entry(r2, textvariable=self.date_to, width=10),
+        dt_entry = _tip(ttk.Entry(r2a, textvariable=self.date_to, width=10),
              "End date filter (DD/MM/YYYY). Leave blank for no upper bound.")
         dt_entry.pack(side=tk.LEFT, padx=(2, 1))
         dt_entry.bind("<Return>",   lambda _: self._plot(silent=True))
         dt_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
-        _tip(ttk.Button(r2, text="▾", width=2,
+        _tip(ttk.Button(r2a, text="▾", width=2,
                         command=lambda: self._pick_date(self.date_to)),
              "Open calendar to pick end date.").pack(side=tk.LEFT, padx=(0, 8))
 
-        _tip(ttk.Label(r2, text="Site:"),
+        # Sub-row b: site, top-n, action buttons
+        r2b = ttk.Frame(r2_right)
+        r2b.pack(fill=tk.X, pady=1)
+
+        _tip(ttk.Label(r2b, text="Site:"),
              "Site name shown in plot titles. Defaults to the database filename if left blank.").pack(side=tk.LEFT)
-        site_entry = _tip(ttk.Entry(r2, textvariable=self.site, width=14),
+        site_entry = _tip(ttk.Entry(r2b, textvariable=self.site, width=14),
              "Site name shown in plot titles. Defaults to the database filename if left blank.")
         site_entry.pack(side=tk.LEFT, padx=(2, 8))
         site_entry.bind("<Return>",   lambda _: self._plot(silent=True))
         site_entry.bind("<FocusOut>", lambda _: self._plot(silent=True))
 
-        ttk.Separator(r2, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=6)
+        ttk.Separator(r2b, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=6)
 
-        _tip(ttk.Label(r2, text="Top-N:"),
+        _tip(ttk.Label(r2b, text="Top-N:"),
              "Number of species to include in heatmap, confidence, top-N, and events plots.").pack(side=tk.LEFT)
-        _tip(ttk.Spinbox(r2, from_=1, to=100, textvariable=self.top_n, width=5),
+        _tip(ttk.Spinbox(r2b, from_=1, to=100, textvariable=self.top_n, width=5),
              "Number of species to include in heatmap, confidence, top-N, and events plots.").pack(
             side=tk.LEFT, padx=(2, 12))
 
-        _tip(ttk.Button(r2, text="Plot", command=self._plot),
+        _tip(ttk.Button(r2b, text="Plot", command=self._plot),
              "Generate the chart for the active tab using the current settings.").pack(side=tk.LEFT, padx=4)
-        _tip(ttk.Button(r2, text="Save…", command=self._save),
+        _tip(ttk.Button(r2b, text="Save…", command=self._save),
              "Save the current plot to a PNG, PDF, or SVG file.").pack(side=tk.LEFT, padx=4)
+        _tip(ttk.Button(r2b, text="Extract…", command=self._extract),
+             "Extract detections shown in the current graph as individual WAV clips.").pack(side=tk.LEFT, padx=4)
 
         # Row 3 — appearance group
         grp = ttk.LabelFrame(parent, text="Appearance", padding=(6, 2))
@@ -429,6 +485,9 @@ class App:
             self._figs[plot_type]    = fig
             self._canvases[plot_type] = canvas
 
+            if plot_type == "daily":
+                canvas.mpl_connect("button_press_event", self._on_daily_click)
+
     # ------------------------------------------------------------------
     # Control state
     # ------------------------------------------------------------------
@@ -489,6 +548,12 @@ class App:
             self._color_btn.itemconfig(self._color_swatch, fill=hex_color)
             self._plot(silent=True)
 
+    def _on_db_changed(self):
+        self._load_species()
+        db = self.db_path.get().strip()
+        if db:
+            self.recordings_dir.set(os.path.splitext(db)[0])
+
     def _browse(self):
         path = filedialog.askopenfilename(
             title="Open database",
@@ -498,13 +563,18 @@ class App:
             self.db_path.set(path)
             self._plot()
 
+    def _browse_recordings(self):
+        path = filedialog.askdirectory(title="Select recordings directory", parent=self.root)
+        if path:
+            self.recordings_dir.set(path)
+
     def _active_tab(self) -> str:
         return PLOT_TYPES[self._nb.index(self._nb.select())]
 
     def _load_species(self):
+        self._species_listbox.delete(0, tk.END)
         db = self.db_path.get().strip()
         if not db or not os.path.exists(db):
-            self._species_combo["values"] = [""]
             return
         try:
             conn  = sqlite3.connect(db)
@@ -513,18 +583,39 @@ class App:
                 "WHERE common_name != 'DUMMY' ORDER BY common_name"
             ).fetchall()]
             conn.close()
-            self._species_combo["values"] = [""] + names
+            for name in names:
+                self._species_listbox.insert(tk.END, name)
+            if self._initial_species:
+                lower = self._initial_species.lower()
+                for i, name in enumerate(names):
+                    if name.lower() == lower:
+                        self._species_listbox.selection_set(i)
+                        self._species_listbox.see(i)
+                        self._initial_species = ""
+                        break
         except Exception:
-            self._species_combo["values"] = [""]
+            pass
+
+    def _get_selected_species(self) -> list[str]:
+        """Return selected species names, or [] meaning 'all species'."""
+        indices = self._species_listbox.curselection()
+        if not indices:
+            return []
+        return [self._species_listbox.get(i) for i in indices]
+
+    def _species_select_all(self):
+        self._species_listbox.select_set(0, tk.END)
+        self._plot(silent=True)
+
+    def _species_select_none(self):
+        self._species_listbox.selection_clear(0, tk.END)
+        self._plot(silent=True)
 
     def _pick_date(self, var: tk.StringVar):
         dlg = _DatePickerDialog(self.root, initial=var.get().strip())
         if dlg.result is not None:
             var.set(dlg.result)
             self._plot(silent=True)
-
-    def _resolve_species(self, db: str) -> str | None:
-        return self.species.get().strip()
 
     def _plot(self, silent: bool = False):
         db = self.db_path.get().strip()
@@ -538,10 +629,7 @@ class App:
                 messagebox.showerror("Not found", f"Database not found:\n{db}", parent=self.root)
             return
 
-        sp = self._resolve_species(db)
-        if sp is None:
-            return
-
+        sp        = self._get_selected_species()
         conf      = round(self.confidence.get(), 3)
         event     = self.event.get()
         date_from = _parse_date(self.date_from.get().strip())
@@ -570,12 +658,14 @@ class App:
                 date_from, date_to, label, n, cmap, color, linewidth):
         if plot_type == "daily":
             dates, counts = load_daily_counts(db, conf, species, event, date_from, date_to)
+            self._daily_dates = dates  # used by click-to-play
             if not dates:
                 messagebox.showinfo("No data", "No detections found above the confidence threshold.",
                                     parent=self.root)
                 return
             missing = load_missing_dates(db, date_from, date_to)
-            img = fetch_species_image(species) if species else None
+            single_sp = species[0] if isinstance(species, list) and len(species) == 1 else (species if isinstance(species, str) and species else None)
+            img = fetch_species_image(single_sp) if single_sp else None
             plot_daily(dates, counts, conf, label, species, event, img, fig=fig,
                        color=color, date_from=date_from, date_to=date_to,
                        missing_dates=missing)
@@ -608,6 +698,108 @@ class App:
             plot_event_comparison(data, top_sp, conf, label, species, fig=fig,
                                   date_from=date_from, date_to=date_to)
 
+    # ------------------------------------------------------------------
+    # Playback
+    # ------------------------------------------------------------------
+
+    def _on_daily_click(self, event):
+        if event.inaxes is None or event.xdata is None:
+            return
+        if not self._daily_dates:
+            return
+
+        clicked_dt = mdates.num2date(event.xdata).replace(tzinfo=None)
+        nearest = min(self._daily_dates, key=lambda d: abs((d - clicked_dt).total_seconds()))
+
+        # Ignore clicks more than half a day away from any bar
+        if abs((nearest - clicked_dt).total_seconds()) > 43200:
+            return
+
+        self._start_playback(nearest.strftime("%Y-%m-%d"))
+
+    def _start_playback(self, date_str: str):
+        # Stop any in-progress playback first
+        self._stop_event.set()
+        if self._play_thread and self._play_thread.is_alive():
+            self._play_thread.join(timeout=3.0)
+
+        recordings_dir = self.recordings_dir.get().strip()
+        if not recordings_dir:
+            db = self.db_path.get().strip()
+            recordings_dir = os.path.splitext(db)[0]
+
+        if not os.path.isdir(recordings_dir):
+            messagebox.showerror(
+                "Recordings not found",
+                f"WAV directory not found:\n{recordings_dir}\n\n"
+                "Set the 'WAV dir' field in the controls.",
+                parent=self.root,
+            )
+            return
+
+        db   = self.db_path.get().strip()
+        conf = round(self.confidence.get(), 3)
+        sp   = self._get_selected_species()
+        ev   = self.event.get()
+
+        conn = sqlite3.connect(db)
+        cur  = conn.cursor()
+        ec   = "AND event = ?" if ev != "All" else ""
+        ep   = (ev,)           if ev != "All" else ()
+        if sp:
+            placeholders = ",".join("?" * len(sp))
+            sc   = f"AND common_name IN ({placeholders})"
+            spar = tuple(sp)
+        else:
+            sc   = "AND common_name != 'DUMMY'"
+            spar = ()
+
+        rows = cur.execute(
+            f"SELECT file_name, common_name, start_time, end_time, confidence, date "
+            f"FROM detection "
+            f"WHERE confidence > ? {sc} {ec} AND DATE(date) = ? "
+            f"ORDER BY start_time",
+            (conf,) + spar + ep + (date_str,),
+        ).fetchall()
+        conn.close()
+
+        if not rows:
+            display_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
+            self._status_lbl.config(text=f"No detections on {display_date}.")
+            return
+
+        self._stop_event.clear()
+        self._cancel_btn.config(state=tk.NORMAL)
+        self._play_thread = threading.Thread(
+            target=self._playback_worker,
+            args=(rows, recordings_dir, date_str),
+            daemon=True,
+        )
+        self._play_thread.start()
+
+    def _playback_worker(self, rows, recordings_dir: str, date_str: str):
+        display_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
+        n = len(rows)
+        for i, (file_name, common_name, start_time, end_time, conf, rec_date) in enumerate(rows, 1):
+            if self._stop_event.is_set():
+                break
+            rec_start = datetime.datetime.strptime(str(rec_date), "%Y-%m-%d %H:%M:%S")
+            t_start = (rec_start + datetime.timedelta(seconds=start_time)).strftime("%H:%M:%S")
+            t_end   = (rec_start + datetime.timedelta(seconds=end_time)).strftime("%H:%M:%S")
+            msg = f"Playing {i}/{n}: {common_name}  conf:{conf:.3f}  {display_date} {t_start}–{t_end}"
+            self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
+            play_detection(recordings_dir, file_name, start_time, end_time)
+        self.root.after(0, self._on_playback_done)
+
+    def _on_playback_done(self):
+        self._cancel_btn.config(state=tk.DISABLED)
+        self._status_lbl.config(text="Click a bar in the Daily chart to play detections.")
+
+    def _cancel_playback(self):
+        self._stop_event.set()
+        self._cancel_btn.config(state=tk.DISABLED)
+        self._status_lbl.config(text="Playback cancelled.")
+
     def _save(self):
         plot_type = self._active_tab()
         path = filedialog.asksaveasfilename(
@@ -620,6 +812,67 @@ class App:
             return
         self._figs[plot_type].savefig(path, dpi=150, bbox_inches="tight")
         messagebox.showinfo("Saved", f"Saved to:\n{path}", parent=self.root)
+
+    def _extract(self):
+        db = self.db_path.get().strip()
+        if not db or not os.path.exists(db):
+            messagebox.showerror("No database", "Please select a database file first.",
+                                 parent=self.root)
+            return
+
+        recordings_dir = self.recordings_dir.get().strip()
+        if not recordings_dir:
+            recordings_dir = os.path.splitext(db)[0]
+        if not os.path.isdir(recordings_dir):
+            messagebox.showerror(
+                "Recordings not found",
+                f"WAV directory not found:\n{recordings_dir}\n\n"
+                "Set the 'WAV dir' field in the controls.",
+                parent=self.root,
+            )
+            return
+
+        out_dir = filedialog.askdirectory(
+            title="Select output directory for extracted WAV clips",
+            parent=self.root,
+        )
+        if not out_dir:
+            return
+
+        sp        = self._get_selected_species()
+        conf      = round(self.confidence.get(), 3)
+        event     = self.event.get()
+        date_from = _parse_date(self.date_from.get().strip())
+        date_to   = _parse_date(self.date_to.get().strip())
+
+        self._status_lbl.config(text="Extracting detections…")
+        threading.Thread(
+            target=self._extract_worker,
+            args=(db, recordings_dir, conf, sp, event, date_from, date_to, out_dir),
+            daemon=True,
+        ).start()
+
+    def _extract_worker(self, db, wav_dir, confidence, species, event,
+                        date_from, date_to, out_dir):
+        try:
+            conn = sqlite3.connect(db)
+            ev   = event if event != "All" else ""
+            extracted, skipped = extract_detections(
+                conn, wav_dir, confidence, species, ev, date_from, date_to, out_dir)
+            conn.close()
+            msg = f"Extracted {extracted} clip(s) to {out_dir}"
+            if skipped:
+                msg += f"  ({skipped} skipped — WAV not found)"
+            self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
+            if extracted == 0 and skipped == 0:
+                self.root.after(0, lambda: messagebox.showinfo(
+                    "No detections", "No detections matched the current filters.",
+                    parent=self.root))
+        except Exception as exc:
+            err = str(exc)
+            self.root.after(0, lambda: messagebox.showerror(
+                "Extract error", err, parent=self.root))
+            self.root.after(0, lambda: self._status_lbl.config(text="Extraction failed."))
 
 
 # ---------------------------------------------------------------------------
