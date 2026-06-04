@@ -1,3 +1,4 @@
+# pylint: disable=protected-access,redefined-outer-name
 """
 Unit tests for query_detections.py helper functions and query modes.
 All tests run against the in-memory fixture DB defined in conftest.py.
@@ -115,7 +116,7 @@ class TestWhere:
         assert "Sunrise" in params
 
     def test_date_clause_appended(self):
-        clause, params = query_detections._where(0.25, "", "", " AND DATE(date) >= ?")
+        clause, _params = query_detections._where(0.25, "", "", " AND DATE(date) >= ?")
         assert "DATE(date) >=" in clause
 
 

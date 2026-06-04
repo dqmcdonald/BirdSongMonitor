@@ -296,7 +296,7 @@ def plot_daily(dates, species_counts, confidence, label, species, event, img, ou
 
     if multi:
         def species_color(i):
-            return cm.tab20(i) if i < 20 else cm.tab20b((i - 20) % 20)
+            return cm.tab20(i) if i < 20 else cm.tab20b((i - 20) % 20)  # pylint: disable=no-member
 
         bottom = [0] * len(dates)
         for i, sp in enumerate(all_species):
@@ -611,7 +611,7 @@ def load_topn_data(db_name: str, confidence: float, species: str, event: str, n:
     return rows
 
 
-def plot_topn(data, confidence, label, species, event, n, out_path=None, *, fig=None, color="steelblue", date_from="", date_to=""):
+def plot_topn(data, confidence, label, species, event, _n, out_path=None, *, fig=None, color="steelblue", date_from="", date_to=""):
     if not data:
         print("No data for top-N chart.")
         return
@@ -706,7 +706,7 @@ def plot_event_comparison(data, top_species, confidence, label, species, out_pat
         counts = [data[evt].get(sp, 0) for sp in top_species]
         offset = (i - len(events) / 2 + 0.5) * bar_width
         ax.bar(x + offset, counts, width=bar_width, label=evt,
-               color=cm.tab10(i), edgecolor="white", linewidth=0.3)
+               color=cm.tab10(i), edgecolor="white", linewidth=0.3)  # pylint: disable=no-member
 
     ax.set_xticks(x)
     ax.set_xticklabels(top_species, rotation=45, ha="right", fontsize=8)

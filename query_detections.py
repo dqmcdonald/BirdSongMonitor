@@ -100,9 +100,9 @@ def play_detection(wav_dir: str, file_name: str, start_time: float, end_time: fl
     try:
         with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
             tmp_path = tmp.name
-        with wave.open(tmp_path, 'w') as wf_out:
-            wf_out.setparams(params)
-            wf_out.writeframes(frames)
+        with wave.open(tmp_path, 'w') as wf_out:  # type: ignore[assignment]
+            wf_out.setparams(params)  # pylint: disable=no-member
+            wf_out.writeframes(frames)  # pylint: disable=no-member
         subprocess.run(['afplay', tmp_path], check=True)
     except FileNotFoundError:
         print("Error: 'afplay' not found (macOS only).", file=sys.stderr)
@@ -601,9 +601,9 @@ def extract_detections(conn, wav_dir: str, confidence: float, species,
                 rate = wf.getframerate()
                 wf.setpos(int(start_time * rate))
                 frames = wf.readframes(int(end_time * rate) - int(start_time * rate))
-            with wave.open(out_path, 'w') as wf_out:
-                wf_out.setparams(wav_params)
-                wf_out.writeframes(frames)
+            with wave.open(out_path, 'w') as wf_out:  # type: ignore[assignment]
+                wf_out.setparams(wav_params)  # pylint: disable=no-member
+                wf_out.writeframes(frames)  # pylint: disable=no-member
             dt = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
             print(f"  {dt.strftime('%d/%m/%Y %H:%M:%S')}  "
                   f"{_fmt_time(start_time)}-{_fmt_time(end_time)}  "

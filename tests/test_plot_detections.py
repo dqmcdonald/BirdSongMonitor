@@ -1,3 +1,4 @@
+# pylint: disable=protected-access,redefined-outer-name
 """
 Unit tests for the data-loading and helper functions in plot_detections.py.
 Matplotlib is forced to the non-interactive Agg backend so no windows open.
@@ -32,11 +33,11 @@ class TestEventFilter:
         assert params == ("Sunrise",)
 
     def test_sunset_clause(self):
-        clause, params = plot_detections._event_filter("Sunset")
+        _clause, params = plot_detections._event_filter("Sunset")
         assert params == ("Sunset",)
 
     def test_day_clause(self):
-        clause, params = plot_detections._event_filter("Day")
+        _clause, params = plot_detections._event_filter("Day")
         assert params == ("Day",)
 
 
@@ -125,13 +126,13 @@ class TestLoadDailyCounts:
         assert "Eurasian Blackbird" in counts
 
     def test_single_species_filter(self, fixture_db_path):
-        dates, counts = plot_detections.load_daily_counts(
+        _dates, counts = plot_detections.load_daily_counts(
             fixture_db_path, 0.25, "Silvereye", "All")
         assert "Silvereye" in counts
         assert len(counts) == 1
 
     def test_event_filter_excludes_other_events(self, fixture_db_path):
-        dates, counts = plot_detections.load_daily_counts(
+        _dates, counts = plot_detections.load_daily_counts(
             fixture_db_path, 0.25, "", "Sunrise")
         # Silvereye only appears in Day recordings
         assert "Silvereye" not in counts
@@ -144,7 +145,7 @@ class TestLoadDailyCounts:
         assert counts == {}
 
     def test_january_date_range_returns_silvereye_only(self, fixture_db_path):
-        dates, counts = plot_detections.load_daily_counts(
+        _dates, counts = plot_detections.load_daily_counts(
             fixture_db_path, 0.25, "", "All",
             date_from="2026-01-01", date_to="2026-01-31")
         assert "Silvereye" in counts
@@ -167,7 +168,7 @@ class TestLoadHeatmapData:
         result = plot_detections.load_heatmap_data(
             fixture_db_path, 0.25, "", "All", 10)
         assert len(result) == 3
-        species_list, hours, matrix = result
+        species_list, _hours, _matrix = result
         assert len(species_list) > 0
 
     def test_matrix_shape_matches_species_and_hours(self, fixture_db_path):
@@ -183,7 +184,7 @@ class TestLoadHeatmapData:
     def test_active_hours_only_includes_hours_with_data(self, fixture_db_path):
         _, hours, matrix = plot_detections.load_heatmap_data(
             fixture_db_path, 0.25, "", "All", 10)
-        for i, h in enumerate(hours):
+        for i, _h in enumerate(hours):
             assert matrix[:, i].sum() > 0
 
     def test_empty_result_returns_two_values(self, fixture_db_path):
@@ -311,7 +312,7 @@ class TestLoadEventComparisonData:
         assert "Day" in data
 
     def test_blackbird_count_by_event(self, fixture_db_path):
-        data, top_species = plot_detections.load_event_comparison_data(
+        data, _top_species = plot_detections.load_event_comparison_data(
             fixture_db_path, 0.25, "", 10)
         # Blackbird: 3 Sunrise + 2 Day detections, 0 Sunset
         assert data["Sunrise"].get("Eurasian Blackbird", 0) == 3

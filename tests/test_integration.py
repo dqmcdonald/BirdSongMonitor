@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 """
 End-to-end integration tests.
 
@@ -53,6 +54,7 @@ def processed_db(tmp_path_factory):
         capture_output=True,
         text=True,
         timeout=600,
+        check=False,
     )
     assert result.returncode == 0, (
         f"proc_recordings.py exited with code {result.returncode}\n"
@@ -167,6 +169,7 @@ def test_idempotent_second_run_adds_no_rows(processed_db):
         capture_output=True,
         text=True,
         timeout=60,
+        check=True,
     )
 
     second_count = sqlite3.connect(processed_db).execute(
@@ -182,7 +185,7 @@ def test_idempotent_second_run_adds_no_rows(processed_db):
 def test_query_detections_basic_run(processed_db):
     result = subprocess.run(
         [sys.executable, QUERY_SCRIPT, processed_db],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0
     assert "confidence" in result.stdout.lower()
@@ -192,7 +195,7 @@ def test_query_detections_basic_run(processed_db):
 def test_query_detections_conf_stats(processed_db):
     result = subprocess.run(
         [sys.executable, QUERY_SCRIPT, processed_db, "--conf-stats"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0
     assert "Min" in result.stdout
@@ -202,7 +205,7 @@ def test_query_detections_conf_stats(processed_db):
 def test_query_detections_life_list(processed_db):
     result = subprocess.run(
         [sys.executable, QUERY_SCRIPT, processed_db, "--life-list"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0
     assert "Date" in result.stdout
@@ -212,7 +215,7 @@ def test_query_detections_life_list(processed_db):
 def test_query_detections_avg(processed_db):
     result = subprocess.run(
         [sys.executable, QUERY_SCRIPT, processed_db, "--avg"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=30, check=False,
     )
     assert result.returncode == 0
     assert "Average" in result.stdout
@@ -222,6 +225,6 @@ def test_query_detections_avg(processed_db):
 def test_query_detections_nonexistent_db_exits_nonzero():
     result = subprocess.run(
         [sys.executable, QUERY_SCRIPT, "/tmp/nonexistent_birdmon.db"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=10, check=False,
     )
     assert result.returncode != 0

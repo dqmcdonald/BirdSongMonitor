@@ -233,8 +233,9 @@ class _UploadDialog(tk.Toplevel):
         self.title("Upload to iNaturalist")
         self.resizable(False, False)
         self.transient(parent)
-        self.confirmed  = False
+        self.confirmed    = False
         self.attach_audio = tk.BooleanVar(value=False)
+        self.dry_run      = tk.BooleanVar(value=False)
 
         f = ttk.Frame(self, padding=14)
         f.pack(fill=tk.BOTH, expand=True)
@@ -254,6 +255,11 @@ class _UploadDialog(tk.Toplevel):
         if not has_wav_dir:
             ttk.Label(f, text="WAV directory not set — audio unavailable.",
                       foreground="gray").pack(anchor=tk.W, padx=(20, 0))
+
+        ttk.Checkbutton(
+            f, text="Dry run (preview without uploading)",
+            variable=self.dry_run,
+        ).pack(anchor=tk.W, pady=(6, 0))
 
         btn_f = ttk.Frame(f)
         btn_f.pack(fill=tk.X, pady=(14, 0))
@@ -884,23 +890,25 @@ class App:
             return
 
         attach_audio = dlg.attach_audio.get()
+        dry_run      = dlg.dry_run.get()
         conf         = round(self.confidence.get(), 3)
         event        = self.event.get()
         date_from    = _parse_date(self.date_from.get().strip())
         date_to      = _parse_date(self.date_to.get().strip())
         lat, lon, place_name = load_location(db, None, None)
 
-        self._status_lbl.config(text="Uploading to iNaturalist…")
+        self._status_lbl.config(text="Dry run — previewing iNaturalist upload…" if dry_run
+                                else "Uploading to iNaturalist…")
         threading.Thread(
             target=self._upload_worker,
             args=(db, species, conf, event, date_from, date_to,
                   token, lat, lon, place_name, attach_audio,
-                  recordings_dir if attach_audio else ""),
+                  recordings_dir if attach_audio else "", dry_run),
             daemon=True,
         ).start()
 
     def _upload_worker(self, db, species_list, conf, event, date_from, date_to,
-                       token, lat, lon, place_name, attach_audio, recordings_dir):
+                       token, lat, lon, place_name, attach_audio, recordings_dir, dry_run):
         ev_clause  = "AND event = ?" if event and event != "All" else ""
         ev_params  = (event,)        if event and event != "All" else ()
         date_clause, date_params = "", ()
@@ -912,6 +920,8 @@ class App:
             date_params  += (date_to,)
 
         uploaded = failed = 0
+        dry_run_lines: list[str] = []
+
         for species in species_list:
             conn = sqlite3.connect(db)
             rows = conn.execute(f"""
@@ -930,6 +940,18 @@ class App:
             for day, day_rows in sorted(by_date.items()):
                 file_name, det_date, start_time, end_time, best_conf, sci_name, evt = day_rows[0]
                 dt = datetime.datetime.strptime(str(det_date), "%Y-%m-%d %H:%M:%S")
+
+                if dry_run:
+                    dry_run_lines.append(
+                        f"{day}  {species} ({sci_name})\n"
+                        f"  time={dt.strftime('%H:%M:%S')}  event={evt}  "
+                        f"conf={best_conf:.3f}  detections={len(day_rows)}\n"
+                        f"  lat={lat:.5f}  lon={lon:.5f}  place={place_name!r}\n"
+                        + ("  + audio clip would be attached\n" if attach_audio else "")
+                    )
+                    uploaded += 1
+                    continue
+
                 self.root.after(0, lambda sp=species, d=day:
                                 self._status_lbl.config(text=f"Uploading {sp} — {d}…"))
 
@@ -953,10 +975,33 @@ class App:
                 else:
                     failed += 1
 
-        msg = f"Uploaded {uploaded} observation(s) to iNaturalist"
-        if failed:
-            msg += f" ({failed} failed — check console)"
-        self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
+        if dry_run:
+            summary = f"Dry run: {uploaded} observation(s) would be uploaded.\n\n"
+            summary += "\n".join(dry_run_lines)
+            self.root.after(0, lambda s=summary: self._show_dry_run_result(s))
+            self.root.after(0, lambda n=uploaded: self._status_lbl.config(
+                text=f"Dry run complete — {n} observation(s) would be uploaded."))
+        else:
+            msg = f"Uploaded {uploaded} observation(s) to iNaturalist"
+            if failed:
+                msg += f" ({failed} failed — check console)"
+            self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
+
+    def _show_dry_run_result(self, text: str):
+        win = tk.Toplevel(self.root)
+        win.title("Dry Run Preview")
+        win.transient(self.root)
+        win.geometry("620x420")
+
+        txt = tk.Text(win, wrap=tk.WORD, padx=8, pady=8, font=("TkFixedFont", 10))
+        sb  = ttk.Scrollbar(win, orient=tk.VERTICAL, command=txt.yview)
+        txt.configure(yscrollcommand=sb.set)
+        sb.pack(side=tk.RIGHT, fill=tk.Y)
+        txt.pack(fill=tk.BOTH, expand=True)
+        txt.insert("1.0", text)
+        txt.config(state=tk.DISABLED)
+
+        ttk.Button(win, text="Close", command=win.destroy).pack(pady=6)
 
     def _save(self):
         plot_type = self._active_tab()

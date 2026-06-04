@@ -37,7 +37,7 @@ def load_location(db_name: str, lat_arg: float, lon_arg: float) -> tuple[float, 
         return lat_arg, lon_arg, ""
     db_stem = os.path.splitext(os.path.basename(db_name))[0]
     if os.path.exists(LOCATIONS_FILE):
-        with open(LOCATIONS_FILE) as f:
+        with open(LOCATIONS_FILE, encoding='utf-8') as f:
             locs = json.load(f)
         if db_stem in locs:
             entry = locs[db_stem]
@@ -96,9 +96,9 @@ def extract_clip(recordings_dir: str, file_name: str,
             frames = wf.readframes(int(end_time * rate) - int(start_time * rate))
         tmp = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
         tmp.close()
-        with wave.open(tmp.name, 'w') as wf_out:
-            wf_out.setparams(wav_params)
-            wf_out.writeframes(frames)
+        with wave.open(tmp.name, 'w') as wf_out:  # type: ignore[assignment]
+            wf_out.setparams(wav_params)  # pylint: disable=no-member
+            wf_out.writeframes(frames)  # pylint: disable=no-member
         return tmp.name
     except Exception as e:
         print(f"  Clip extraction error: {e}", file=sys.stderr)
@@ -158,7 +158,7 @@ def upload_observation(token: str, species: str, sci_name: str,
                 timeout=60,
             )
         if sound_resp.status_code in (200, 201):
-            print(f"  Audio attached.")
+            print("  Audio attached.")
         else:
             print(f"  Audio attach failed ({sound_resp.status_code}): "
                   f"{sound_resp.text[:200]}", file=sys.stderr)

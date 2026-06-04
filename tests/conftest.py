@@ -106,7 +106,7 @@ def fixture_db_path(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def fixture_conn(fixture_db_path):
+def fixture_conn(fixture_db_path):  # pylint: disable=redefined-outer-name
     conn = sqlite3.connect(fixture_db_path)
     yield conn
     conn.close()
