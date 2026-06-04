@@ -29,10 +29,11 @@ from plot_detections import (
     load_accumulation_data,     plot_accumulation,
     load_topn_data,             plot_topn,
     load_event_comparison_data, plot_event_comparison,
+    load_cooccurrence_data,     plot_cooccurrence,
 )
 
-PLOT_TYPES = ["daily", "heatmap", "confidence", "accumulation", "topn", "events"]
-TAB_LABELS = ["Daily", "Heatmap", "Confidence", "Accumulation", "Top-N", "Events"]
+PLOT_TYPES = ["daily", "heatmap", "confidence", "accumulation", "topn", "events", "cooccurrence"]
+TAB_LABELS = ["Daily", "Heatmap", "Confidence", "Accumulation", "Top-N", "Events", "Co-occurrence"]
 COLORMAPS  = ["YlOrRd", "viridis", "plasma", "Blues", "Greens", "Oranges", "hot", "cool", "RdYlBu"]
 PALETTES   = ["tab10", "tab20", "tab20b", "tab20c", "Set1", "Set2", "Set3", "Paired", "Dark2", "Accent"]
 STYLES     = ["default"] + sorted(s for s in plt.style.available if not s.startswith("_"))
@@ -44,6 +45,7 @@ TAB_HELP = {
     "accumulation": "Cumulative unique-species count over time.",
     "topn":         "Horizontal bar chart of the top-N species by total detections.",
     "events":       "Grouped bar chart comparing detections across recording events (Sunrise / Sunset / Day).",
+    "cooccurrence": "Symmetric heatmap of how often species pairs were detected in the same recording file. Diagonal = files where that species appeared. Uses Top-N and Colormap settings.",
 }
 
 # Which appearance controls are relevant for each tab
@@ -54,6 +56,7 @@ APPEARANCE_RELEVANT: dict[str, set[str]] = {
     "accumulation": {"color", "linewidth"},
     "topn":         {"color"},
     "events":       set(),
+    "cooccurrence": {"colormap"},
 }
 
 
@@ -767,6 +770,11 @@ class App:
             data, top_sp = load_event_comparison_data(db, conf, species, n, date_from, date_to)
             plot_event_comparison(data, top_sp, conf, label, species, fig=fig,
                                   date_from=date_from, date_to=date_to)
+
+        elif plot_type == "cooccurrence":
+            sp_list, matrix = load_cooccurrence_data(db, conf, species, event, n, date_from, date_to)
+            plot_cooccurrence(sp_list, matrix, conf, label, species, event, cmap, fig=fig,
+                              date_from=date_from, date_to=date_to)
 
     # ------------------------------------------------------------------
     # Playback

@@ -729,6 +729,104 @@ def plot_event_comparison(data, top_species, confidence, label, species, out_pat
 
 
 # ---------------------------------------------------------------------------
+# cooccurrence — species × species file co-detection matrix
+# ---------------------------------------------------------------------------
+
+def load_cooccurrence_data(db_name: str, confidence: float, species, event: str, n: int,
+                           date_from: str = "", date_to: str = ""):
+    ec, ep = _event_filter(event)
+    dc, dp = _date_filter(date_from, date_to)
+    conn = sqlite3.connect(db_name)
+    cur = conn.cursor()
+
+    if isinstance(species, list) and species:
+        top_species = list(species)
+    elif isinstance(species, str) and species:
+        top_species = [species]
+    else:
+        top = cur.execute(f"""
+            SELECT common_name FROM detection
+            WHERE confidence > ? AND common_name != 'DUMMY' {ec} {dc}
+            GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
+        """, (confidence,) + ep + dp + (n,)).fetchall()
+        top_species = [r[0] for r in top]
+
+    if not top_species:
+        conn.close()
+        return [], np.zeros((0, 0), dtype=int)
+
+    placeholders = ",".join("?" * len(top_species))
+    rows = cur.execute(f"""
+        SELECT file_name, common_name FROM detection
+        WHERE confidence > ? AND common_name IN ({placeholders}) {ec} {dc}
+        GROUP BY file_name, common_name
+        ORDER BY file_name
+    """, (confidence,) + tuple(top_species) + ep + dp).fetchall()
+    conn.close()
+
+    file_species: dict[str, set] = {}
+    for file_name, sp_name in rows:
+        file_species.setdefault(file_name, set()).add(sp_name)
+
+    sp_idx = {sp: i for i, sp in enumerate(top_species)}
+    n_sp = len(top_species)
+    matrix = np.zeros((n_sp, n_sp), dtype=int)
+    for sp_set in file_species.values():
+        present = [s for s in sp_set if s in sp_idx]
+        for i, a in enumerate(present):
+            for b in present[i:]:
+                ia, ib = sp_idx[a], sp_idx[b]
+                matrix[ia, ib] += 1
+                if ia != ib:
+                    matrix[ib, ia] += 1
+
+    return top_species, matrix
+
+
+def plot_cooccurrence(species_list, matrix, confidence, label, species, event, cmap,
+                      out_path=None, *, fig=None, date_from="", date_to=""):
+    if not species_list:
+        print("No co-occurrence data found.")
+        return
+
+    n_sp = len(species_list)
+    cell_size = max(0.5, min(0.8, 12 / n_sp))
+    fig_size = max(5, n_sp * cell_size + 2)
+
+    if fig is None:
+        fig, ax = plt.subplots(figsize=(fig_size, fig_size))
+    else:
+        ax = fig.add_subplot(1, 1, 1)
+
+    im = ax.imshow(matrix, aspect="auto", cmap=cmap, interpolation="nearest")
+
+    thresh = matrix.max() / 2
+    font_size = max(5, min(9, 90 // n_sp))
+    for i in range(n_sp):
+        for j in range(n_sp):
+            val = matrix[i, j]
+            if val > 0:
+                ax.text(j, i, str(val), ha="center", va="center", fontsize=font_size,
+                        color="white" if val > thresh else "black")
+
+    ax.set_xticks(range(n_sp))
+    ax.set_yticks(range(n_sp))
+    ax.set_xticklabels(species_list, rotation=45, ha="right", fontsize=8)
+    ax.set_yticklabels(species_list, fontsize=8)
+    fig.colorbar(im, ax=ax, label="Files co-detected")
+
+    subtitle = _build_subtitle(event, species, confidence, date_from, date_to)
+    ax.set_title(f"Species co-occurrence — {label}", pad=28)
+    _add_subtitle(ax, subtitle)
+    fig.tight_layout()
+    if out_path:
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        print(f"Saved plot to {out_path}")
+        plt.close(fig)
+    return fig
+
+
+# ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
 
@@ -742,7 +840,7 @@ def main():
         "--plot",
         dest="plot",
         default="daily",
-        choices=["daily", "heatmap", "confidence", "accumulation", "topn", "events"],
+        choices=["daily", "heatmap", "confidence", "accumulation", "topn", "events", "cooccurrence"],
         help="Chart type (default: daily)",
     )
     parser.add_argument(
@@ -875,6 +973,14 @@ def main():
         plot_event_comparison(data, top_species, args.confidence, label,
                               species, out_path,
                               date_from=date_from, date_to=date_to)
+
+    elif args.plot == "cooccurrence":
+        sp_list, matrix = load_cooccurrence_data(
+            args.db_name, args.confidence, species, args.event, args.n,
+            date_from, date_to)
+        plot_cooccurrence(sp_list, matrix, args.confidence, label,
+                          species, args.event, args.cmap, out_path,
+                          date_from=date_from, date_to=date_to)
 
 
 if __name__ == "__main__":
