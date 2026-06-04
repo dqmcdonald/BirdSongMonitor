@@ -23,6 +23,8 @@ from datetime import datetime
 
 import requests
 
+from query_detections import resolve_species
+
 INATURALIST_API = "https://api.inaturalist.org/v1"
 DEFAULT_LAT = -43.62674558206582
 DEFAULT_LON = 172.72602916819974
@@ -197,6 +199,10 @@ def main():
     if not os.path.exists(args.db_name):
         sys.exit(f"Error: database not found: {args.db_name}")
 
+    conn = sqlite3.connect(args.db_name)
+    species = resolve_species(conn, args.species)
+    conn.close()
+
     lat, lon, place_name = load_location(args.db_name, args.lat, args.lon)
 
     recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
@@ -205,13 +211,13 @@ def main():
                  f"Use --recordings-dir to specify the WAV file location.")
 
     date = _parse_date(args.date) if args.date else None
-    by_date = query_detections(args.db_name, args.species, date, args.confidence)
+    by_date = query_detections(args.db_name, species, date, args.confidence)
 
     if not by_date:
-        sys.exit(f"No detections found for '{args.species}' "
+        sys.exit(f"No detections found for '{species}' "
                  f"with confidence > {args.confidence:.2f}")
 
-    print(f"\nUploading {len(by_date)} observation(s) for '{args.species}' "
+    print(f"\nUploading {len(by_date)} observation(s) for '{species}' "
           f"from {os.path.basename(args.db_name)}")
     print(f"Location: {place_name} (lat={lat:.5f}, lon={lon:.5f})\n")
 
@@ -229,7 +235,7 @@ def main():
 
         obs_id = upload_observation(
             token=token or "",
-            species=args.species,
+            species=species,
             sci_name=sci_name,
             observed_on=day,
             time_str=time_str,
