@@ -19,6 +19,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 from query_detections import play_detection, extract_detections
+from upload_to_inaturalist import load_location, upload_observation, extract_clip
 from plot_detections import (
     _parse_date,
     fetch_species_image,
@@ -221,6 +222,53 @@ class _DatePickerDialog(tk.Toplevel):
 
 
 # ---------------------------------------------------------------------------
+# iNaturalist upload confirmation dialog
+# ---------------------------------------------------------------------------
+
+class _UploadDialog(tk.Toplevel):
+    """Confirm iNaturalist upload settings before starting."""
+
+    def __init__(self, parent: tk.Tk, species_list: list[str], has_wav_dir: bool):
+        super().__init__(parent)
+        self.title("Upload to iNaturalist")
+        self.resizable(False, False)
+        self.transient(parent)
+        self.confirmed  = False
+        self.attach_audio = tk.BooleanVar(value=False)
+
+        f = ttk.Frame(self, padding=14)
+        f.pack(fill=tk.BOTH, expand=True)
+
+        sp_str = ", ".join(species_list) if len(species_list) <= 3 else f"{len(species_list)} species"
+        ttk.Label(f, text="Upload detections to iNaturalist?",
+                  font=("TkDefaultFont", 10, "bold")).pack(anchor=tk.W)
+        ttk.Label(f, text=f"Species: {sp_str}").pack(anchor=tk.W, pady=(6, 0))
+        ttk.Label(f, text="One observation will be created per species per day.",
+                  foreground="gray").pack(anchor=tk.W, pady=(2, 10))
+
+        ttk.Checkbutton(
+            f, text="Attach audio clip (best detection per observation)",
+            variable=self.attach_audio,
+            state=tk.NORMAL if has_wav_dir else tk.DISABLED,
+        ).pack(anchor=tk.W)
+        if not has_wav_dir:
+            ttk.Label(f, text="WAV directory not set — audio unavailable.",
+                      foreground="gray").pack(anchor=tk.W, padx=(20, 0))
+
+        btn_f = ttk.Frame(f)
+        btn_f.pack(fill=tk.X, pady=(14, 0))
+        ttk.Button(btn_f, text="Cancel", command=self.destroy).pack(side=tk.RIGHT, padx=(4, 0))
+        ttk.Button(btn_f, text="Upload", command=self._ok).pack(side=tk.RIGHT)
+
+        self.grab_set()
+        self.wait_window()
+
+    def _ok(self):
+        self.confirmed = True
+        self.destroy()
+
+
+# ---------------------------------------------------------------------------
 # Main application
 # ---------------------------------------------------------------------------
 
@@ -415,6 +463,8 @@ class App:
              "Save the current plot to a PNG, PDF, or SVG file.").pack(side=tk.LEFT, padx=4)
         _tip(ttk.Button(r2b, text="Extract…", command=self._extract),
              "Extract detections shown in the current graph as individual WAV clips.").pack(side=tk.LEFT, padx=4)
+        _tip(ttk.Button(r2b, text="iNaturalist…", command=self._upload_inaturalist),
+             "Upload detections for the selected species to iNaturalist (one observation per day).").pack(side=tk.LEFT, padx=4)
 
         # Row 3 — appearance group
         grp = ttk.LabelFrame(parent, text="Appearance", padding=(6, 2))
@@ -799,6 +849,114 @@ class App:
         self._stop_event.set()
         self._cancel_btn.config(state=tk.DISABLED)
         self._status_lbl.config(text="Playback cancelled.")
+
+    def _upload_inaturalist(self):
+        db = self.db_path.get().strip()
+        if not db or not os.path.exists(db):
+            messagebox.showerror("No database", "Please select a database file first.",
+                                 parent=self.root)
+            return
+
+        token = os.environ.get("INATURALIST_TOKEN", "")
+        if not token:
+            messagebox.showerror(
+                "No token",
+                "INATURALIST_TOKEN environment variable is not set.\n\n"
+                "Get your token from:\nhttps://www.inaturalist.org/users/api_token",
+                parent=self.root,
+            )
+            return
+
+        species = self._get_selected_species()
+        if not species:
+            messagebox.showerror(
+                "No species selected",
+                "Please select at least one species in the Species list before uploading.",
+                parent=self.root,
+            )
+            return
+
+        recordings_dir = self.recordings_dir.get().strip() or os.path.splitext(db)[0]
+        has_wav_dir    = os.path.isdir(recordings_dir)
+
+        dlg = _UploadDialog(self.root, species, has_wav_dir)
+        if not dlg.confirmed:
+            return
+
+        attach_audio = dlg.attach_audio.get()
+        conf         = round(self.confidence.get(), 3)
+        event        = self.event.get()
+        date_from    = _parse_date(self.date_from.get().strip())
+        date_to      = _parse_date(self.date_to.get().strip())
+        lat, lon, place_name = load_location(db, None, None)
+
+        self._status_lbl.config(text="Uploading to iNaturalist…")
+        threading.Thread(
+            target=self._upload_worker,
+            args=(db, species, conf, event, date_from, date_to,
+                  token, lat, lon, place_name, attach_audio,
+                  recordings_dir if attach_audio else ""),
+            daemon=True,
+        ).start()
+
+    def _upload_worker(self, db, species_list, conf, event, date_from, date_to,
+                       token, lat, lon, place_name, attach_audio, recordings_dir):
+        ev_clause  = "AND event = ?" if event and event != "All" else ""
+        ev_params  = (event,)        if event and event != "All" else ()
+        date_clause, date_params = "", ()
+        if date_from:
+            date_clause += " AND DATE(date) >= ?"
+            date_params  += (date_from,)
+        if date_to:
+            date_clause += " AND DATE(date) <= ?"
+            date_params  += (date_to,)
+
+        uploaded = failed = 0
+        for species in species_list:
+            conn = sqlite3.connect(db)
+            rows = conn.execute(f"""
+                SELECT file_name, date, start_time, end_time, confidence, scientific_name, event
+                FROM detection
+                WHERE confidence > ? AND common_name = ? AND common_name != 'DUMMY'
+                {ev_clause} {date_clause}
+                ORDER BY date, confidence DESC
+            """, (conf, species) + ev_params + date_params).fetchall()
+            conn.close()
+
+            by_date: dict[str, list] = {}
+            for row in rows:
+                by_date.setdefault(str(row[1])[:10], []).append(row)
+
+            for day, day_rows in sorted(by_date.items()):
+                file_name, det_date, start_time, end_time, best_conf, sci_name, evt = day_rows[0]
+                dt = datetime.datetime.strptime(str(det_date), "%Y-%m-%d %H:%M:%S")
+                self.root.after(0, lambda sp=species, d=day:
+                                self._status_lbl.config(text=f"Uploading {sp} — {d}…"))
+
+                audio_path = None
+                if attach_audio and recordings_dir:
+                    audio_path = extract_clip(recordings_dir, file_name, start_time, end_time)
+
+                obs_id = upload_observation(
+                    token=token, species=species, sci_name=sci_name,
+                    observed_on=day, time_str=dt.strftime("%H:%M:%S"),
+                    lat=lat, lon=lon, place_name=place_name,
+                    confidence=best_conf, n_detections=len(day_rows),
+                    event=evt, audio_path=audio_path, dry_run=False,
+                )
+
+                if audio_path and os.path.exists(audio_path):
+                    os.unlink(audio_path)
+
+                if obs_id:
+                    uploaded += 1
+                else:
+                    failed += 1
+
+        msg = f"Uploaded {uploaded} observation(s) to iNaturalist"
+        if failed:
+            msg += f" ({failed} failed — check console)"
+        self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
 
     def _save(self):
         plot_type = self._active_tab()
