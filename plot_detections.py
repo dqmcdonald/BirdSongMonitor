@@ -800,6 +800,7 @@ def plot_cooccurrence(species_list, matrix, confidence, label, species, event, c
 
     im = ax.imshow(matrix, aspect="auto", cmap=cmap, interpolation="nearest")
 
+    from matplotlib.patches import Rectangle
     thresh = matrix.max() / 2
     font_size = max(5, min(9, 90 // n_sp))
     for i in range(n_sp):
@@ -808,6 +809,8 @@ def plot_cooccurrence(species_list, matrix, confidence, label, species, event, c
             if val > 0:
                 ax.text(j, i, str(val), ha="center", va="center", fontsize=font_size,
                         color="white" if val > thresh else "black")
+        ax.add_patch(Rectangle((i - 0.5, i - 0.5), 1, 1,
+                                fill=False, edgecolor="white", linewidth=2))
 
     ax.set_xticks(range(n_sp))
     ax.set_yticks(range(n_sp))
