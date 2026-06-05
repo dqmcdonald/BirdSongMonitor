@@ -81,7 +81,7 @@ python plot_detections.py <db_name.db> [options]
 | `-s`, `--species` | (all) | Limit to a single species; accepts partial, case-insensitive names — prompts if ambiguous |
 | `-n`, `--top-n` | `20` | Number of species for heatmap / topn / confidence / events plots |
 | `-o`, `--output` | `<db_stem>[_<plot>].png` | Output PNG path |
-| `--cmap` | `YlOrRd` | Matplotlib colormap for heatmap |
+| `--cmap` | `YlOrRd` | Matplotlib colormap for heatmap and co-occurrence plots, or qualitative palette for multi-species daily bars (e.g. `tab10`, `Set1`, `Dark2`) |
 | `--site NAME` | (db filename) | Site name for plot titles |
 | `--from DATE` | (none) | Start date inclusive |
 | `--to DATE` | (none) | End date inclusive |
@@ -96,12 +96,13 @@ python plot_detections.py <db_name.db> [options]
 | `accumulation` | Cumulative unique-species count over time |
 | `topn` | Horizontal bar chart of top-N species by total detections |
 | `events` | Grouped bar chart comparing detections across recording events |
+| `cooccurrence` | Symmetric species × species heatmap of how often each pair was detected in the same recording file; diagonal shows per-species file count |
 
 For a single-species `daily` plot, a photo is inset from `bird_photos/<Species_Name>.png` or fetched from Wikipedia if no local file exists.
 
 ### `gui_plot_detections.py` — interactive plot GUI
 
-Tkinter-based GUI for exploring detections interactively. Provides the same six chart types as `plot_detections.py` in a tabbed window, with live controls and a Save button to export the current plot.
+Tkinter-based GUI for exploring detections interactively. Provides the same seven chart types as `plot_detections.py` in a tabbed window, with live controls and a Save button to export the current plot.
 
 ```
 python gui_plot_detections.py [db_name.db] [options]
@@ -136,7 +137,7 @@ python gui_plot_detections.py [db_name.db] [options]
 |---------|-----------|
 | Color | Single-species daily bars, accumulation line, top-N bars |
 | Line width | Accumulation step-line thickness |
-| Colormap | Heatmap colour scale |
+| Palette / Colormap | Qualitative colour palette for multi-species daily bars (labelled **Palette**); sequential colormap for heatmap and co-occurrence plots (labelled **Colormap**) — the control and its option list swap automatically when switching tabs |
 | Style | Matplotlib style sheet applied to all plots |
 
 Plots regenerate automatically on tab switch, database selection, colormap change, color pick, linewidth adjustment, and style change.
