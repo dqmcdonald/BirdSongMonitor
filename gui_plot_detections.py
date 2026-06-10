@@ -9,6 +9,8 @@ import os
 import sqlite3
 import threading
 import tkinter as tk
+import wave
+import webbrowser
 from tkinter import ttk, filedialog, messagebox, colorchooser
 
 import matplotlib
@@ -18,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
-from query_detections import play_detection, extract_detections
+from query_detections import play_detection, extract_detections, _expand_clip_window
 from upload_to_inaturalist import load_location, upload_observation, extract_clip
 from plot_detections import (
     _parse_date,
@@ -240,6 +242,7 @@ class _UploadDialog(tk.Toplevel):
         self.confirmed    = False
         self.attach_audio = tk.BooleanVar(value=False)
         self.dry_run      = tk.BooleanVar(value=False)
+        self._token_var   = tk.StringVar(value=os.environ.get("INATURALIST_TOKEN", ""))
 
         f = ttk.Frame(self, padding=14)
         f.pack(fill=tk.BOTH, expand=True)
@@ -249,7 +252,18 @@ class _UploadDialog(tk.Toplevel):
                   font=("TkDefaultFont", 10, "bold")).pack(anchor=tk.W)
         ttk.Label(f, text=f"Species: {sp_str}").pack(anchor=tk.W, pady=(6, 0))
         ttk.Label(f, text="One observation will be created per species per day.",
-                  foreground="gray").pack(anchor=tk.W, pady=(2, 10))
+                  foreground="gray").pack(anchor=tk.W, pady=(2, 6))
+
+        tok_f = ttk.Frame(f)
+        tok_f.pack(fill=tk.X, pady=(0, 8))
+        ttk.Label(tok_f, text="API token:").pack(side=tk.LEFT)
+        ttk.Entry(tok_f, textvariable=self._token_var, width=38, show="*").pack(
+            side=tk.LEFT, padx=(6, 0))
+        _tok_link = tk.Label(f, text="Get your token from iNaturalist",
+                             foreground="blue", cursor="hand2")
+        _tok_link.pack(anchor=tk.W, pady=(0, 6))
+        _tok_link.bind("<Button-1>", lambda _: webbrowser.open(
+            "https://www.inaturalist.org/users/api_token"))
 
         ttk.Checkbutton(
             f, text="Attach audio clip (best detection per observation)",
@@ -273,7 +287,17 @@ class _UploadDialog(tk.Toplevel):
         self.grab_set()
         self.wait_window()
 
+    @property
+    def token(self) -> str:
+        return self._token_var.get().strip()
+
     def _ok(self):
+        if not self.token and not self.dry_run.get():
+            import tkinter.messagebox as _mb
+            _mb.showerror("No token",
+                          "Please paste your iNaturalist API token before uploading.",
+                          parent=self)
+            return
         self.confirmed = True
         self.destroy()
 
@@ -396,6 +420,12 @@ class App:
                      "Select one or more species to filter plots. "
                      "No selection = all species shown.")
         sp_lf.pack(side=tk.LEFT, padx=(0, 8), anchor=tk.N)
+
+        self._species_search_var = tk.StringVar()
+        _sp_search = _tip(ttk.Entry(sp_lf, textvariable=self._species_search_var, width=24),
+                          "Type to scroll the species list to the first partial name match.")
+        _sp_search.pack(fill=tk.X, pady=(0, 2))
+        self._species_search_var.trace_add("write", lambda *_: self._species_scroll_to_match())
 
         sp_list_frame = ttk.Frame(sp_lf)
         sp_list_frame.pack()
@@ -676,6 +706,16 @@ class App:
             return []
         return [self._species_listbox.get(i) for i in indices]
 
+    def _species_scroll_to_match(self):
+        query = self._species_search_var.get().lower()
+        if not query:
+            return
+        for i in range(self._species_listbox.size()):
+            if query in self._species_listbox.get(i).lower():
+                self._species_listbox.see(i)
+                self._species_listbox.activate(i)
+                return
+
     def _species_select_all(self):
         self._species_listbox.select_set(0, tk.END)
         self._plot(silent=True)
@@ -862,8 +902,15 @@ class App:
             if self._stop_event.is_set():
                 break
             rec_start = datetime.datetime.strptime(str(rec_date), "%Y-%m-%d %H:%M:%S")
-            t_start = (rec_start + datetime.timedelta(seconds=start_time)).strftime("%H:%M:%S")
-            t_end   = (rec_start + datetime.timedelta(seconds=end_time)).strftime("%H:%M:%S")
+            wav_path = os.path.join(recordings_dir, file_name)
+            try:
+                with wave.open(wav_path, 'r') as _wf:
+                    clip_s, clip_e = _expand_clip_window(start_time, end_time,
+                                                         _wf.getnframes(), _wf.getframerate())
+            except Exception:
+                clip_s, clip_e = start_time, end_time
+            t_start = (rec_start + datetime.timedelta(seconds=clip_s)).strftime("%H:%M:%S")
+            t_end   = (rec_start + datetime.timedelta(seconds=clip_e)).strftime("%H:%M:%S")
             msg = f"Playing {i}/{n}: {common_name}  conf:{conf:.3f}  {display_date} {t_start}–{t_end}"
             self.root.after(0, lambda m=msg: self._status_lbl.config(text=m))
             play_detection(recordings_dir, file_name, start_time, end_time)
@@ -885,16 +932,6 @@ class App:
                                  parent=self.root)
             return
 
-        token = os.environ.get("INATURALIST_TOKEN", "")
-        if not token:
-            messagebox.showerror(
-                "No token",
-                "INATURALIST_TOKEN environment variable is not set.\n\n"
-                "Get your token from:\nhttps://www.inaturalist.org/users/api_token",
-                parent=self.root,
-            )
-            return
-
         species = self._get_selected_species()
         if not species:
             messagebox.showerror(
@@ -911,6 +948,7 @@ class App:
         if not dlg.confirmed:
             return
 
+        token        = dlg.token
         attach_audio = dlg.attach_audio.get()
         dry_run      = dlg.dry_run.get()
         conf         = round(self.confidence.get(), 3)

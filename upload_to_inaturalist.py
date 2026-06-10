@@ -23,7 +23,7 @@ from datetime import datetime
 
 import requests
 
-from query_detections import resolve_species
+from query_detections import resolve_species, _expand_clip_window
 
 INATURALIST_API = "https://api.inaturalist.org/v1"
 DEFAULT_LAT = -43.62674558206582
@@ -92,8 +92,10 @@ def extract_clip(recordings_dir: str, file_name: str,
         with wave.open(wav_path, 'r') as wf:
             wav_params = wf.getparams()
             rate = wf.getframerate()
-            wf.setpos(int(start_time * rate))
-            frames = wf.readframes(int(end_time * rate) - int(start_time * rate))
+            clip_start, clip_end = _expand_clip_window(start_time, end_time,
+                                                       wf.getnframes(), rate)
+            wf.setpos(int(clip_start * rate))
+            frames = wf.readframes(int(clip_end * rate) - int(clip_start * rate))
         tmp = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
         tmp.close()
         with wave.open(tmp.name, 'w') as wf_out:  # type: ignore[assignment]
@@ -142,7 +144,10 @@ def upload_observation(token: str, species: str, sci_name: str,
     resp = requests.post(f"{INATURALIST_API}/observations",
                          json=payload, headers=headers, timeout=30)
     if resp.status_code not in (200, 201):
-        print(f"  Upload failed ({resp.status_code}): {resp.text[:300]}", file=sys.stderr)
+        msg = f"  Upload failed ({resp.status_code}): {resp.text[:300]}"
+        if resp.status_code == 401:
+            msg += "\n  Token may be expired — get a fresh one from iNaturalist Account Settings → API."
+        print(msg, file=sys.stderr)
         return None
 
     obs_id = str(resp.json()["id"])

@@ -82,6 +82,27 @@ def _print_header(label: str, confidence: float, species: str, event: str,
     print()
 
 
+def _expand_clip_window(start_time: float, end_time: float,
+                        total_frames: int, rate: int,
+                        context: float = 3.0) -> tuple[float, float]:
+    """Return (clip_start, clip_end) expanded by `context` seconds on each side.
+
+    When near a file boundary the unused padding is shifted to the other side so
+    the total clip length stays at (end_time - start_time + 2*context) seconds,
+    clamped to the file duration.
+    """
+    total_dur = total_frames / rate
+    clip_start = start_time - context
+    clip_end = end_time + context
+    if clip_start < 0:
+        clip_end = min(total_dur, clip_end - clip_start)
+        clip_start = 0.0
+    if clip_end > total_dur:
+        clip_start = max(0.0, clip_start - (clip_end - total_dur))
+        clip_end = total_dur
+    return clip_start, clip_end
+
+
 def play_detection(wav_dir: str, file_name: str, start_time: float, end_time: float):
     wav_path = os.path.join(wav_dir, file_name)
     if not os.path.exists(wav_path):
@@ -91,8 +112,10 @@ def play_detection(wav_dir: str, file_name: str, start_time: float, end_time: fl
     with wave.open(wav_path, 'r') as wf:
         params = wf.getparams()
         rate = wf.getframerate()
-        start_frame = int(start_time * rate)
-        end_frame = int(end_time * rate)
+        clip_start, clip_end = _expand_clip_window(start_time, end_time,
+                                                   wf.getnframes(), rate)
+        start_frame = int(clip_start * rate)
+        end_frame = int(clip_end * rate)
         wf.setpos(start_frame)
         frames = wf.readframes(end_frame - start_frame)
 
@@ -599,8 +622,10 @@ def extract_detections(conn, wav_dir: str, confidence: float, species,
             with wave.open(wav_path, 'r') as wf:
                 wav_params = wf.getparams()
                 rate = wf.getframerate()
-                wf.setpos(int(start_time * rate))
-                frames = wf.readframes(int(end_time * rate) - int(start_time * rate))
+                clip_start, clip_end = _expand_clip_window(start_time, end_time,
+                                                           wf.getnframes(), rate)
+                wf.setpos(int(clip_start * rate))
+                frames = wf.readframes(int(clip_end * rate) - int(clip_start * rate))
             with wave.open(out_path, 'w') as wf_out:  # type: ignore[assignment]
                 wf_out.setparams(wav_params)  # pylint: disable=no-member
                 wf_out.writeframes(frames)  # pylint: disable=no-member
