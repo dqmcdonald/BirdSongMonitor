@@ -101,8 +101,9 @@ class _Tooltip:
         tw.wm_geometry(f"+{x}+{y}")
         tk.Label(
             tw, text=self._text, justify=tk.LEFT,
-            background="#ffffe0", relief=tk.SOLID, borderwidth=1,
-            font=("TkSmallCaptionFont",), wraplength=self._WRAP, padx=4, pady=2,
+            background="#ffffe0", foreground="black",
+            relief=tk.SOLID, borderwidth=1,
+            font=("TkSmallCaptionFont",), wraplength=self._WRAP, padx=12, pady=4,
         ).pack()
 
 
@@ -812,8 +813,8 @@ class App:
                                   date_from=date_from, date_to=date_to)
 
         elif plot_type == "cooccurrence":
-            sp_list, matrix = load_cooccurrence_data(db, conf, species, event, n, date_from, date_to)
-            plot_cooccurrence(sp_list, matrix, conf, label, species, event, cmap, fig=fig,
+            row_sp, col_sp, matrix = load_cooccurrence_data(db, conf, species, event, n, date_from, date_to)
+            plot_cooccurrence(row_sp, col_sp, matrix, conf, label, species, event, cmap, fig=fig,
                               date_from=date_from, date_to=date_to)
 
     # ------------------------------------------------------------------

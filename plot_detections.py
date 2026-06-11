@@ -734,15 +734,60 @@ def plot_event_comparison(data, top_species, confidence, label, species, out_pat
 
 def load_cooccurrence_data(db_name: str, confidence: float, species, event: str, n: int,
                            date_from: str = "", date_to: str = ""):
+    """Return (row_species, col_species, matrix).
+
+    When exactly one species is selected row_species=[that species] and
+    col_species=top-N species, giving a 1×N matrix.  Otherwise the matrix is
+    square and row_species == col_species.
+    """
     ec, ep = _event_filter(event)
     dc, dp = _date_filter(date_from, date_to)
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
 
+    single = None
+    if isinstance(species, str) and species:
+        single = species
+    elif isinstance(species, list) and len(species) == 1:
+        single = species[0]
+
+    if single:
+        top = cur.execute(f"""
+            SELECT common_name FROM detection
+            WHERE confidence > ? AND common_name != 'DUMMY' {ec} {dc}
+            GROUP BY common_name ORDER BY COUNT(*) DESC LIMIT ?
+        """, (confidence,) + ep + dp + (n,)).fetchall()
+        col_species = [r[0] for r in top]
+        if not col_species:
+            conn.close()
+            return [single], [], np.zeros((1, 0), dtype=int)
+
+        fetch_set = list({single} | set(col_species))
+        placeholders = ",".join("?" * len(fetch_set))
+        rows = cur.execute(f"""
+            SELECT file_name, common_name FROM detection
+            WHERE confidence > ? AND common_name IN ({placeholders}) {ec} {dc}
+            GROUP BY file_name, common_name
+            ORDER BY file_name
+        """, (confidence,) + tuple(fetch_set) + ep + dp).fetchall()
+        conn.close()
+
+        file_species: dict[str, set] = {}
+        for fname, sp_name in rows:
+            file_species.setdefault(fname, set()).add(sp_name)
+
+        col_idx = {sp: i for i, sp in enumerate(col_species)}
+        matrix = np.zeros((1, len(col_species)), dtype=int)
+        for sp_set in file_species.values():
+            if single not in sp_set:
+                continue
+            for sp in sp_set:
+                if sp in col_idx:
+                    matrix[0, col_idx[sp]] += 1
+        return [single], col_species, matrix
+
     if isinstance(species, list) and species:
         top_species = list(species)
-    elif isinstance(species, str) and species:
-        top_species = [species]
     else:
         top = cur.execute(f"""
             SELECT common_name FROM detection
@@ -753,7 +798,7 @@ def load_cooccurrence_data(db_name: str, confidence: float, species, event: str,
 
     if not top_species:
         conn.close()
-        return [], np.zeros((0, 0), dtype=int)
+        return [], [], np.zeros((0, 0), dtype=int)
 
     placeholders = ",".join("?" * len(top_species))
     rows = cur.execute(f"""
@@ -765,8 +810,8 @@ def load_cooccurrence_data(db_name: str, confidence: float, species, event: str,
     conn.close()
 
     file_species: dict[str, set] = {}
-    for file_name, sp_name in rows:
-        file_species.setdefault(file_name, set()).add(sp_name)
+    for fname, sp_name in rows:
+        file_species.setdefault(fname, set()).add(sp_name)
 
     sp_idx = {sp: i for i, sp in enumerate(top_species)}
     n_sp = len(top_species)
@@ -780,21 +825,25 @@ def load_cooccurrence_data(db_name: str, confidence: float, species, event: str,
                 if ia != ib:
                     matrix[ib, ia] += 1
 
-    return top_species, matrix
+    return top_species, top_species, matrix
 
 
-def plot_cooccurrence(species_list, matrix, confidence, label, species, event, cmap,
+def plot_cooccurrence(row_species, col_species, matrix, confidence, label, species, event, cmap,
                       out_path=None, *, fig=None, date_from="", date_to=""):
-    if not species_list:
+    if not row_species or not col_species:
         print("No co-occurrence data found.")
         return
 
-    n_sp = len(species_list)
-    cell_size = max(0.5, min(0.8, 12 / n_sp))
-    fig_size = max(5, n_sp * cell_size + 2)
+    n_rows = len(row_species)
+    n_cols = len(col_species)
+    is_square = (row_species == col_species)
+
+    cell_size = max(0.5, min(0.8, 12 / n_cols))
+    fig_w = max(5, n_cols * cell_size + 2)
+    fig_h = max(2, n_rows * cell_size + 2) if not is_square else fig_w
 
     if fig is None:
-        fig, ax = plt.subplots(figsize=(fig_size, fig_size))
+        fig, ax = plt.subplots(figsize=(fig_w, fig_h))
     else:
         ax = fig.add_subplot(1, 1, 1)
 
@@ -802,20 +851,29 @@ def plot_cooccurrence(species_list, matrix, confidence, label, species, event, c
 
     from matplotlib.patches import Rectangle
     thresh = matrix.max() / 2
-    font_size = max(5, min(9, 90 // n_sp))
-    for i in range(n_sp):
-        for j in range(n_sp):
+    font_size = max(5, min(9, 90 // n_cols))
+    for i in range(n_rows):
+        for j in range(n_cols):
             val = matrix[i, j]
             if val > 0:
                 ax.text(j, i, str(val), ha="center", va="center", fontsize=font_size,
                         color="white" if val > thresh else "black")
-        ax.add_patch(Rectangle((i - 0.5, i - 0.5), 1, 1,
-                                fill=False, edgecolor="white", linewidth=2))
 
-    ax.set_xticks(range(n_sp))
-    ax.set_yticks(range(n_sp))
-    ax.set_xticklabels(species_list, rotation=45, ha="right", fontsize=8)
-    ax.set_yticklabels(species_list, fontsize=8)
+    if is_square:
+        for i in range(n_rows):
+            ax.add_patch(Rectangle((i - 0.5, i - 0.5), 1, 1,
+                                    fill=False, edgecolor="white", linewidth=2))
+    else:
+        # Highlight the cell where the selected species meets itself in the columns
+        if row_species[0] in col_species:
+            j = col_species.index(row_species[0])
+            ax.add_patch(Rectangle((j - 0.5, -0.5), 1, 1,
+                                    fill=False, edgecolor="white", linewidth=2))
+
+    ax.set_xticks(range(n_cols))
+    ax.set_yticks(range(n_rows))
+    ax.set_xticklabels(col_species, rotation=45, ha="right", fontsize=8)
+    ax.set_yticklabels(row_species, fontsize=8)
     fig.colorbar(im, ax=ax, label="Files co-detected")
 
     subtitle = _build_subtitle(event, species, confidence, date_from, date_to)
@@ -978,10 +1036,10 @@ def main():
                               date_from=date_from, date_to=date_to)
 
     elif args.plot == "cooccurrence":
-        sp_list, matrix = load_cooccurrence_data(
+        row_sp, col_sp, matrix = load_cooccurrence_data(
             args.db_name, args.confidence, species, args.event, args.n,
             date_from, date_to)
-        plot_cooccurrence(sp_list, matrix, args.confidence, label,
+        plot_cooccurrence(row_sp, col_sp, matrix, args.confidence, label,
                           species, args.event, args.cmap, out_path,
                           date_from=date_from, date_to=date_to)
 
