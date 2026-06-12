@@ -336,3 +336,86 @@ class TestProcessRec:
             proc_recordings.process_rec("SR_2026_03_12_07_06.WAV", conn, set(), 0.25)
         assert conn.execute("SELECT COUNT(*) FROM detection").fetchone()[0] == 0
         conn.close()
+
+
+# ===========================================================================
+# rare_threshold
+# ===========================================================================
+
+class TestRareThreshold:
+
+    def test_empty_returns_zero(self):
+        assert proc_recordings.rare_threshold([]) == 0
+
+    def test_single_count_is_threshold(self):
+        assert proc_recordings.rare_threshold([5]) == 5
+
+    def test_bottom_quartile_of_four(self):
+        # ceil(0.25 * 4) - 1 = 0 -> only the single least common
+        assert proc_recordings.rare_threshold([1, 2, 3, 4]) == 1
+
+    def test_bottom_quartile_of_eight(self):
+        # ceil(0.25 * 8) - 1 = 1 -> the two least common
+        assert proc_recordings.rare_threshold([1, 2, 3, 4, 5, 6, 7, 8]) == 2
+
+    def test_unsorted_input(self):
+        assert proc_recordings.rare_threshold([8, 1, 4, 2, 6, 3, 7, 5]) == 2
+
+
+# ===========================================================================
+# report_detections
+# ===========================================================================
+
+class TestReportDetections:
+
+    def _make_db(self, tmp_path, rows=None):
+        db_path = str(tmp_path / "rep.db")
+        conn = sqlite3.connect(db_path)
+        conn.execute(
+            "CREATE TABLE detection("
+            "file_name,event,date,common_name,scientific_name,"
+            "start_time,end_time,confidence)"
+        )
+        if rows:
+            conn.executemany("INSERT INTO detection VALUES(?,?,?,?,?,?,?,?)", rows)
+        conn.commit()
+        return conn
+
+    def test_no_detections_message(self, tmp_path, capsys):
+        conn = self._make_db(tmp_path)
+        proc_recordings.report_detections(conn, 0.7)
+        out = capsys.readouterr().out
+        assert "No detections at or above the reporting confidence." in out
+        conn.close()
+
+    def test_excludes_dummy_and_below_threshold(self, tmp_path, capsys):
+        rows = [
+            ("f1.WAV", "Sunrise", "2026-01-01", "DUMMY", "DUMMY", 0, 0, 0.0),
+            ("f1.WAV", "Sunrise", "2026-01-01", "Robin", "Erithacus", 0, 3, 0.9),
+            ("f2.WAV", "Sunrise", "2026-01-02", "Quiet Bird", "Q", 0, 3, 0.5),
+        ]
+        conn = self._make_db(tmp_path, rows)
+        proc_recordings.report_detections(conn, 0.7)
+        out = capsys.readouterr().out
+        assert "Robin" in out
+        assert "DUMMY" not in out
+        assert "Quiet Bird" not in out  # below the 0.7 reporting confidence
+        conn.close()
+
+    def test_least_common_highlighted(self, tmp_path, capsys):
+        rows = []
+        # Common Bird: 5 detections, Rare Bird: 1 detection (all >= 0.7)
+        for i in range(5):
+            rows.append((f"c{i}.WAV", "Sunrise", "2026-01-01",
+                         "Common Bird", "C", 0, 3, 0.9))
+        rows.append(("r0.WAV", "Sunrise", "2026-01-02",
+                     "Rare Bird", "R", 0, 3, 0.9))
+        conn = self._make_db(tmp_path, rows)
+        proc_recordings.report_detections(conn, 0.7)
+        out = capsys.readouterr().out
+        lines = [ln for ln in out.splitlines() if "Bird" in ln]
+        rare_line = next(ln for ln in lines if "Rare Bird" in ln)
+        common_line = next(ln for ln in lines if "Common Bird" in ln)
+        assert rare_line.lstrip().startswith("*")
+        assert not common_line.lstrip().startswith("*")
+        conn.close()

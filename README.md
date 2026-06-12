@@ -19,16 +19,17 @@ Install manually with pip — no `requirements.txt` exists.
 
 ### `proc_recordings.py` — process recordings
 
-Runs BirdNET on every `.WAV` file in a directory and stores detections in a SQLite database named after the directory (`<dirname>.db`), created in the current working directory. Already-processed files are skipped automatically.
+Runs BirdNET on every `.WAV` file in a directory and stores detections in a SQLite database named after the directory (`<dirname>.db`), created in the current working directory. Already-processed files are skipped automatically. Once all new files are processed, a summary report lists every detected species at or above the reporting confidence, sorted from least to most common across the database, and highlights (`*`) those in the bottom quartile of occurrence — the rarest species.
 
 ```
-python proc_recordings.py <directory> [-c CONFIDENCE]
+python proc_recordings.py <directory> [-c CONFIDENCE] [-r REPORT_CONFIDENCE]
 ```
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `directory` | (required) | Directory of WAV recordings |
-| `-c`, `--confidence` | `0.75` | Minimum BirdNET confidence threshold |
+| `-c`, `--confidence` | `0.25` | Minimum BirdNET confidence threshold |
+| `-r`, `--report-confidence` | `0.7` | Confidence threshold for the post-run detection report |
 
 ### `query_detections.py` — query a database
 
