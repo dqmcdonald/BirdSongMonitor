@@ -1,11 +1,15 @@
 """Process a directory of bird song recordings through BirdNET and store
-detections in a SQLite database.  Usage: proc_recordings.py <directory>
+detections in a SQLite database, then report the detections found,
+highlighting the species that are least common in the database.
+
+Usage: proc_recordings.py <directory> [-c CONFIDENCE] [-r REPORT_CONFIDENCE]
 
 D. Q. McDonald — August 2025
 """
 
 import argparse
 import glob
+import math
 import os.path
 import sqlite3
 import sys
@@ -136,6 +140,53 @@ def proc_recordings(directory: str, conn, confidence: float):
         process_rec(f, conn, processed, confidence)
 
 
+def rare_threshold(counts) -> int:
+    """Return the count at or below which a species is considered rare.
+
+    Rare is defined as the bottom quartile of the per-species count
+    distribution, so the least common species in the database are always
+    flagged.  Returns 0 when there are no counts.
+    """
+    counts = sorted(counts)
+    if not counts:
+        return 0
+    # Index of the 25th-percentile element (at least the single rarest species).
+    k = max(0, math.ceil(0.25 * len(counts)) - 1)
+    return counts[k]
+
+
+def report_detections(conn, report_confidence: float):
+    """Print a report of all detections at or above the reporting confidence.
+
+    Species are listed from least to most common across the whole database,
+    and those in the bottom quartile of occurrence (the rarest) are highlighted.
+    """
+    cur = conn.cursor()
+    rows = cur.execute(
+        "SELECT common_name, COUNT(*) AS cnt FROM detection "
+        "WHERE common_name != 'DUMMY' AND confidence >= ? "
+        "GROUP BY common_name ORDER BY cnt ASC, common_name ASC",
+        (report_confidence,),
+    ).fetchall()
+
+    print(f"\nDetection report (confidence >= {report_confidence:.2f})")
+    print("=" * 45)
+
+    if not rows:
+        print("No detections at or above the reporting confidence.")
+        return
+
+    threshold = rare_threshold([cnt for _, cnt in rows])
+
+    print(f"{'Species':<32}{'Count':>7}")
+    print("-" * 45)
+    for common_name, cnt in rows:
+        marker = "*" if cnt <= threshold else " "
+        print(f"{marker} {common_name:<30}{cnt:>7}")
+    print("-" * 45)
+    print("* = least common in the database")
+
+
 def main():
     """Parse command-line arguments and run the recording processor."""
     parser = argparse.ArgumentParser(
@@ -149,6 +200,10 @@ def main():
     parser.add_argument('-c', '--confidence', dest='confidence', type=float,
                         default=0.25,
                         help='Minimum confidence threshold (default: 0.25)')
+    parser.add_argument('-r', '--report-confidence', dest='report_confidence',
+                        type=float, default=0.7,
+                        help='Confidence threshold for the post-run detection '
+                             'report (default: 0.7)')
     args = parser.parse_args()
 
     if not os.path.exists(args.directory):
@@ -156,6 +211,7 @@ def main():
 
     conn = create_db(args.directory)
     proc_recordings(args.directory, conn, args.confidence)
+    report_detections(conn, args.report_confidence)
 
 
 if __name__ == '__main__':
