@@ -64,6 +64,7 @@ python query_detections.py <db_name.db> [options]
 | `--life-list` | Species grouped by the date first detected; `*` marks species seen on only one day |
 | `--cooccur` | Top 20 species pairs co-occurring in the same recording file; with `-s`, lists all species sharing files with that species |
 | `--streaks` | Longest consecutive-day detection streak and longest gap between detection days per species |
+| `--rarity` | Species ranked from least to most common, with total detections, observation days, and share of all detections; `*` marks the rarest quartile |
 
 ### `plot_detections.py` — visualise detections
 

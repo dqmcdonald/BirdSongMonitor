@@ -10,6 +10,7 @@ import os
 import os.path
 import sqlite3
 import argparse
+import math
 import subprocess
 import tempfile
 import wave
@@ -63,6 +64,19 @@ def _where(confidence: float, species: str, event: str, dc: str):
         conds.append("event = ?")
         p += (event,)
     return " AND ".join(conds) + dc, p
+
+
+def _rare_threshold(counts) -> int:
+    """Return the count at or below which a species is considered rare.
+
+    Rare is the bottom quartile of the per-species count distribution, so the
+    least common species are always flagged.  Returns 0 for no counts.
+    """
+    counts = sorted(counts)
+    if not counts:
+        return 0
+    k = max(0, math.ceil(0.25 * len(counts)) - 1)
+    return counts[k]
 
 
 def _print_header(label: str, confidence: float, species: str, event: str,
@@ -452,6 +466,46 @@ def life_list(conn, confidence: float, species: str, event: str,
     print("\n  * = detected on only one day")
 
 
+def rarity(conn, confidence: float, species: str, event: str,
+           date_from: str, date_to: str):
+    """Rank species from least to most common in the database.
+
+    Lists total detections, distinct observation days, and each species'
+    share of all detections, highlighting those in the rarest quartile.
+    """
+    cur = conn.cursor()
+    dc, dp = _date_clause(date_from, date_to)
+    where, params = _where(confidence, species, event, dc)
+    params += dp
+
+    rows = cur.execute(f"""
+        SELECT common_name,
+               COUNT(*) AS total,
+               COUNT(DISTINCT DATE(date)) AS obs_days
+        FROM detection
+        WHERE {where}
+        GROUP BY common_name
+        ORDER BY total ASC, obs_days ASC, common_name ASC
+    """, params).fetchall()
+
+    _print_header("Species rarity (least to most common)", confidence,
+                  species, event, date_from, date_to)
+    if not rows:
+        print("  No data found.")
+        return
+
+    grand_total = sum(total for _, total, _ in rows)
+    threshold = _rare_threshold([total for _, total, _ in rows])
+
+    print(f"  {'Species':<35} {'Total':>7} {'Days':>5} {'Share':>7}")
+    print(f"  {'-'*35} {'-'*7} {'-'*5} {'-'*7}")
+    for name, total, obs_days in rows:
+        share = 100.0 * total / grand_total if grand_total else 0.0
+        marker = " *" if total <= threshold else ""
+        print(f"  {name:<35} {total:>7} {obs_days:>5} {share:>6.1f}%{marker}")
+    print("\n  * = least common in the database (rarest quartile by total detections)")
+
+
 def cooccurrence(conn, confidence: float, species: str, event: str,
                  date_from: str, date_to: str, top_n: int = 20):
     cur = conn.cursor()
@@ -675,6 +729,8 @@ def main():
         help="show top species co-occurrences within the same recording file")
     parser.add_argument('--streaks', action='store_true',
         help="show longest consecutive-day detection streak and longest gap per species")
+    parser.add_argument('--rarity', action='store_true',
+        help="rank species from least to most common (* = rarest quartile)")
     parser.add_argument('-p', '--play', action='store_true',
         help="play audio for each detection (requires -s; uses afplay on macOS)")
     parser.add_argument('--extract', action='store_true',
@@ -721,6 +777,9 @@ def main():
 
     if args.streaks:
         detection_streaks(conn, args.confidence, species, args.event, date_from, date_to)
+
+    if args.rarity:
+        rarity(conn, args.confidence, species, args.event, date_from, date_to)
 
     if args.play:
         recordings_dir = args.recordings_dir or os.path.splitext(args.db_name)[0]
