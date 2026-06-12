@@ -338,6 +338,67 @@ class TestDetectionStreaks:
 
 
 # ===========================================================================
+# _rare_threshold
+# ===========================================================================
+
+class TestRareThreshold:
+
+    def test_empty_returns_zero(self):
+        assert query_detections._rare_threshold([]) == 0
+
+    def test_single_count(self):
+        assert query_detections._rare_threshold([7]) == 7
+
+    def test_bottom_quartile_of_four(self):
+        assert query_detections._rare_threshold([1, 2, 3, 4]) == 1
+
+    def test_bottom_quartile_of_eight(self):
+        assert query_detections._rare_threshold([1, 2, 3, 4, 5, 6, 7, 8]) == 2
+
+    def test_unsorted_input(self):
+        assert query_detections._rare_threshold([5, 2, 2, 2]) == 2
+
+
+# ===========================================================================
+# rarity
+# ===========================================================================
+
+class TestRarity:
+
+    def test_lists_all_species_with_share(self, fixture_conn, capsys):
+        query_detections.rarity(fixture_conn, 0.25, "", "", "", "")
+        out = capsys.readouterr().out
+        for name in ("Eurasian Blackbird", "European Starling",
+                     "Common Chaffinch", "Silvereye"):
+            assert name in out
+        assert "Share" in out
+
+    def test_no_data_message(self, fixture_conn, capsys):
+        query_detections.rarity(fixture_conn, 0.99, "", "", "", "")
+        out = capsys.readouterr().out
+        assert "No data found" in out
+
+    def test_common_species_not_flagged(self, fixture_conn, capsys):
+        # Blackbird (5 detections) is the most common → no asterisk;
+        # the three 2-detection species are the rarest quartile → flagged.
+        query_detections.rarity(fixture_conn, 0.25, "", "", "", "")
+        out = capsys.readouterr().out
+        blackbird_line = next(ln for ln in out.splitlines()
+                              if "Eurasian Blackbird" in ln)
+        starling_line = next(ln for ln in out.splitlines()
+                             if "European Starling" in ln)
+        assert "*" not in blackbird_line
+        assert starling_line.rstrip().endswith("*")
+
+    def test_sorted_least_common_first(self, fixture_conn, capsys):
+        query_detections.rarity(fixture_conn, 0.25, "", "", "", "")
+        out = capsys.readouterr().out
+        lines = [ln for ln in out.splitlines() if "%" in ln]
+        # Blackbird is most common, so it must be the last data row.
+        assert "Eurasian Blackbird" in lines[-1]
+
+
+# ===========================================================================
 # resolve_species
 # ===========================================================================
 
